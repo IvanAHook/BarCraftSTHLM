@@ -19,8 +19,13 @@ get_header(); ?>
 		<?php if ( have_posts() ) : ?>
 
 			<?php /* Start the Loop */ ?>
+            <?php
+                $fetatured = get_posts( 'category'=>'featured', 'posts_per_page'=>1 );
+                foreach( $featured as $article ) {
+                    echo $article->post_title;
+                }
+            ?>
 			<?php while ( have_posts() ) : the_post(); ?>
-
 				<?php
 					/* Include the Post-Format-specific template for the content.
 					 * If you want to override this in a child theme, then include a file
