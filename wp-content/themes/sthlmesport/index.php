@@ -13,6 +13,19 @@
 
 get_header(); ?>
 
+<div id="content" class="site-content">
+
+	<div id="featured-area">
+		<div id="featured-post">
+			<div id="featured-description">This is the featured post!</div>
+		</div>
+		<div id="schedule">
+			<div id="comminty-viewer">
+				Community viewer
+			</div>
+		</div>
+	</div>
+
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
 

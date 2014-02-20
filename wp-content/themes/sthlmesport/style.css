@@ -588,6 +588,24 @@ nav#site-navigation	a {
 	margin-left: 1em;
 }
 
+/* feature area */
+
+#featured-area #featured-post {
+	width: 81%;
+	height: 200px;
+	float: left;
+
+	background: gray;
+}
+
+#featured-area #schedule {
+	width: 17%;
+	height: 200px;
+	float: right;
+
+	background: silver;
+}
+
 
 /*--------------------------------------------------------------
 10.1 Posts and pages
