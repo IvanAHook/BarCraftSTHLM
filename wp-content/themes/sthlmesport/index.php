@@ -15,9 +15,15 @@ get_header(); ?>
 
 <div id="content" class="site-content">
 
-	<div id="featured-area">
-		<div id="featured-post">
-			<div id="featured-description">This is the featured post!</div>
+    <div id="featured-area">
+        <div id="featured-post">
+            <?php
+                $featured_post = get_posts('numberposts=1&category=2');
+                foreach($featured_post as $post) : ?>
+                    the_post_thumbnail();
+                <img class="article-img" id="featured-img"><?php the_title(); ?></a>
+            <?php endforeach; ?>
+            <div id="featured-description"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></div>
 		</div>
 		<div id="schedule">
 			<div id="comminty-viewer">
@@ -32,12 +38,8 @@ get_header(); ?>
 		<?php if ( have_posts() ) : ?>
 
 			<?php /* Start the Loop */ ?>
-            <?php
-                $fetatured = get_posts( 'category'=>'featured', 'posts_per_page'=>1 );
-                foreach( $featured as $article ) {
-                    echo $article->post_title;
-                }
-            ?>
+
+
 			<?php while ( have_posts() ) : the_post(); ?>
 				<?php
 					/* Include the Post-Format-specific template for the content.
@@ -51,14 +53,14 @@ get_header(); ?>
 
 			<?php sthlmesport_paging_nav(); ?>
 
-		<?php else : ?>
+        <?php else : ?>
 
-			<?php get_template_part( 'content', 'none' ); ?>
+            <?php get_template_part( 'content', 'none' ); ?>
 
-		<?php endif; ?>
+        <?php endif; ?>
 
-		</main><!-- #main -->
-	</div><!-- #primary -->
+        </main><!-- #main -->
+    </div><!-- #primary -->
 
 <?php get_sidebar(); ?>
 <?php get_footer(); ?>
