@@ -1,10 +1,10 @@
 /*
-Theme Name: STHLM e-sport
-Theme URI: http://sthlmesport.se/
-Author: Johan och Ivan
-Author URI: http://sthlmesport.se/
-Description: Dat Bouse Theme
-Version: 0.1
+Theme Name: sthlmesport
+Theme URI: http://underscores.me/
+Author: Underscores.me
+Author URI: http://underscores.me/
+Description: Description
+Version: 1.0
 License: GNU General Public License
 License URI: license.txt
 Text Domain: sthlmesport
@@ -537,6 +537,28 @@ a:active {
 /*--------------------------------------------------------------
 10.0 Content
 --------------------------------------------------------------*/
+
+ /* page */
+
+body.page {
+	padding: 0 10px;
+}
+
+#page {
+	width: 100%;
+	max-width: 940px;
+	margin: 0 auto;
+}
+
+ /* branding */
+
+ .site-branding {
+ 	position: relative;
+ 	top: 0;
+ 	left: ;
+ }
+
+
 /*--------------------------------------------------------------
 10.1 Posts and pages
 --------------------------------------------------------------*/
