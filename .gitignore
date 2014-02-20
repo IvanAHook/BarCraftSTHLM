@@ -1,6 +1,7 @@
 # VIM
 *.swp
 
+# Wordpress
 .htaccess
 wp-config.php
 wp-content/uploads/
