@@ -26,8 +26,8 @@ and Blueprint http://www.blueprintcss.org/
 
 Colors:
 
-STHLM e-sport: #e43053;
-
+STHLM e-sport pink:	#e43053;
+BarCraft purple:	#541d59;
 
 
 */
@@ -568,6 +568,7 @@ header {
 	position: absolute;
 	top: 0;
 	left: 4.2%;
+	z-index: 100;
 
 	width: 19%;
 	height: 116px;
@@ -590,12 +591,25 @@ nav#site-navigation	a {
 
 /* feature area */
 
+#featured-area {
+	overflow: auto;
+}
+
 #featured-area #featured-post {
 	width: 81%;
 	height: 200px;
 	float: left;
+	position: relative;
 
 	background: gray;
+}
+
+#featured-area #featured-post #featured-description {
+	position: absolute;
+	bottom: 40px;
+	left: 4.2%;
+	background: #541d59;
+	color: white;
 }
 
 #featured-area #schedule {
@@ -604,6 +618,22 @@ nav#site-navigation	a {
 	float: right;
 
 	background: silver;
+}
+
+/* main content */
+
+#primary.content-area {
+	clear: both;
+	margin-top: 30px;
+	width: 81%;
+	float: left;
+}
+
+#secondary.widget-area {
+	margin-top: 30px;
+	width: 81%;
+	width: 17%;
+	float: right;
 }
 
 

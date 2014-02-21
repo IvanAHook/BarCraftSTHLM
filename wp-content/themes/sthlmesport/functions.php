@@ -40,6 +40,8 @@ function sthlmesport_setup() {
 	 */
 	add_theme_support( 'post-thumbnails' );
 
+	add_image_size("top-image", 760, 380, false );
+
 	// This theme uses wp_nav_menu() in one location.
 	register_nav_menus( array(
 		'primary' => __( 'Primary Menu', 'sthlmesport' ),
