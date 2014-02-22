@@ -1,5 +1,7 @@
 <?php
 /**
+ * The template part for single post (Article view)
+ *
  * @package sthlmesport
  */
 ?>
