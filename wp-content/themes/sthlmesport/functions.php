@@ -40,7 +40,15 @@ function sthlmesport_setup() {
 	 */
 	add_theme_support( 'post-thumbnails' );
 
-	add_image_size("top-image", 760, 380, false );
+	add_image_size("top-image", 760, 380, true );
+	add_image_size("article-thumb", 280, 140, true );
+
+	// remove hard coded dimension from thumbnails
+	add_filter( 'post_thumbnail_html', 'remove_thumbnail_dimensions', 10, 3 );
+	function remove_thumbnail_dimensions( $html, $post_id, $post_image_id ) {
+	    $html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
+	    return $html;
+	}
 
 	// This theme uses wp_nav_menu() in one location.
 	register_nav_menus( array(

@@ -7,10 +7,12 @@
  * It is used to display a page when nothing more specific matches a query.
  * E.g., it puts together the home page when no home.php file exists.
  * Learn more: http://codex.wordpress.org/Template_Hierarchy
+ *
  *                    if ( has_post_thumbnail( $post->ID )) {
-                        echo '<a href="' . get_permalink( $post->ID ) . '"title="' . esc_attr( $post->post_title ) . '">';
-                        echo get_the_post_thumbnail( $post->ID, 'thumbnail' );
-                    }
+ *                       echo '<a href="' . get_permalink( $post->ID ) . '"title="' . esc_attr( $post->post_title ) . '">';
+ *                       echo get_the_post_thumbnail( $post->ID, 'thumbnail' );
+ *                   }
+ *
  * @package sthlmesport
  */
 
@@ -24,13 +26,15 @@ get_header(); ?>
                 $featured_post = get_posts('numberposts=1&category=2');
                 foreach($featured_post as $post) :?>
                     <?php $featured_id = get_the_ID(); ?>
-                    <a href="<?php the_permalink(); ?>"> <?php echo get_the_post_thumbnail( $post->ID, 'top-image' ); ?> </a>
-                    <div id="featured-description"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></div>
+                    <a href="<?php the_permalink(); ?>">
+                    	<?php echo get_the_post_thumbnail( $post->ID, 'top-image' ); ?>
+                    	<p id="featured-description"><?php the_title(); ?></p>
+                    </a>
             <?php endforeach; ?>
 		</div>
 		<div id="schedule">
 			<div id="comminty-viewer">
-				Community viewer
+				
 			</div>
 		</div>
 	</div>

@@ -597,19 +597,28 @@ nav#site-navigation	a {
 
 #featured-area #featured-post {
 	width: 81%;
-	height: 200px;
 	float: left;
 	position: relative;
 
 	background: gray;
 }
 
-#featured-area #featured-post #featured-description {
+#featured-area #featured-post a {
+	display: block;
+}
+
+#featured-area #featured-post img.attachment-top-image {
+    width: 100%;
+    display: block;
+}
+
+#featured-area #featured-post p#featured-description {
 	position: absolute;
 	bottom: 40px;
 	left: 4.2%;
 	background: #541d59;
 	color: white;
+	display: block;
 }
 
 #featured-area #schedule {
