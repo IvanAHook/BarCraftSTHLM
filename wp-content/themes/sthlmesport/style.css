@@ -511,6 +511,7 @@ a {
 
 #featured-area {
 	overflow: auto;
+	position: relative;
 }
 
 #featured-area #featured-post {
@@ -525,24 +526,37 @@ a {
 	display: block;
 }
 
-#featured-area #featured-post img.attachment-top-image {
+#featured-area #featured-post .entry-image img {
     width: 100%;
     display: block;
 }
 
-#featured-area #featured-post p#featured-description {
+#featured-area #featured-post #featured-description {
+	width: 47.368421052631578947368421052632%; /* 360px of 760px */
+	padding: 1em 3.289473684210526315789473684211%; /* 20px of 760px*/
 	position: absolute;
-	bottom: 40px;
-	left: 4.2%;
-	background: #541d59;
+	bottom: 0;
+	left: 0;
+	background: rgba(0,0,0,0.5);
 	color: white;
 	display: block;
 }
 
+#featured-area #featured-post #featured-description {
+	color: white;
+	text-decoration: none;
+}
+
+#featured-area #featured-post #featured-description h1 {
+	font-size: 3.0rem;
+}
+
 #featured-area #schedule {
 	width: 17.021276595744680851063829787234%; /* 160px of 940px */
-	height: 200px;
-	float: right;
+	position: absolute;
+	height: 100%;
+	top: 0;
+	right: 0;
 
 	background: silver;
 }
@@ -673,35 +687,31 @@ a {
 	float: right;
 }
 
-article:nth-child(odd) {
+#primary.content-area main article:nth-child(odd) {
 	clear: both;
 }
 
-article {
+#primary.content-area main article {
 	width: 46.666666666666666666666666666666%; /* 280px of 600px */
 	margin-left: 03.333333333333333333333333333333%; /* 20px of 600px */
 	display: block;
 	float: left;
 }
 
-article a.entry-image {
+#primary.content-area main article a.entry-image {
 	display: block;
 }
 
-article .attachment-article-thumb {
+#primary.content-area main article .attachment-article-thumb {
 	width: 100%;
 }
 
-article .entry-meta {
+#primary.content-area main article .entry-meta {
 	font-size: 1.1rem;
 	color: rgba(0,0,0,0.5);
 	text-transform: uppercase;
 	margin-top: 1rem;
 }
-
-
-
-
 
 
 
@@ -732,8 +742,7 @@ article .entry-meta {
 	display: inline;
 }
 .page-content,
-.entry-content,
-.entry-summary {
+.entry-content {
 	margin: 1.5em 0 0;
 }
 .page-links {

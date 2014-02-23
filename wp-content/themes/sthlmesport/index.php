@@ -21,17 +21,36 @@ get_header(); ?>
 <div id="content" class="site-content">
 
     <div id="featured-area">
-        <div id="featured-post">
-            <?php
-                $featured_post = get_posts('numberposts=1&category=2');
-                foreach($featured_post as $post) :?>
-                    <?php $featured_id = get_the_ID(); ?>
-                    <a href="<?php the_permalink(); ?>">
-                    	<?php echo get_the_post_thumbnail( $post->ID, 'top-image' ); ?>
-                    	<p id="featured-description"><?php the_title(); ?></p>
-                    </a>
-            <?php endforeach; ?>
-		</div>
+
+    <?php
+        $featured_post = get_posts('numberposts=1&category=2');
+        foreach($featured_post as $post) :?>
+            <?php $featured_id = get_the_ID(); ?>
+
+			<article id="featured-post" <?php post_class(); ?>>
+				<a class="entry-image" href="<?php the_permalink(); ?>" rel="bookmark"><?php
+
+					if ( has_post_thumbnail() ) {
+						the_post_thumbnail('top-image');
+					}
+					else {
+						echo '<img src="' . get_bloginfo( 'stylesheet_directory' ) . '/img/thumbnail-fallback.png" />';
+					}
+
+				?></a>
+				
+				<a id="featured-description" href="<?php the_permalink(); ?>" rel="bookmark">
+					<h1 class="entry-title"><?php the_title(); ?></h1>
+
+					<p class="entry-summary">
+						<?php echo get_the_excerpt(); ?>
+					</p><!-- .entry-summary -->
+				</a>
+
+			</article><!-- #post-## -->
+
+        <?php endforeach; ?>
+
 		<div id="schedule">
 			<div id="comminty-viewer">
 				
