@@ -565,13 +565,13 @@ header {
 /* branding */
 
 .site-branding {
+	width: 19.148936170212765957446808510638%; /* 180px of 940px */
+	margin-left: 04.255319148936170212765957446809%; /* 40px of 940px */
+	height: 116px;
 	position: absolute;
 	top: 0;
-	left: 4.2%;
+	left: 10px;
 	z-index: 100;
-
-	width: 19%;
-	height: 116px;
 	
 	background: #e43053;
 }
@@ -579,10 +579,10 @@ header {
 /* nav */
 
 nav#site-navigation {
+	width: 74.468085106382978723404255319149%; /* 700px of 940px */
 	margin-top: 50px;
 	border-bottom: 3px solid black;
 	float:right;
-	width: 74%;
 }
 
 nav#site-navigation	a {
@@ -596,7 +596,7 @@ nav#site-navigation	a {
 }
 
 #featured-area #featured-post {
-	width: 81%;
+	width: 80.851063829787234042553191489362%; /* 760px of 940px */
 	float: left;
 	position: relative;
 
@@ -622,38 +622,46 @@ nav#site-navigation	a {
 }
 
 #featured-area #schedule {
-	width: 17%;
+	width: 17.021276595744680851063829787234%; /* 160px of 940px */
 	height: 200px;
 	float: right;
 
 	background: silver;
 }
 
-/* main content */
+/* Main column */
 
 #primary.content-area {
+	width: 80.851063829787234042553191489362%; /* 760px of 940px */
 	clear: both;
 	margin-top: 30px;
-	width: 81%;
 	float: left;
 }
 
-#secondary.widget-area {
-	margin-top: 30px;
-	width: 81%;
-	width: 17%;
+
+/* Left side event sidebar */
+
+#primary.content-area #tertiary.events-area {
+	width: 21.052631578947368421052631578947%; /* 160px of 760px */
+	float: left;
+	background: #e43053;
+	height: 100px;
+}
+
+
+/* Main article list */
+
+#primary.content-area main {
+	width: 78.947368421052631578947368421053%; /* 600px of 760px */
+	overflow: auto;
 	float: right;
 }
 
-
-
-/* Article list */
-
 article {
+	width: 46.666666666666666666666666666666%; /* 280px of 600px */
+	margin-left: 03.333333333333333333333333333333%; /* 20px of 600px */
 	display: block;
-	width: 30%;
 	float: left;
-	margin-left: 20px;
 }
 
 article a.entry-image {
@@ -662,6 +670,21 @@ article a.entry-image {
 
 article .attachment-article-thumb {
 	width: 100%;
+}
+
+
+
+
+
+
+
+
+/* Right side notice sidebar */
+
+#secondary.widget-area {
+	width: 17.021276595744680851063829787234%; /* 160px of 940px */
+	margin-top: 30px;
+	float: right;
 }
 
 

@@ -40,6 +40,9 @@ get_header(); ?>
 	</div>
 
 	<div id="primary" class="content-area">
+
+		<?php get_sidebar('events'); ?>
+
 		<main id="main" class="site-main" role="main">
 
 		<?php if ( have_posts() ) : ?>
