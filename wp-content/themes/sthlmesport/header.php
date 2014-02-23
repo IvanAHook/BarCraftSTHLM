@@ -23,7 +23,9 @@
 
 	<header id="masthead" class="site-header" role="banner">
 		<div class="site-branding">
-			<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
+			<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+				<img src="<?php bloginfo('template_directory');?>/img/top-logo.png" alt="<?php bloginfo( 'name' ); ?>">
+			</a></h1>
 		</div>
 
 		<nav id="site-navigation" class="main-navigation" role="navigation">

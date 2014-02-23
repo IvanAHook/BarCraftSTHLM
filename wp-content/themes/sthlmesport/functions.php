@@ -50,6 +50,12 @@ function sthlmesport_setup() {
 	    return $html;
 	}
 
+	// Decrease excerpt length
+	function my_excerpt_length($length) {
+		return 35; // Number of words
+	}
+	add_filter('excerpt_length', 'my_excerpt_length');
+
 	// This theme uses wp_nav_menu() in one location.
 	register_nav_menus( array(
 		'primary' => __( 'Primary Menu', 'sthlmesport' ),
