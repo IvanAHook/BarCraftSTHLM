@@ -57,7 +57,7 @@ BarCraft purple:	#541d59;
 
 /* Google Web Fonts */
 
-@import url(http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Oswald);
+@import url(//fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Oswald);
 
 
 /*--------------------------------------------------------------
@@ -702,7 +702,7 @@ a {
 	display: block;
 }
 
-#primary.content-area main article .attachment-article-thumb {
+#primary.content-area main article img {
 	width: 100%;
 }
 
@@ -711,6 +711,30 @@ a {
 	color: rgba(0,0,0,0.5);
 	text-transform: uppercase;
 	margin-top: 1rem;
+}
+
+#primary.content-area main article .entry-icon {
+	background: url("img/icon/esport-icon-42.png");
+	height: 42px;
+	width: 42px;
+	float: left;
+	margin: 4px 5px 5px 0;
+}
+
+#primary.content-area main article.category-starcraft .entry-icon {
+	background: url("img/icon/sc-icon-42.png");
+}
+
+
+
+#primary.content-area main article h1.entry-title {
+	clear: none;
+	font-size: 1.9rem;
+	line-height: 2.4rem;
+}
+
+#primary.content-area main article .entry-summary {
+	clear: both;
 }
 
 

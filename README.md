@@ -4,6 +4,43 @@ STHLM e-sport
 Logik för temat:
 ---------------
 
+### Post Types ###
+
+Vi använder två post types:
+
+* Posts (artiklar)
+* Events
+
+Events har ett par custom fields, som datum och tid, plats och annat specifikt för evenemang.
+
+
+### Kategorier ###
+
+Vi har ett gäng kategorier. Först och främst **spel-kategori** för filtret:
+
+* E-sport	*(slug="esport") [default]*
+* StarCraft *(slug="starcraft")*
+* LoL		*(slug="lol")*
+* Dota2 	*(slug="dota")*
+
+*En post kan tillhöra flera av dessa (men minst en)*
+
+Vi har sedan kategorier för **artikeltyp**:
+
+* Artikel
+* Notis
+* Ledare
+
+etc
+
+*En post bör endast tillhöra en av dessa. Redaktörerna kan hitta på egna efter behag. Den enda som särbehandlas är Notiserna som har eget flöde och styling.*
+
+Sedan har vi en **specialkategori**:
+
+* Featured *(id=2)*
+
+*Denna kategori kan sättas på artiklar (som inte är notiser). Det senaste inlägget med denna kategori visas överst på förstasidan.*
+
 
 ### Filtret ###
 
