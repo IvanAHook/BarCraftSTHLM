@@ -21,6 +21,8 @@
 	<div class="entry-meta">
 		<?php the_time('j F, Y H:i'); ?>
 	</div><!-- .entry-meta -->
+
+	<div class="entry-icon"></div>
 	
 	<h1 class="entry-title"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h1>
 
