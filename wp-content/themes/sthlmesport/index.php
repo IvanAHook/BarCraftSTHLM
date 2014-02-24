@@ -23,9 +23,9 @@ get_header(); ?>
     <div id="featured-area">
 
     <?php
-        $featured_post = get_posts('numberposts=1&category=2');
-        foreach($featured_post as $post) :?>
-            <?php $featured_id = get_the_ID(); ?>
+        $featured_post = new WP_Query( array( 'post_type'=>'Post', 'limit'=>1, 'cat'=>2 ) );
+        $featured_id = get_the_ID();
+    ?>
 
 			<article id="featured-post" <?php post_class(); ?>>
 				<a class="entry-image" href="<?php the_permalink(); ?>" rel="bookmark"><?php
@@ -38,7 +38,7 @@ get_header(); ?>
 					}
 
 				?></a>
-				
+
 				<a id="featured-description" href="<?php the_permalink(); ?>" rel="bookmark">
 					<h1 class="entry-title"><?php the_title(); ?></h1>
 
@@ -49,34 +49,38 @@ get_header(); ?>
 
 			</article><!-- #post-## -->
 
-        <?php endforeach; ?>
 
 		<div id="schedule">
 			<div id="comminty-viewer">
-				
+
 			</div>
 		</div>
 	</div>
 
 	<div id="primary" class="content-area">
 
+        <?php
+            $selected_cats = '2,3,4,5,6'; /* change args for query depending on filter choices, create set/get_filter() functions?
+                                             or handle depending on slugs? */
+            $query_post = new WP_Query( array( 'post_type'=>'Post', 'posts_per_page'=>10, 'cat'=>$selected_cats ) );
+        ?>
+
 		<?php get_sidebar('events'); ?>
 
 		<main id="main" class="site-main" role="main">
 
-		<?php if ( have_posts() ) : ?>
+		<?php if ( $query_post->have_posts() ) : ?>
 
 			<?php /* Start the Loop */ ?>
 
-
-			<?php while ( have_posts() ) : the_post(); ?>
+			<?php while ( $query_post->have_posts() ) : $query_post->the_post(); ?>
 				<?php
                     if ( $post->ID !== $featured_id ) {
                     /* Include the Post-Format-specific template for the content.
 					 * If you want to override this in a child theme, then include a file
 					 * called content-___.php (where ___ is the Post Format name) and that will be used instead.
 					 */
-					get_template_part( 'content', get_post_format() );
+                        get_template_part( 'content', get_post_format() );
                     }
 				?>
 
@@ -91,6 +95,7 @@ get_header(); ?>
         <?php endif; ?>
 
         </main><!-- #main -->
+
     </div><!-- #primary -->
 
 <?php get_sidebar(); ?>

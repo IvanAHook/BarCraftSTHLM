@@ -107,6 +107,26 @@ function sthlmesport_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'sthlmesport_scripts' );
 
+/*
+ *  Adds Article and Event post types
+ */
+add_action( 'init', 'create_post_types' );
+function create_post_types() { // add 'supports' => array(),
+    register_post_type( 'event',
+                        array(
+                            'labels' => array(
+                                            'name' => __( 'Event' ),
+                                            'singular_name' => __( 'Event' )
+                                            ),
+                            'taxonomies' => array('category', 'post_tag'),
+                            'public' => true,
+                            'has_archive' => true,
+                            'rewrite' => array( 'slug' => 'event'),
+                        )
+                    );
+
+}
+
 /**
  * Implement the Custom Header feature.
  */
