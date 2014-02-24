@@ -20,10 +20,16 @@ get_header(); ?>
 
 <div id="content" class="site-content">
 
+    <?php
+        $selected_cats = array( 1,2,3,4,5 ); // change this array depending on filter choices, create set/get_filter() functions?
+        $query_article = new WP_Query( array( 'post_type'=>'Article', 'posts_per_page'=>10, 'cat'=>$selected_cats ) );
+        $query_event = new WP_Query( array( 'post_type'=>'Event', 'posts_per_page'=>10, 'cat'=>$selected_cats ) );
+    ?>
+
     <div id="featured-area">
         <div id="featured-post">
             <?php
-                $featured_post = get_posts('numberposts=1&category=2');
+                $featured_post = get_posts( 'numberposts=1&category=2' );
                 foreach($featured_post as $post) :?>
                     <?php $featured_id = get_the_ID(); ?>
                     <a href="<?php the_permalink(); ?>">
@@ -34,7 +40,7 @@ get_header(); ?>
 		</div>
 		<div id="schedule">
 			<div id="comminty-viewer">
-				
+
 			</div>
 		</div>
 	</div>
@@ -42,6 +48,7 @@ get_header(); ?>
 	<div id="primary" class="content-area">
 
 		<?php get_sidebar('events'); ?>
+        <?php get_sidebar('notifications'); ?>
 
 		<main id="main" class="site-main" role="main">
 
@@ -72,6 +79,7 @@ get_header(); ?>
         <?php endif; ?>
 
         </main><!-- #main -->
+
     </div><!-- #primary -->
 
 <?php get_sidebar(); ?>
