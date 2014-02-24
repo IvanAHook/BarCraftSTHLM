@@ -50,6 +50,12 @@ function sthlmesport_setup() {
 	    return $html;
 	}
 
+	// Decrease excerpt length
+	function my_excerpt_length($length) {
+		return 35; // Number of words
+	}
+	add_filter('excerpt_length', 'my_excerpt_length');
+
 	// This theme uses wp_nav_menu() in one location.
 	register_nav_menus( array(
 		'primary' => __( 'Primary Menu', 'sthlmesport' ),
@@ -106,18 +112,6 @@ add_action( 'wp_enqueue_scripts', 'sthlmesport_scripts' );
  */
 add_action( 'init', 'create_post_types' );
 function create_post_types() { // add 'supports' => array(),
-    register_post_type( 'article',
-                        array(
-                            'labels' => array(
-                                            'name' => __( 'Article' ),
-                                            'singular_name' => __( 'Article' )
-                                            ),
-                            'taxonomies' => array('category', 'post_tag'),
-                            'public' => true,
-                            'has_archive' => true,
-                            'rewrite' => array( 'slug' => 'article'),
-                        )
-                    );
     register_post_type( 'event',
                         array(
                             'labels' => array(
