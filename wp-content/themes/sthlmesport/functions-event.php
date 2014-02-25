@@ -11,8 +11,8 @@ function event_posts_cache() { //separate taxonomy for events?
     $categories = get_categories( $args );
     $event_query = array();
     foreach ( $categories as $cat ) {
-        $args = array( 'post_type'=>'event', // not getting latest for some reason
-                       'limit'=>1,
+        $args = array( 'post_type'=>'event',
+                       'posts_per_page'=>1,
                        'cat'=>$cat->cat_ID,
                        'no_found_rows'=>true,
                        'update_post_meta_cache'=>false,
