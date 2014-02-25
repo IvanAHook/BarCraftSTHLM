@@ -22,9 +22,12 @@
 		<?php the_time('j F, Y H:i'); ?>
 	</div><!-- .entry-meta -->
 
-	<div class="entry-icon"></div>
-	
-	<h1 class="entry-title"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h1>
+	<h1 class="entry-title">
+	<a href="<?php the_permalink(); ?>" rel="bookmark">
+		<div class="entry-icon"></div>
+		<?php the_title(); ?>
+	</a>
+	</h1>
 
 	<div class="entry-summary">
 		<?php the_excerpt(); ?>
