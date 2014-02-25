@@ -23,6 +23,7 @@ get_header(); ?>
     <div id="featured-area">
 
     <?php
+        delete_transient('event_query'); // not supposed to be here lol... but transient does not work propperly
         $featured_post = new WP_Query( array( 'post_type'=>'Post', 'limit'=>1, 'cat'=>2 ) );
         $featured_id = get_the_ID();
     ?>
@@ -60,7 +61,7 @@ get_header(); ?>
 	<div id="primary" class="content-area">
 
         <?php
-            $selected_cats = '2,3,4,5,6'; /* change args for query depending on filter choices, create set/get_filter() functions?
+            $selected_cats = '2,3,4,5,6,7'; /* change args for query depending on filter choices, create set/get_filter() functions?
                                              or handle depending on slugs? */
             $query_post = new WP_Query( array( 'post_type'=>'Post', 'posts_per_page'=>10, 'cat'=>$selected_cats ) );
         ?>

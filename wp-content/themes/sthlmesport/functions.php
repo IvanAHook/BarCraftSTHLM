@@ -108,9 +108,8 @@ function sthlmesport_scripts() {
 add_action( 'wp_enqueue_scripts', 'sthlmesport_scripts' );
 
 /*
- *  Adds Article and Event post types
+ *  Adds Event post type
  */
-add_action( 'init', 'create_post_types' );
 function create_post_types() { // add 'supports' => array(),
     register_post_type( 'event',
                         array(
@@ -126,6 +125,17 @@ function create_post_types() { // add 'supports' => array(),
                     );
 
 }
+add_action( 'init', 'create_post_types' );
+
+function event_save( $post_id, $post ) {
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+    if ( $post->post_type == 'Event' ) {
+        delete_transient( 'event_query' );
+    }
+}
+add_action( 'save_post', 'event_save', 10, 2 );
 
 /**
  * Implement the Custom Header feature.

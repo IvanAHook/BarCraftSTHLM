@@ -4,21 +4,28 @@
  *
  * @package sthlmesport
  */
+
+require_once( get_template_directory() . '/functions-event.php' );
+
+$event_query = get_transient( 'event_query' );
+if ( !$event_query ) {
+    $event_query = event_posts_cache();
+}
 ?>
 
-    <?php
-       /*
-        * somekind of sitewide $selected_cats? or get and set funcs?
-        *  should we even query here or how does widgets work
-        *  $selected_cats = array( 3,4,5,6 );
-        *  $query_event = new WP_Query( array( 'post_type'=>'Event', 'posts_per_page'=>4, 'cat'=>$selected_cats ) );
-        */
-    ?>
+            <div id="tertiary" class="widget-area events-area" role="complementary">
+                <?php echo $event_query['dota2']['name']; ?>
+                <br>
+                <?php echo $event_query['dota2']['title']; ?>
+                <p>barcraft
+                15/4</p>
 
-	<div id="tertiary" class="widget-area events-area" role="complementary">
+            </div><!-- #tertiary -->
+            <div id="tertiary" class="widget-area events-area" role="complementary">
+                <?php echo $event_query['starcraft2']['name']; ?>
+                <br>
+                <?php echo $event_query['starcraft2']['title']; ?>
+                <p>barcraft
+                15/4</p>
 
-		barcraft
-		15/4
-
-	</div><!-- #tertiary -->
-
+            </div><!-- #tertiary -->
