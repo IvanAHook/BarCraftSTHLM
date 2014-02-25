@@ -671,14 +671,67 @@ a {
 }
 
 
-/* Left side event sidebar */
+/* Right Events and Streamers sidebar */
 
-#primary.content-area #tertiary.events-area {
+#secondary.widget-area {
+	width: 17.021276595744680851063829787234%; /* 160px of 940px */
+	float: right;
+	margin-top: 30px;
+}
+
+#secondary.widget-area .events-area .event-box {
+	color: white;
+	margin-top: 7px;
+	overflow: auto;
+	padding: 5%;
+	font-family: Oswald, sans-serif;
+	text-transform: uppercase;
+}
+
+#secondary.widget-area .events-area .event-box#starcraft-event-box {
+	background: #541d59;
+}
+#secondary.widget-area .events-area .event-box#lol-event-box {
+	background: #57c09f;
+}
+#secondary.widget-area .events-area .event-box#dota-event-box {
+	background: #49bae2;
+}
+#secondary.widget-area .events-area .event-box#esport-event-box {
+	background: #e43053;
+}
+
+#secondary.widget-area .events-area .event-box .event-text {
+	display: block;
+	float: left;
+	margin: 0;
+	width: 47%;
+	font-size: 1.3rem;
+	line-height: 1.7rem;
+	margin-top: 0.2rem;
+}
+
+#secondary.widget-area .events-area .event-box .event-date {
+	display: block;
+	float: right;
+	margin: 0;
+	width: 53%;
+	font-size: 3.5rem;
+	line-height: 3.5rem;
+	text-align: right;
+}
+
+
+
+
+/* Left Notice sidebar */
+
+#tertiary {
 	width: 21.052631578947368421052631578947%; /* 160px of 760px */
 	float: left;
-	background: #e43053;
-	height: 100px;
 }
+
+
 
 
 /* Main article list */
@@ -733,6 +786,7 @@ a {
 	clear: none;
 	font-size: 1.9rem;
 	line-height: 2.4rem;
+	display: inline-block;
 }
 
 #primary.content-area main article .entry-summary {
@@ -741,15 +795,6 @@ a {
 }
 
 
-
-
-/* Right side notice sidebar */
-
-#secondary.widget-area {
-	width: 17.021276595744680851063829787234%; /* 160px of 940px */
-	margin-top: 30px;
-	float: right;
-}
 
 
 /*--------------------------------------------------------------

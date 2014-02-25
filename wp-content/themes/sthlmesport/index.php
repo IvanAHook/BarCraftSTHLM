@@ -66,7 +66,7 @@ get_header(); ?>
             $query_post = new WP_Query( array( 'post_type'=>'Post', 'posts_per_page'=>10, 'cat'=>$selected_cats ) );
         ?>
 
-		<?php get_sidebar('events'); ?>
+		<?php get_sidebar('tertiary'); ?>
 
 		<main id="main" class="site-main" role="main">
 
