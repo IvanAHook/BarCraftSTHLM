@@ -422,8 +422,12 @@ a {
 	margin-top: 50px;
 	float:right;
 }
-.main-navigation ul {
+.main-navigation .menu {
 	width: 74.285714285714285714285714285714%; /* 520px of 700px */
+	float: left;
+}
+
+.main-navigation .menu ul {
 	list-style: none;
 	margin: 0;
 	padding-left: 0;
@@ -502,6 +506,28 @@ a {
 	float: right;
 	text-align: right;
 	width: 50%;
+}
+
+/* Filter icons */
+
+#filter-area {
+	width: 22.857142857142857142857142857143%; /* 160px of 700px */
+	height: 36px;
+	line-height: 36px;
+	float: right;
+}
+
+#filter-area .filter-icon {
+	width: 22.5%; /* 36px of 160px; */
+	margin-left: 3.75%; /* 6px / 160px */
+	display: block;
+	float: right;
+}
+
+#filter-area .filter-icon img {
+	width: 100%;
+	display: block;
+	vertical-align: middle;
 }
 
 /*--------------------------------------------------------------
@@ -686,6 +712,7 @@ a {
 	padding: 5%;
 	font-family: Oswald, sans-serif;
 	text-transform: uppercase;
+	display: block;
 }
 
 #secondary.widget-area .events-area .event-box#starcraft-event-box {
@@ -708,7 +735,6 @@ a {
 	width: 47%;
 	font-size: 1.3rem;
 	line-height: 1.7rem;
-	margin-top: 0.2rem;
 }
 
 #secondary.widget-area .events-area .event-box .event-date {
@@ -717,7 +743,7 @@ a {
 	margin: 0;
 	width: 53%;
 	font-size: 3.5rem;
-	line-height: 3.5rem;
+	line-height: 3.1rem;
 	text-align: right;
 }
 

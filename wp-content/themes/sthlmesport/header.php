@@ -33,6 +33,19 @@
 			<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'sthlmesport' ); ?></a>
 
 			<?php wp_nav_menu( array( 'theme_location' => 'primary' ) ); ?>
+
+			<div id="filter-area">
+				<a class="filter-icon" id="dota-filter-icon" href="?filter=dota">
+					<img src="<?php bloginfo('template_directory');?>/img/icon/dota-icon-36.png">
+				</a>
+				<a class="filter-icon" id="lol-filter-icon" href="?filter=lol">
+					<img src="<?php bloginfo('template_directory');?>/img/icon/lol-icon-36.png">
+				</a>
+				<a class="filter-icon" id="starcraft-filter-icon" href="?filter=starcraft">
+					<img src="<?php bloginfo('template_directory');?>/img/icon/sc-icon-36.png">
+				</a>
+			</div>
+
 		</nav><!-- #site-navigation -->
 	</header><!-- #masthead -->
 	

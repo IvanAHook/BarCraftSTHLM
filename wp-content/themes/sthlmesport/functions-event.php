@@ -22,6 +22,7 @@ function event_posts_cache() { //separate taxonomy for events?
             // add 'date' etc, stuff to display in event box to event query
             $event_query[$cat->slug] = array( 'name'=>$cat->name, 'title'=>get_the_title(get_the_ID()), // does not seem right...
                                               'event-date'=>get_post_meta(get_the_ID(), '_date', true),
+                                              'event-link'=>get_permalink(get_the_ID()),
                                               'term_link'=>esc_attr(get_term_link($cat->slug, 'category')) );
         endwhile;
     }

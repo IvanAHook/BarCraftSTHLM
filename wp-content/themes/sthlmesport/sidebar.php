@@ -16,33 +16,54 @@ if ( !$event_query ) {
 
             	<aside class="events-area widget">
 
-	                <div class="event-box" id="starcraft-event-box">
+            	<?php if ($event_query['starcraft']) : ?>
+	                <a href="<?php echo $event_query['starcraft']['event-link']; ?>" class="event-box" id="starcraft-event-box">
 	                    <p class="event-text">Nästa BarCraft</p>
 	                    <p class="event-date"><?php echo $event_query['starcraft']['event-date']; ?></p>
-
-	                    <?php echo $event_query['starcraft']['name']; ?>
+	                </a>
+	            <?php else: ?>
+	                <div class="event-box" id="starcraft-event-box">
+	                    <p class="event-text">Nästa BarCraft</p>
+	                    <p class="event-date">TBA</p>
 	                </div>
+	            <?php endif; ?>
 
-	               <div class="event-box" id="lol-event-box">
+				<?php if ($event_query['lol']) : ?>
+	               <a href="<?php echo $event_query['lol']['event-link']; ?>" class="event-box" id="lol-event-box">
 	                    <p class="event-text">Nästa Bar of Legends</p>
 	                    <p class="event-date"><?php echo $event_query['lol']['event-date']; ?></p>
-
-	                    <?php echo $event_query['lol']['name']; ?>
+	                </a>
+	            <?php else: ?>
+	                <div class="event-box" id="lol-event-box">
+	                    <p class="event-text">Nästa Bar of Legends</p>
+	                    <p class="event-date">TBA</p>
 	                </div>
+	            <?php endif; ?>
 
-	                <div class="event-box" id="dota-event-box">
+				<?php if ($event_query['dota']) : ?>
+	                <a href="<?php echo $event_query['dota']['event-link']; ?>" class="event-box" id="dota-event-box">
 	                    <p class="event-text">Nästa Pubstomp</p>
 	                    <p class="event-date"><?php echo $event_query['dota']['event-date']; ?></p>
-
-	                    <?php echo $event_query['dota']['name']; ?>
-	                </div>
-
-	                <div class="event-box" id="esport-event-box">
+	                </a>
+	            <?php else: ?>
+	                <div class="event-box" id="dota-event-box">
 	                    <p class="event-text">Nästa Pubstomp</p>
-	                    <p class="event-date"><?php echo $event_query['esport']['event-date']; ?></p>
-
-	                    <?php echo $event_query['esport']['name']; ?>
+	                    <p class="event-date">TBA</p>
 	                </div>
+	            <?php endif; ?>
+
+				<?php if ($event_query['esport']) : ?>
+	                <a href="<?php echo $event_query['esport']['event-link']; ?>" class="event-box" id="esport-event-box">
+	                    <p class="event-text">Nästa Turnering</p>
+	                    <p class="event-date"><?php echo $event_query['esport']['event-date']; ?></p>
+	                </a>
+	            <?php else: ?>
+	                <div class="event-box" id="esport-event-box">
+	                    <p class="event-text">Nästa Turnering</p>
+	                    <p class="event-date">TBA</p>
+	                </div>
+	            <?php endif; ?>
+
 	            </aside>
 
 
