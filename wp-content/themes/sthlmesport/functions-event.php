@@ -21,12 +21,17 @@ function event_posts_cache() { //separate taxonomy for events?
         while ( $query->have_posts() ) : $query->the_post();
             // add 'date' etc, stuff to display in event box to event query
             $event_query[$cat->slug] = array( 'name'=>$cat->name, 'title'=>get_the_title(get_the_ID()), // does not seem right...
+                                              'event-date'=>get_post_meta(get_the_ID(), '_date', true),
                                               'term_link'=>esc_attr(get_term_link($cat->slug, 'category')) );
         endwhile;
     }
     wp_reset_postdata();
     set_transient( 'event_query', $event_query );
     return $event_query;
+}
+
+function event_str($s) {
+    return (strlen($s) > 23) ? substr($s, 0, 20) . '...' : $s;
 }
 ?>
 

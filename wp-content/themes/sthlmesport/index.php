@@ -23,7 +23,6 @@ get_header(); ?>
     <div id="featured-area">
 
     <?php
-        delete_transient('event_query'); // not supposed to be here lol... but transient does not work propperly
         $featured_post = new WP_Query( array( 'post_type'=>'Post', 'limit'=>1, 'cat'=>2 ) );
         $featured_id = get_the_ID();
     ?>

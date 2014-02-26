@@ -121,21 +121,58 @@ function create_post_types() { // add 'supports' => array(),
                             'public' => true,
                             'has_archive' => true,
                             'rewrite' => array( 'slug' => 'event'),
+                            'register_meta_box_cb'=>'add_event_metaboxes'
                         )
                     );
 
 }
 add_action( 'init', 'create_post_types' );
 
+function add_event_metaboxes() {
+    add_meta_box( 'event_date', 'Event Date', 'event_date', 'event', 'normal', 'default' );
+}
+
+function event_date() {
+    global $post;
+    echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' .
+            wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
+    $date = get_post_meta( $post->ID, '_date', true );
+    echo '<input type="text" name="_date" value="' .
+            $date . '" class="widefat" />';
+}
+
 function event_save( $post_id, $post ) {
+    // i dont understand all this 100%
+    if ( !isset( $_POST['eventmeta_noncename'] ) || !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
+        return $post->ID;
+    }
+    if ( !current_user_can( 'edit_post', $post->ID )) {
+        return $post->ID;
+    }
+
+    $event_meta['_date'] = $_POST['_date'];
+    foreach ( $event_meta as $key=>$value ) {
+        if ( $post->post_type == 'revision' ) return;
+        $value = implode( ',', (array)$value );
+        if ( get_post_meta( $post->ID, $key, FALSE )) {
+            update_post_meta( $post->ID, $key, $value);
+        } else {
+            add_post_meta( $post->ID, $key, $value );
+        }
+        if ( !$value ) delete_post_meta( $post->ID, $key );
+    }
+}
+add_action( 'save_post', 'event_save', 1, 2 );
+
+function event_delete_transient( $post_id, $post ) {
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
         return;
     }
-    if ( $post->post_type == 'Event' ) {
+    if ( $post->post_type == 'event' ) {
         delete_transient( 'event_query' );
     }
 }
-add_action( 'save_post', 'event_save', 10, 2 );
+add_action( 'save_post', 'event_delete_transient', 10, 2 );
 
 /**
  * Implement the Custom Header feature.
