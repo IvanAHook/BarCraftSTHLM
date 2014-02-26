@@ -43,7 +43,7 @@ if ( !$event_query ) {
 	                </div>
 
 	                <div class="event-box" id="esport-event-box">
-	                    <p class="event-text">Nästa Pubstomp</p>
+	                    <p class="event-text">Nästa Turnering</p>
 	                    <p class="event-date">2/5</p>
 
 	                    <?php echo $event_query['esport']['name']; ?>
