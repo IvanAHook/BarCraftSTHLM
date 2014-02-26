@@ -19,11 +19,10 @@ if ( !$event_query ) {
 
 	                <div class="event-box" id="starcraft-event-box">
 	                    <p class="event-text">Nästa BarCraft</p>
-	                    <p class="event-date">23/4</p>
+	                    <p class="event-date"><?php echo $event_query['starcraft']['event-date']; ?></p>
 
 	                    <?php echo $event_query['starcraft']['name']; ?>
-	                    <?php echo $event_query['starcraft']['title']; ?>
-	                    <?php echo $event_query['starcraft']['event-date']; ?>
+	                    <?php echo event_str($event_query['starcraft']['title']); ?>
 	                </div>
 
 	               <div class="event-box" id="lol-event-box">
@@ -31,7 +30,7 @@ if ( !$event_query ) {
 	                    <p class="event-date">2/5</p>
 
 	                    <?php echo $event_query['lol']['name']; ?>
-	                    <?php echo $event_query['lol']['title']; ?>
+	                    <?php echo event_str($event_query['lol']['title']); ?>
 	                </div>
 
 	                <div class="event-box" id="dota-event-box">
@@ -39,7 +38,7 @@ if ( !$event_query ) {
 	                    <p class="event-date">2/5</p>
 
 	                    <?php echo $event_query['dota']['name']; ?>
-	                    <?php echo $event_query['dota']['title']; ?>
+	                    <?php echo event_str($event_query['dota']['title']); ?>
 	                </div>
 
 	                <div class="event-box" id="esport-event-box">
