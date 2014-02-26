@@ -8,7 +8,6 @@
 require_once( get_template_directory() . '/functions-event.php' );
 $event_query = get_transient( 'event_query' );
 if ( !$event_query ) {
-    echo "hej";
     $event_query = event_posts_cache();
 }
 ?>
@@ -22,31 +21,27 @@ if ( !$event_query ) {
 	                    <p class="event-date"><?php echo $event_query['starcraft']['event-date']; ?></p>
 
 	                    <?php echo $event_query['starcraft']['name']; ?>
-	                    <?php echo event_str($event_query['starcraft']['title']); ?>
 	                </div>
 
 	               <div class="event-box" id="lol-event-box">
 	                    <p class="event-text">Nästa Bar of Legends</p>
-	                    <p class="event-date">2/5</p>
+	                    <p class="event-date"><?php echo $event_query['lol']['event-date']; ?></p>
 
 	                    <?php echo $event_query['lol']['name']; ?>
-	                    <?php echo event_str($event_query['lol']['title']); ?>
 	                </div>
 
 	                <div class="event-box" id="dota-event-box">
 	                    <p class="event-text">Nästa Pubstomp</p>
-	                    <p class="event-date">2/5</p>
+	                    <p class="event-date"><?php echo $event_query['dota']['event-date']; ?></p>
 
 	                    <?php echo $event_query['dota']['name']; ?>
-	                    <?php echo event_str($event_query['dota']['title']); ?>
 	                </div>
 
 	                <div class="event-box" id="esport-event-box">
 	                    <p class="event-text">Nästa Pubstomp</p>
-	                    <p class="event-date">2/5</p>
+	                    <p class="event-date"><?php echo $event_query['esport']['event-date']; ?></p>
 
 	                    <?php echo $event_query['esport']['name']; ?>
-	                    <?php echo $event_query['esport']['title']; ?>
 	                </div>
 	            </aside>
 
