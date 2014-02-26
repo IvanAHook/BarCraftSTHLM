@@ -6,9 +6,9 @@
  */
 
 require_once( get_template_directory() . '/functions-event.php' );
-
 $event_query = get_transient( 'event_query' );
 if ( !$event_query ) {
+    echo "hej";
     $event_query = event_posts_cache();
 }
 ?>
