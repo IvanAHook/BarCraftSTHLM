@@ -16,17 +16,18 @@
  * @package sthlmesport
  */
 
-get_header(); ?>
+get_header();
+?>
 
 <div id="content" class="site-content">
 
     <div id="featured-area">
 
-    <?php
-        $featured_post = new WP_Query( array( 'post_type'=>'Post', 'limit'=>1, 'cat'=>2 ) );
+    <?php // i dont like the sound of 'posts_per_page'...
+        $featured_post = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>1, 'cat'=>2 ) );
+        while ( $featured_post->have_posts() ) : $featured_post->the_post();
         $featured_id = get_the_ID();
     ?>
-
 			<article id="featured-post" <?php post_class(); ?>>
 				<a class="entry-image" href="<?php the_permalink(); ?>" rel="bookmark"><?php
 
@@ -48,7 +49,7 @@ get_header(); ?>
 				</a>
 
 			</article><!-- #post-## -->
-
+<?php endwhile; ?>
 
 		<div id="schedule">
 			<div id="comminty-viewer">
@@ -60,9 +61,12 @@ get_header(); ?>
 	<div id="primary" class="content-area">
 
         <?php
-            $selected_cats = '2,3,4,5,6,7'; /* change args for query depending on filter choices, create set/get_filter() functions?
-                                             or handle depending on slugs? */
-            $query_post = new WP_Query( array( 'post_type'=>'Post', 'posts_per_page'=>10, 'cat'=>$selected_cats ) );
+            if ( !isset($_COOKIE['filter']) ) { // something nicer here sometime maybe...
+                $selected_cats = 'esport,starcraft,lol,dota,';
+            } else {
+                $selected_cats = 'esport,' . $_COOKIE['filter'];
+            }
+            $query_post = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>10, 'category_name'=>$selected_cats ) );
         ?>
 
 		<?php get_sidebar('tertiary'); ?>

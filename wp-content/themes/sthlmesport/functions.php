@@ -95,7 +95,12 @@ add_action( 'widgets_init', 'sthlmesport_widgets_init' );
  * Enqueue scripts and styles.
  */
 function sthlmesport_scripts() {
+
+    wp_enqueue_script('jquery');
+
 	wp_enqueue_style( 'sthlmesport-style', get_stylesheet_uri() );
+
+    wp_enqueue_script( 'sthlmesport-navigation', get_template_directory_uri() . '/js/filter_functions.js');
 
 	wp_enqueue_script( 'sthlmesport-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20120206', true );
 

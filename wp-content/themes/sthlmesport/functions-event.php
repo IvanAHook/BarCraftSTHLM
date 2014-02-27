@@ -5,7 +5,7 @@
 ?>
 
 <?php
-function event_posts_cache() { //separate taxonomy for events?
+function event_posts_cache() {
     $args = array( 'type'=>'post', 'orderby'=>'name',
                    'order'=>'ASC', 'taxonomy'=>'category' );
     $categories = get_categories( $args );
@@ -19,9 +19,9 @@ function event_posts_cache() { //separate taxonomy for events?
                        'update_post_term_cache'=>false );
         $query = new WP_Query( $args );
         while ( $query->have_posts() ) : $query->the_post();
-            // add 'date' etc, stuff to display in event box to event query
-            $event_query[$cat->slug] = array( 'name'=>$cat->name, 'title'=>get_the_title(get_the_ID()), // does not seem right...
+            $event_query[$cat->slug] = array( 'name'=>$cat->name, 'title'=>get_the_title(get_the_ID()), // ...
                                               'event-date'=>get_post_meta(get_the_ID(), '_date', true),
+                                              'event-link'=>get_permalink(get_the_ID()),
                                               'term_link'=>esc_attr(get_term_link($cat->slug, 'category')) );
         endwhile;
     }
