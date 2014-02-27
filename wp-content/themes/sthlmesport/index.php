@@ -61,7 +61,7 @@ get_header();
 	<div id="primary" class="content-area">
 
         <?php
-            if ( !isset($_COOKIE['filter']) ) { // something nicer here sometime maybe...
+            if ( empty($_COOKIE['filter']) ) {
                 $selected_cats = 'esport,starcraft,lol,dota,';
             } else {
                 $selected_cats = 'esport,' . $_COOKIE['filter'];

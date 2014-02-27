@@ -21,7 +21,7 @@
 <body <?php body_class(); ?>>
 <div id="page" class="hfeed site 
 						<?php
-				            if (isset($_COOKIE['filter']) ) { // something nicer here sometime maybe...
+				            if (!empty($_COOKIE['filter'])) {
 			                	print str_replace(",", " ", $_COOKIE['filter']);
 			            	}
 						?>">
@@ -40,13 +40,13 @@
 			<?php wp_nav_menu( array( 'theme_location' => 'primary' ) ); ?>
 
 			<div id="filter-area">
-				<a class="filter-icon" id="dota-filter-icon" name="dota" href="?filter=dota">
+				<a class="filter-icon" id="dota-filter-icon" name="dota" href="">
 					<img src="<?php bloginfo('template_directory');?>/img/icon/dota-icon-36.png">
 				</a>
-				<a class="filter-icon" id="lol-filter-icon" name="lol" href="?filter=lol">
+				<a class="filter-icon" id="lol-filter-icon" name="lol" href="">
 					<img src="<?php bloginfo('template_directory');?>/img/icon/lol-icon-36.png">
 				</a>
-				<a class="filter-icon" id="starcraft-filter-icon" name="starcraft" href="?filter=starcraft">
+				<a class="filter-icon" id="starcraft-filter-icon" name="starcraft" href="">
 					<img src="<?php bloginfo('template_directory');?>/img/icon/sc-icon-36.png">
 				</a>
 			</div>
