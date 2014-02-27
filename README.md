@@ -37,7 +37,7 @@ etc
 
 Sedan har vi en **specialkategori**:
 
-* Featured *(id=2)*
+* Featured *(slug="featured")*
 
 *Denna kategori kan sättas på artiklar (som inte är notiser). Det senaste inlägget med denna kategori visas överst på förstasidan.*
 
@@ -87,6 +87,31 @@ Om detta är för svårt att koda så är det inte superviktigt att antalet noti
 Event-kolumnen visar alltid kommande fysiska events från alla spel-kategorier. Den ser helt enkelt alltid likadan ut.
 
 Den skulle kunna sorteras så att valda spel-kategorier visas överst, men det är inte prioriterat i nuläget.
+
+De måste sorteras efter nästa kommande event-datum, och inte efter senaste postade inlägg.
+
+Event-datum är ett Custom Field (slug="_date") som sparas i Unix-timestamp-format. Event-tid är ett Custom Field (slug="_time") som sparas i formatet HH:MM (t.ex. 23:15).
+
+Alla som kör temat borde installera pluginet "**Advanced Custom Fields**" och sätta upp dessa fält:
+
+	Fältgrupp = "Event fields"
+
+	== DATUM ==
+	Fältetikett:  	  Event-datum
+	Fältnamn:	      _date
+	Fälttyp:	      Datumväljare
+	Obligatorisk:	  Ja
+	Lagringsformat:   @
+	Visningsformat:   d/m -y
+
+	== TID ==
+	Fältetikett:  	  Event-tid
+	Fältnamn:	  	  _time
+	Fälttyp:	  	  Text
+	Obligatorisk:	  Nej
+	Max antal tecken: 5
+
+	Regler:			  Visa detta fält när inläggstyp är lika med event
 
 ### Streamare ###
 

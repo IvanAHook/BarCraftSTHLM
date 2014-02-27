@@ -522,6 +522,17 @@ a {
 	margin-left: 3.75%; /* 6px / 160px */
 	display: block;
 	float: right;
+	opacity: 0.5;
+}
+
+#page.starcraft #filter-area #starcraft-filter-icon {
+	opacity: 1;
+}
+#page.dota #filter-area #dota-filter-icon {
+	opacity: 1;
+}
+#page.lol #filter-area #lol-filter-icon {
+	opacity: 1;
 }
 
 #filter-area .filter-icon img {

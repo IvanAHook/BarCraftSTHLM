@@ -19,7 +19,12 @@
 </head>
 
 <body <?php body_class(); ?>>
-<div id="page" class="hfeed site">
+<div id="page" class="hfeed site 
+						<?php
+				            if (isset($_COOKIE['filter']) ) { // something nicer here sometime maybe...
+			                	print str_replace(",", " ", $_COOKIE['filter']);
+			            	}
+						?>">
 
 	<header id="masthead" class="site-header" role="banner">
 		<div class="site-branding">

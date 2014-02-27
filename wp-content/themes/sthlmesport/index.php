@@ -24,7 +24,7 @@ get_header();
     <div id="featured-area">
 
     <?php // i dont like the sound of 'posts_per_page'...
-        $featured_post = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>1, 'cat'=>2 ) );
+        $featured_post = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>1, 'category_name'=>'featured' ) );
         while ( $featured_post->have_posts() ) : $featured_post->the_post();
         $featured_id = get_the_ID();
     ?>

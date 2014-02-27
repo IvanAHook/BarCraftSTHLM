@@ -133,6 +133,7 @@ function create_post_types() { // add 'supports' => array(),
 }
 add_action( 'init', 'create_post_types' );
 
+/*
 function add_event_metaboxes() {
     add_meta_box( 'event_date', 'Event Date', 'event_date', 'event', 'normal', 'default' );
 }
@@ -145,6 +146,7 @@ function event_date() {
     echo '<input type="text" name="_date" value="' .
             $date . '" class="widefat" />';
 }
+*/
 
 function event_save( $post_id, $post ) {
     // i dont understand all this 100%
