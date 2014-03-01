@@ -40,6 +40,9 @@
 			<?php wp_nav_menu( array( 'theme_location' => 'primary' ) ); ?>
 
 			<div id="filter-area">
+				<a class="filter-icon" id="hearthstone-filter-icon" name="hearthstone" href="">
+					<img src="<?php bloginfo('template_directory');?>/img/icon/hearthstone-icon-36.png">
+				</a>
 				<a class="filter-icon" id="dota-filter-icon" name="dota" href="">
 					<img src="<?php bloginfo('template_directory');?>/img/icon/dota-icon-36.png">
 				</a>
@@ -47,7 +50,7 @@
 					<img src="<?php bloginfo('template_directory');?>/img/icon/lol-icon-36.png">
 				</a>
 				<a class="filter-icon" id="starcraft-filter-icon" name="starcraft" href="">
-					<img src="<?php bloginfo('template_directory');?>/img/icon/sc-icon-36.png">
+					<img src="<?php bloginfo('template_directory');?>/img/icon/starcraft-icon-36.png">
 				</a>
 			</div>
 

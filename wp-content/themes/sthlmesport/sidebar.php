@@ -80,6 +80,13 @@ foreach ( $categories as $cat ) {
 	                </div>
 	            <?php endif; ?>
 
+	            	<div id="social-box">
+	            		<a class="social-link" href="#"><img src="<?php bloginfo('template_directory');?>/img/icon/social-facebook-36.png"></a>
+	            		<a class="social-link" href="#"><img src="<?php bloginfo('template_directory');?>/img/icon/social-twitter-36.png"></a>
+	            		<a class="social-link" href="#"><img src="<?php bloginfo('template_directory');?>/img/icon/social-instagram-36.png"></a>
+	            		<a class="social-link" href="#"><img src="<?php bloginfo('template_directory');?>/img/icon/social-youtube-36.png"></a>
+	            	</div>
+
 	            </aside>
 
 

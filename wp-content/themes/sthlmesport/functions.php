@@ -94,6 +94,22 @@ function sthlmesport_widgets_init() {
 		'before_title'  => '<h1 class="widget-title">',
 		'after_title'   => '</h1>',
 	) );
+	register_sidebar( array(
+		'name'          => __( 'Notice Widgets 1', 'noticewidgets1' ),
+		'id'            => 'noticewidgets1',
+		'before_widget' => '<div id="%1$s" class="splash %2$s">',
+		'after_widget'  => '</div>',
+		'before_title'  => '<h1 class="widget-title">',
+		'after_title'   => '</h1>',
+	) );
+	register_sidebar( array(
+		'name'          => __( 'Notice Widgets 2', 'noticewidgets2' ),
+		'id'            => 'noticewidgets2',
+		'before_widget' => '<div id="%1$s" class="splash %2$s">',
+		'after_widget'  => '</div>',
+		'before_title'  => '<h1 class="widget-title">',
+		'after_title'   => '</h1>',
+	) );
 }
 add_action( 'widgets_init', 'sthlmesport_widgets_init' );
 
