@@ -5,6 +5,8 @@
 ?>
 
 <?php
+//bool date_default_timezone_set ( 'Europe/Stockholm' );
+
 function event_posts_cache() {
     $args = array( 'type'=>'post', 'orderby'=>'name',
                    'order'=>'ASC', 'taxonomy'=>'category' );
@@ -14,13 +16,15 @@ function event_posts_cache() {
         $args = array( 'post_type'=>'event',
                        'posts_per_page'=>1,
                        'cat'=>$cat->cat_ID,
+                       'order_by'=>'_date',
+                       'order'=>'ASC',
                        'no_found_rows'=>true,
                        'update_post_meta_cache'=>false,
                        'update_post_term_cache'=>false );
         $query = new WP_Query( $args );
         while ( $query->have_posts() ) : $query->the_post();
             $event_query[$cat->slug] = array( 'name'=>$cat->name, 'title'=>get_the_title(get_the_ID()), // ...
-                                              'event-date'=>get_post_meta(get_the_ID(), '_date', true),
+                                              'event-date'=>(get_post_meta(get_the_ID(), '_date', true)),
                                               'event-link'=>get_permalink(get_the_ID()),
                                               'term_link'=>esc_attr(get_term_link($cat->slug, 'category')) );
         endwhile;
