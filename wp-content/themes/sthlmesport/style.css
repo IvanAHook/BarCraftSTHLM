@@ -865,6 +865,58 @@ aside.widget_lsb_stream_status_widget a {
 	float: left;
 }
 
+#tertiary aside article {
+	border-bottom: 1px solid rgba(0,0,0, 0.35);
+	padding-bottom: 1.7rem;
+}
+
+#tertiary aside article .entry-meta {
+	font-size: 1.1rem;
+	color: rgba(0,0,0,0.4);
+	text-transform: uppercase;
+	margin: 0.4rem 0;
+}
+
+#tertiary aside article h2.entry-title {
+	clear: none;
+	display: inline-block;
+	width: 100%;
+	font-family: Lato, sans-serif;
+	font-size: 1.4rem;
+	font-weight: bold;
+	line-height: 1.4rem;
+	text-transform: none;
+	color: black;
+}
+
+#tertiary aside article .entry-icon {
+	background: url("img/icon/esport-icon-42.png") no-repeat top left;
+	background-size: 100% 100%;
+	height: 2.4rem;
+	width: 2.4rem;
+	float: left;
+	margin: 0.25rem 0.5rem 0 0;
+}
+
+
+#tertiary aside article.category-hearthstone .entry-icon {
+	background-image: url("img/icon/hearthstone-icon-24.png");
+}
+#tertiary aside article.category-dota .entry-icon {
+	background-image: url("img/icon/dota-icon-24.png");
+}
+#tertiary aside article.category-lol .entry-icon {
+	background-image: url("img/icon/lol-icon-24.png");
+}
+#tertiary aside article.category-starcraft .entry-icon {
+	background-image: url("img/icon/starcraft-icon-24.png");
+}
+#tertiary aside article.category-esport .entry-icon {
+	background-image: url("img/icon/esport-icon-24.png");
+}
+
+
+
 
 
 
