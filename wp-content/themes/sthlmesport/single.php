@@ -12,7 +12,7 @@ get_header(); ?>
 
 		<?php while ( have_posts() ) : the_post(); ?>
 			<?php get_template_part( 'content', 'single' ); ?>
-<?php print_r(get_post_meta(get_the_ID(), '_date', true)); ?>
+            <?php echo get_post_type(get_the_ID()); ?>
 			<?php sthlmesport_post_nav(); ?>
 
 			<?php

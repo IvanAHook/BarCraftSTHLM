@@ -80,7 +80,7 @@ get_header();
 
 			<?php while ( $query_post->have_posts() ) : $query_post->the_post(); ?>
 				<?php
-                    if ( get_the_ID() !== $featured_id ) {
+                    if ( $post->ID !== $featured_id ) {
                     /* Include the Post-Format-specific template for the content.
 					 * If you want to override this in a child theme, then include a file
 					 * called content-___.php (where ___ is the Post Format name) and that will be used instead.
@@ -91,7 +91,6 @@ get_header();
 
 			<?php endwhile; ?>
 
-			<?php sthlmesport_paging_nav(); ?>
 
         <?php else : ?>
 

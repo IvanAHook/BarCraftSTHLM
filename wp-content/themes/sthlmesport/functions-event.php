@@ -34,7 +34,7 @@ function event_posts_cache() {
     return $event_query;
 }
 
-function event_str($s) {
+function event_str($s) { // unused atm, move and rename?
     return (strlen($s) > 23) ? substr($s, 0, 20) . '...' : $s;
 }
 ?>
