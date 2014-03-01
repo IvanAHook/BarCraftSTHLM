@@ -4,7 +4,6 @@
  *
  * @package sthlmesport
  */
-
 require_once( get_template_directory() . '/functions-event.php' );
 $event_query = get_transient( 'event_query' );
 if ( !$event_query ) {
@@ -19,7 +18,7 @@ if ( !$event_query ) {
             	<?php if (isset($event_query['starcraft'])) : ?>
 	                <a href="<?php echo $event_query['starcraft']['event-link']; ?>" class="event-box" id="starcraft-event-box">
 	                    <p class="event-text">Nästa BarCraft</p>
-	                    <p class="event-date"><?php echo date("j/n", $event_query['starcraft']['event-date']); ?></p>
+	                    <p class="event-date"><?php echo date("j/n", strtotime($event_query['starcraft']['event-date']) ); ?></p>
 	                </a>
 	            <?php else: ?>
 	                <div class="event-box" id="starcraft-event-box">
@@ -31,7 +30,7 @@ if ( !$event_query ) {
 				<?php if (isset($event_query['lol'])) : ?>
 	               <a href="<?php echo $event_query['lol']['event-link']; ?>" class="event-box" id="lol-event-box">
 	                    <p class="event-text">Nästa Bar of Legends</p>
-	                    <p class="event-date"><?php echo  date("j/n", $event_query['lol']['event-date']); ?></p>
+	                    <p class="event-date"><?php echo  date("j/n", strtotime($event_query['lol']['event-date']) ); ?></p>
 	                </a>
 	            <?php else: ?>
 	                <div class="event-box" id="lol-event-box">
@@ -43,7 +42,7 @@ if ( !$event_query ) {
 				<?php if (isset($event_query['dota'])) : ?>
 	                <a href="<?php echo $event_query['dota']['event-link']; ?>" class="event-box" id="dota-event-box">
 	                    <p class="event-text">Nästa Pubstomp</p>
-	                    <p class="event-date"><?php echo  date("j/n", $event_query['dota']['event-date']); ?></p>
+	                    <p class="event-date"><?php echo  date("j/n", strtotime($event_query['dota']['event-date']) ); ?></p>
 	                </a>
 	            <?php else: ?>
 	                <div class="event-box" id="dota-event-box">
@@ -55,7 +54,7 @@ if ( !$event_query ) {
 				<?php if (isset($event_query['esport'])) : ?>
 	                <a href="<?php echo $event_query['esport']['event-link']; ?>" class="event-box" id="esport-event-box">
 	                    <p class="event-text">Nästa Turnering</p>
-	                    <p class="event-date"><?php echo  date("j/n", $event_query['esport']['event-date']); ?></p>
+	                    <p class="event-date"><?php echo  date("j/n", strtotime($event_query['esport']['event-date']) ); ?></p>
 	                </a>
 	            <?php else: ?>
 	                <div class="event-box" id="esport-event-box">

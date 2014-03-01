@@ -132,7 +132,6 @@ function create_post_types() { // add 'supports' => array(),
                             'public' => true,
                             'has_archive' => true,
                             'rewrite' => array( 'slug' => 'event'),
-                            'register_meta_box_cb'=>'add_event_metaboxes'
                         )
                     );
 
@@ -154,28 +153,28 @@ function event_date() {
 }
 */
 
-function event_save( $post_id, $post ) {
-    // i dont understand all this 100%
-    if ( !isset( $_POST['eventmeta_noncename'] ) || !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
-        return $post->ID;
-    }
-    if ( !current_user_can( 'edit_post', $post->ID )) {
-        return $post->ID;
-    }
-
-    $event_meta['_date'] = $_POST['_date'];
-    foreach ( $event_meta as $key=>$value ) {
-        if ( $post->post_type == 'revision' ) return;
-        $value = implode( ',', (array)$value );
-        if ( get_post_meta( $post->ID, $key, FALSE )) {
-            update_post_meta( $post->ID, $key, $value);
-        } else {
-            add_post_meta( $post->ID, $key, $value );
-        }
-        if ( !$value ) delete_post_meta( $post->ID, $key );
-    }
-}
-add_action( 'save_post', 'event_save', 1, 2 );
+//function event_save( $post_id, $post ) {
+//    // i dont understand all this 100%
+//    if ( !isset( $_POST['eventmeta_noncename'] ) || !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
+//        return $post->ID;
+//    }
+//    if ( !current_user_can( 'edit_post', $post->ID )) {
+//        return $post->ID;
+//    }
+//
+//    $event_meta['_date'] = $_POST['_date'];
+//    foreach ( $event_meta as $key=>$value ) {
+//        if ( $post->post_type == 'revision' ) return;
+//        $value = implode( ',', (array)$value );
+//        if ( get_post_meta( $post->ID, $key, FALSE )) {
+//            update_post_meta( $post->ID, $key, $value);
+//        } else {
+//            add_post_meta( $post->ID, $key, $value );
+//        }
+//        if ( !$value ) delete_post_meta( $post->ID, $key );
+//    }
+//}
+//add_action( 'save_post', 'event_save', 1, 2 );
 
 function event_delete_transient( $post_id, $post ) {
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
