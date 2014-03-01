@@ -588,6 +588,8 @@ a {
 
 #featured-area #featured-post #featured-description h1 {
 	font-size: 3.0rem;
+	line-height: 3.6rem;
+	margin-bottom: 0.6rem;
 }
 
 #featured-area #schedule {
@@ -813,8 +815,18 @@ a {
 	margin: 4px 5px 0 0;
 }
 
+
+#primary.content-area main article.category-dota .entry-icon {
+	background: url("img/icon/dota-icon-42.png");
+}
+#primary.content-area main article.category-lol .entry-icon {
+	background: url("img/icon/lol-icon-42.png");
+}
 #primary.content-area main article.category-starcraft .entry-icon {
 	background: url("img/icon/sc-icon-42.png");
+}
+#primary.content-area main article.category-esport .entry-icon {
+	background: url("img/icon/esport-icon-42.png");
 }
 
 
