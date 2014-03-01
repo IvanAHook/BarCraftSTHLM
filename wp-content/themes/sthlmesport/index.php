@@ -61,7 +61,7 @@ get_header();
 
 	<div id="primary" class="content-area">
 
-        <?php
+        <?php   // filter
             if ( empty($_COOKIE['filter']) ) {
                 $selected_cats = '';
             } else {
