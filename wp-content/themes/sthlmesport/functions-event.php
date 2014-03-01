@@ -5,7 +5,7 @@
 ?>
 
 <?php
-//bool date_default_timezone_set ( 'Europe/Stockholm' );
+// unused...
 
 function event_posts_cache() {
     $args = array( 'type'=>'post', 'orderby'=>'name',
@@ -18,9 +18,7 @@ function event_posts_cache() {
                        'cat'=>$cat->cat_ID,
                        'order_by'=>'_date',
                        'order'=>'ASC',
-                       'no_found_rows'=>true,
-                       'update_post_meta_cache'=>false,
-                       'update_post_term_cache'=>false );
+                       'no_found_rows'=>true );
         $query = new WP_Query( $args );
         while ( $query->have_posts() ) : $query->the_post();
             $event_query[$cat->slug] = array( 'name'=>$cat->name, 'title'=>get_the_title(get_the_ID()), // ...
