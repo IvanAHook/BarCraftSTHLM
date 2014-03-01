@@ -16,10 +16,11 @@ class Templates {
     function status_widget_item() {
         $template = 
             '<li class="lsb-status-widget-list-item %%status_class%% %%item_classes%%">'.
-			'  <span class="lsb-status-widget-title">'.
-			'    <a href="%%url%%" target="_blank">%%title%%</a>'.
-			'  </span>'.
+            '<a href="%%url%%" target="_blank">'.
+            '  <span class="lsb-status-widget-icon"></span>'.
+			'  <span class="lsb-status-widget-title">%%title%%</span>'.
 			'  <span class="lsb-status-widget-indicator %%status_class%%">%%status_indicator%%</span>'.
+            '</a>'.
 			'</li>';
 	    return apply_filters( 'lsb_status_widget_item_format', $template );
     }
@@ -27,15 +28,14 @@ class Templates {
     function status_widget_item_with_image() {
         $template = 
             '<li class="lsb-status-widget-list-item %%status_class%% %%item_classes%%">'.
-			'  <span class="lsb-status-widget-title">'.
-			'    <a href="%%url%%" target="_blank">%%title%%</a>'.
-			'  </span>'.
+            '<a href="%%url%%" target="_blank">'.
+            '  <span class="lsb-status-widget-icon"></span>'.
+			'  <span class="lsb-status-widget-title">%%title%%</span>'.
 			'  <span class="lsb-status-widget-indicator %%status_class%%">%%status_indicator%%</span>'.
 			'  <span class="lsb-status-widget-image">'.
-			'    <a href="%%url%%" target="_blank">'.
 			'      <img src="%%image_src%%">'.
-			'    </a>'.
 			'  </span>'.
+            '</a>'.
 			'</li>';
 		return apply_filters( 'lsb_status_widget_item_with_image_format', $template );
     }

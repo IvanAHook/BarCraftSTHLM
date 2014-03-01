@@ -101,7 +101,7 @@ Alla som kör temat borde installera pluginet "**Advanced Custom Fields**" och s
 	Fältnamn:	      _date
 	Fälttyp:	      Datumväljare
 	Obligatorisk:	  Ja
-	Lagringsformat:   @
+	Lagringsformat:   yymmdd
 	Visningsformat:   d/m -y
 
 	== TID ==
@@ -118,3 +118,5 @@ Alla som kör temat borde installera pluginet "**Advanced Custom Fields**" och s
 Listorna med streamare från community och proffs sorteras inte efter vald spel-kategori i nuläget.
 
 Den skulle kunna filtreras efter valda spel-kategorier, men det är inte prioriterat i nuläget.
+
+Streamare läggs till med hjälp av en custom meny, och pluginet Live Stream Badger. Varje menyalternativ ska vara en länk till twitch-URLen. Lägger man till klasserna "starcraft", "lol" eller "dota" (enligt [denna](http://sevenspark.com/how-to/how-to-add-a-custom-class-to-a-wordpress-menu-item)) så färgas ikonen korrekt.

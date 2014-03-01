@@ -28,6 +28,8 @@ Colors:
 
 STHLM e-sport pink:	#e43053;
 BarCraft purple:	#541d59;
+LOL green:			#57c09f;
+DOTA blue:			#49bae2;
 
 
 */
@@ -691,10 +693,54 @@ a {
 	max-width: 100%;
 }
 
+.widget .widget-title {
+	font-size: 19px;
+	padding-bottom: 0.3rem;
+	border-bottom: 1px solid rgba(0,0,0, 0.35);
+	margin-bottom: 0.4rem;
+}
+
 /* Search widget */
 .widget_search .search-submit {
 	display: none;
 }
+
+
+/* Live Stream Badger Widget */
+
+aside.widget_lsb_stream_status_widget ul {
+	margin: 0;
+	font-size: 1.1rem;
+	line-height: 1.5rem;
+}
+
+aside.widget_lsb_stream_status_widget a {
+	color: black;
+	text-decoration: none;
+}
+
+.lsb-status-widget-icon {
+	display: inline-block;
+	height: 0.7em;
+	width: 0.7em;
+	margin-right: 0.2rem;
+	background-color: #e43053;
+}
+
+.lsb-status-widget-list-item.dota .lsb-status-widget-icon {
+	background-color: #49bae2;
+}
+.lsb-status-widget-list-item.lol .lsb-status-widget-icon {
+	background-color: #57c09f;
+}
+.lsb-status-widget-list-item.starcraft .lsb-status-widget-icon {
+	background-color: #541d59;
+}
+
+.lsb-status-widget-indicator {
+	color: rgba(0,0,0, 0.35);
+}
+
 
 /*--------------------------------------------------------------
 10.0 Content

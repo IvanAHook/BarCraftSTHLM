@@ -118,7 +118,7 @@ class Stream_Status_Widget extends \WP_Widget {
 			$var_url = $menu_item->url;
 			$var_title = apply_filters( 'lsb_stream_status_widget_text', $menu_item->title );
 			$var_status_indicator = $is_on ? $stream->watching_now : 'Offline';
-			$var_item_classes = implode(" ",$menu_item->classes);
+			$var_item_classes = implode(" ",$menu_item->classes);  // added
 
 			$item = '';
 			if ($show_image == true) {
@@ -129,7 +129,7 @@ class Stream_Status_Widget extends \WP_Widget {
 						'%%title%%'            => $var_title,
 						'%%status_indicator%%' => $var_status_indicator,
 						'%%image_src%%'        => $var_image_src,
-						'%%item_classes%%'	   => $var_item_classes
+						'%%item_classes%%'	   => $var_item_classes  // added
 					)
 				);
 			} else {
@@ -139,7 +139,7 @@ class Stream_Status_Widget extends \WP_Widget {
 						'%%url%%'              => $var_url,
 						'%%title%%'            => $var_title,
 						'%%status_indicator%%' => $var_status_indicator,
-						'%%item_classes%%'	   => $var_item_classes
+						'%%item_classes%%'	   => $var_item_classes  // added
 					)
 				);
 			}
