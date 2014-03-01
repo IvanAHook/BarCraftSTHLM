@@ -63,11 +63,11 @@ get_header();
 
         <?php
             if ( empty($_COOKIE['filter']) ) {
-                $selected_cats = 'esport,starcraft,lol,dota,';
+                $selected_cats = '';
             } else {
                 $selected_cats = 'esport,' . $_COOKIE['filter'];
             }
-            $query_post = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>10, 'category_name'=>$selected_cats ) );
+            $query_post = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>6, 'category_name'=>$selected_cats, 'post__not_in'=>array($featured_id) ) );
         ?>
 
 		<?php get_sidebar('tertiary'); ?>
@@ -80,13 +80,11 @@ get_header();
 
 			<?php while ( $query_post->have_posts() ) : $query_post->the_post(); ?>
 				<?php
-                    if ( get_the_ID() !== $featured_id ) {
-                    /* Include the Post-Format-specific template for the content.
-					 * If you want to override this in a child theme, then include a file
-					 * called content-___.php (where ___ is the Post Format name) and that will be used instead.
-					 */
-                        get_template_part( 'content', get_post_format() );
-                    }
+                /* Include the Post-Format-specific template for the content.
+				 * If you want to override this in a child theme, then include a file
+				 * called content-___.php (where ___ is the Post Format name) and that will be used instead.
+				 */
+                    get_template_part( 'content', get_post_format() );
 				?>
 
 			<?php endwhile; ?>

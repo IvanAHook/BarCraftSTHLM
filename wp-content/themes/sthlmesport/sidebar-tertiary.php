@@ -22,7 +22,6 @@
                     <?php the_title(); ?>
                 </a>
                 </h1>
-                    <?php the_content(); ?>
         </article>
     <?php endwhile; ?>
     <?php endif; ?>
