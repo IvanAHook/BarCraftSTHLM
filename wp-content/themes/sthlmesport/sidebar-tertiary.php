@@ -7,7 +7,6 @@
 ?>
     <div id="tertiary" class="notice-area" role="complementary">
 
-        Loop igenom notiser, på nåt sätt:<br><br>
 <?php $query_aside = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>8 ) );
       if ( $query_aside->have_posts() ) : ?>
 
