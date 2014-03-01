@@ -67,7 +67,16 @@ get_header();
             } else {
                 $selected_cats = 'esport,' . $_COOKIE['filter'];
             }
-            $query_post = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>6, 'category_name'=>$selected_cats, 'post__not_in'=>array($featured_id) ) );
+        $query_post = new WP_Query( array( 'post_type'=>'post',
+                                            'posts_per_page'=>6,
+                                            'category_name'=>$selected_cats,
+                                            'tax_query'=>array(array( // why double array? i dont know...
+                                                'taxonomy'=>'post_format',
+                                                'field'=>'slug',
+                                                'terms'=>'post-format-aside',
+                                                'operator'=>'NOT IN',
+                                            ) ),
+                                            'post__not_in'=>array($featured_id) ) );
         ?>
 
 		<?php get_sidebar('tertiary'); ?>

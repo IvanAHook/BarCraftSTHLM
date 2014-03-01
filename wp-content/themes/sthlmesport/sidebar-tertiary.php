@@ -20,7 +20,16 @@
                 $aside_counter = 1;
             ?>
 
-            <?php $query_aside1 = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>15, 'category_name'=>$selected_cats ) );
+            <?php $query_aside1 = new WP_Query( array( 'post_type'=>'post',
+                                                'posts_per_page'=>15,
+                                                'category_name'=>$selected_cats,
+                                                'tax_query'=>array(array( // why double array? i dont know...
+                                                    'taxonomy'=>'post_format',
+                                                    'field'=>'slug',
+                                                    'terms'=>'post-format-aside',
+                                                    'operator'=>'IN',
+                                                    ) ),
+                                                ) );
                   if ( $query_aside1->have_posts() ) : ?>
 
             <?php while ( $query_aside1->have_posts() ) : $query_aside1->the_post(); ?>
@@ -38,7 +47,7 @@
                  <?php the_time('j F, Y H:i'); ?>
                 </div><!-- .entry-meta -->
 
-                
+
                 <h2 class="entry-title">
                     <a href="<?php the_permalink(); ?>" rel="bookmark">
                         <div class="entry-icon"></div>
