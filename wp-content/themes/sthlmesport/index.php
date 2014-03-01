@@ -42,8 +42,8 @@ get_header();
 				?></a>
 
 				<a id="featured-description" href="<?php the_permalink(); ?>" rel="bookmark">
+					<div class="entry-icon"></div>
 					<h1 class="entry-title"><?php the_title(); ?></h1>
-
 					<p class="entry-summary">
 						<?php echo get_the_excerpt(); ?>
 					</p><!-- .entry-summary -->
@@ -54,7 +54,7 @@ get_header();
 
 		<div id="schedule">
 			<div id="comminty-viewer">
-
+				<?php include("watch/esport-twitch-status.php"); ?>
 			</div>
 		</div>
 	</div>

@@ -621,9 +621,41 @@ a {
 	height: 100%;
 	top: 0;
 	right: 0;
-
-	background: silver;
 }
+
+#featured-area #schedule #comminty-viewer {
+	background: #e43053;
+	overflow: hidden;
+}
+
+#featured-area #schedule #comminty-viewer a.watchlive-text {
+	color: white;
+	font-family: Oswald, sans-serif;
+	text-decoration: none;
+	text-transform: uppercase;
+	display: block;
+}
+
+#featured-area #schedule #comminty-viewer a.watchlive-text .watchlive-box {
+	padding: 0.7rem;
+}
+
+#featured-area #schedule #comminty-viewer a.watchlive-text .watchlive-title {
+	font-size: 1.8rem;
+}
+
+
+#featured-area #schedule #comminty-viewer a.watchlive-text .watchlive-more {
+	font-size: 1.4rem;
+	display: block;
+}
+
+#featured-area #schedule #comminty-viewer a.watchlive-text .watchlive-arrow {
+	font-size: 1rem;
+	line-height: 1.4rem;
+}
+
+
 
 /*--------------------------------------------------------------
 6.0 Accessibility
@@ -898,7 +930,6 @@ aside.widget_lsb_stream_status_widget a {
 	margin: 0.25rem 0.5rem 0 0;
 }
 
-
 #tertiary aside article.category-hearthstone .entry-icon {
 	background-image: url("img/icon/hearthstone-icon-24.png");
 }
@@ -914,9 +945,6 @@ aside.widget_lsb_stream_status_widget a {
 #tertiary aside article.category-esport .entry-icon {
 	background-image: url("img/icon/esport-icon-24.png");
 }
-
-
-
 
 
 
