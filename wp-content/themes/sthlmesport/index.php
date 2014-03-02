@@ -54,13 +54,11 @@ get_header();
 
 		<div id="schedule">
 
-			<?php dynamic_sidebar( 'schedulewidgets' ); ?>
-
-			<!--
 			<div id="comminty-viewer">
-				<?php // include("watch/esport-twitch-status.php"); ?>
+				<?php include("watch/esport-twitch-status.php"); ?>
 			</div>
-			-->
+
+			<?php dynamic_sidebar( 'schedulewidgets' ); ?>
 
 		</div>
 	</div>
