@@ -8,7 +8,7 @@
     <div id="tertiary" class="notice-area" role="complementary">
 
         <aside class="widget">
-            <h1 class="widget-title">Fler nyheter</h1>
+            <h1 class="widget-title">E-sportnotiser</h1>
 
             <?php   // filter
                 if ( empty($_COOKIE['filter']) ) {
