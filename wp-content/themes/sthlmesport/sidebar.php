@@ -15,7 +15,7 @@ foreach ( $categories as $cat ) {
                    'cat'=>$cat->cat_ID,
                    'meta_key'=>'_date',
                    'order_by'=>'meta_value',
-                   'order'=>'DESC',
+                   'order'=>'ASC',
                    'meta_query'=>array(array(
                        'key'=>'_date',
                        'value'=>date('Ymd'),
