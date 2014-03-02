@@ -90,7 +90,7 @@ foreach ( $categories as $cat ) {
 	            		<a class="social-link" href="https://www.facebook.com/STHLMesport" target="_blank"><img src="<?php bloginfo('template_directory');?>/img/icon/social-facebook-36.png"></a>
 	            		<a class="social-link" href="https://twitter.com/sthlmesport" target="_blank"><img src="<?php bloginfo('template_directory');?>/img/icon/social-twitter-36.png"></a>
 	            		<a class="social-link" href="http://instagram.com/sthlmesport" target="_blank"><img src="<?php bloginfo('template_directory');?>/img/icon/social-instagram-36.png"></a>
-	            		<img class="social-link" src="<?php bloginfo('template_directory');?>/img/icon/social-youtube-36.png">
+	            		<a class="social-link" href="http://youtube.com/sthlmesport" target="_blank"><img class="social-link" src="<?php bloginfo('template_directory');?>/img/icon/social-youtube-36.png"></a>
 	            	</div>
 
 	            </aside>
