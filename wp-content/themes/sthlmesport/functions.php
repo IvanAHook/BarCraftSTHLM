@@ -110,8 +110,27 @@ function sthlmesport_widgets_init() {
 		'before_title'  => '<h1 class="widget-title">',
 		'after_title'   => '</h1>',
 	) );
+	register_sidebar( array(
+		'name'          => __( 'Footer', 'footer' ),
+		'id'            => 'footer',
+		'before_widget' => '<div id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</div>',
+		'before_title'  => '<h1 class="widget-title">',
+		'after_title'   => '</h1>',
+	) );
 }
 add_action( 'widgets_init', 'sthlmesport_widgets_init' );
+
+
+/**
+ * Shortcodes
+ */
+
+function esport_ingress( $atts, $content = null ) {
+	return '<p class="ingress ' . implode(" ", $atts) . '">' . do_shortcode($content) . '</p>';
+}
+add_shortcode('ingress', 'esport_ingress');
+
 
 /**
  * Enqueue scripts and styles.

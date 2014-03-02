@@ -60,7 +60,7 @@ Hearthstone yellow: #f79224;
 
 /* Google Web Fonts */
 
-@import url(//fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Oswald);
+@import url(//fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Oswald:400,300);
 
 
 /*--------------------------------------------------------------
@@ -165,7 +165,7 @@ textarea {
 h1, h2, h3, h4, h5, h6 {
 	clear: both;
 }
-h1, h2, h3, h4, h5, h6, nav {
+h1, h2, h3, h4, h5, h6 {
 	font-family: Oswald, sans-serif;
 	text-transform: uppercase;
 }
@@ -384,7 +384,7 @@ textarea {
 	padding: 0 1rem;
 }
 
-header {
+header#masthead {
 	height: 10rem;
 }
 
@@ -436,6 +436,9 @@ a {
 .main-navigation .menu {
 	width: 74.285714285714285714285714285714%; /* 520px of 700px */
 	float: left;
+	border-bottom: 1px solid rgba(0,0,0, 0.3);
+	margin-top: 0.7rem;
+	line-height: 2.8rem;
 }
 
 .main-navigation .menu ul {
@@ -443,12 +446,13 @@ a {
 	margin: 0;
 	padding-left: 0;
 	overflow: auto;
-	font-size: 2.2rem;
+	font-size: 1.6rem;
+	font-weight: bold;
 }
 .main-navigation li {
 	float: left;
 	position: relative;
-	margin-left: 0.8em;
+	margin-right: 0.8em;
 }
 .main-navigation a {
 	display: block;
@@ -614,6 +618,42 @@ a {
 	line-height: 3.6rem;
 	margin-bottom: 0.6rem;
 }
+
+
+#featured-area #featured-post .featured-category {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background: #e43053;
+}
+
+#featured-area #featured-post .featured-category.category-hearthstone {
+	background-color: #f79224;
+}
+#featured-area #featured-post .featured-category.category-dota {
+	background-color: #49bae2;
+}
+#featured-area #featured-post .featured-category.category-lol {
+	background-color: #57c09f;
+}
+#featured-area #featured-post .featured-category.category-starcraft {
+	background-color: #541d59;
+}
+#featured-area #featured-post .featured-category.category-esport {
+	background-color: #e43053;
+}
+
+
+#featured-area #featured-post .featured-category a{
+	color: white;
+	text-decoration: none;
+	text-transform: uppercase;
+	line-height: 2.6rem;
+	font-size: 1.2rem;
+	font-weight: bold;
+	margin-left: 6rem;
+}
+
 
 #featured-area #schedule {
 	width: 17.021276595744680851063829787234%; /* 160px of 940px */
@@ -805,21 +845,30 @@ aside.widget_lsb_stream_status_widget a {
 
 /* Main column */
 
-#primary.content-area {
+.home #primary.content-area {
 	width: 80.851063829787234042553191489362%; /* 760px of 940px */
-	clear: both;
 	margin-top: 3rem;
-	float: left;
+	float: right;
+}
+
+#primary.content-area {
+	width: 100%;
+	margin-top: 3rem;
 }
 
 
 /* Right Events and Streamers sidebar */
 
-#secondary.widget-area {
-	width: 17.021276595744680851063829787234%; /* 160px of 940px */
+.home #secondary.widget-area {
+	width: 21.052631578947368421052631578947%; /* 160px of 760px */
 	float: right;
-	margin-top: 3rem;
 }
+
+#secondary.widget-area {
+	width: 17.02127659574468%; /* 160px of 940px */
+	float: right;
+}
+
 
 #secondary.widget-area .events-area .event-box {
 	color: white;
@@ -893,7 +942,8 @@ aside.widget_lsb_stream_status_widget a {
 /* Left Notice sidebar */
 
 #tertiary {
-	width: 21.052631578947368421052631578947%; /* 160px of 760px */
+	width: 17.021276595744680851063829787234%; /* 160px of 940px */
+	margin-top: 3rem;
 	float: left;
 }
 
@@ -948,41 +998,42 @@ aside.widget_lsb_stream_status_widget a {
 
 
 
-/* Main article list */
+/* Front page main article list */
 
-#primary.content-area main {
+.home #primary.content-area main {
 	width: 78.947368421052631578947368421053%; /* 600px of 760px */
+	margin-left: 0;
 	overflow: auto;
-	float: right;
+	float: left;
 }
 
-#primary.content-area main article:nth-child(odd) {
+.home #primary.content-area main article:nth-child(odd) {
 	clear: both;
 }
 
-#primary.content-area main article {
+.home #primary.content-area main article {
 	width: 46.666666666666666666666666666666%; /* 280px of 600px */
-	margin-left: 03.333333333333333333333333333333%; /* 20px of 600px */
+	margin-right: 03.333333333333333333333333333333%; /* 20px of 600px */
 	display: block;
 	float: left;
 }
 
-#primary.content-area main article a.entry-image {
+.home #primary.content-area main article a.entry-image {
 	display: block;
 }
 
-#primary.content-area main article img {
+.home #primary.content-area main article img {
 	width: 100%;
 }
 
-#primary.content-area main article .entry-meta {
+.home #primary.content-area main article .entry-meta {
 	font-size: 1.1rem;
 	color: rgba(0,0,0,0.4);
 	text-transform: uppercase;
 	margin: 0.4rem 0;
 }
 
-#primary.content-area main article .entry-icon {
+.home #primary.content-area main article .entry-icon {
 	background: url("img/icon/esport-icon-42.png") no-repeat top left;
 	background-size: 100% 100%;
 	height: 4.2rem;
@@ -992,25 +1043,24 @@ aside.widget_lsb_stream_status_widget a {
 }
 
 
-#primary.content-area main article.category-hearthstone .entry-icon {
+.home #primary.content-area main article.category-hearthstone .entry-icon {
 	background-image: url("img/icon/hearthstone-icon-42.png");
 }
-#primary.content-area main article.category-dota .entry-icon {
+.home #primary.content-area main article.category-dota .entry-icon {
 	background-image: url("img/icon/dota-icon-42.png");
 }
-#primary.content-area main article.category-lol .entry-icon {
+.home #primary.content-area main article.category-lol .entry-icon {
 	background-image: url("img/icon/lol-icon-42.png");
 }
-#primary.content-area main article.category-starcraft .entry-icon {
+.home #primary.content-area main article.category-starcraft .entry-icon {
 	background-image: url("img/icon/starcraft-icon-42.png");
 }
-#primary.content-area main article.category-esport .entry-icon {
+.home #primary.content-area main article.category-esport .entry-icon {
 	background-image: url("img/icon/esport-icon-42.png");
 }
 
 
-
-#primary.content-area main article h1.entry-title {
+.home #primary.content-area main article h1.entry-title {
 	clear: none;
 	font-size: 1.9rem;
 	line-height: 2.4rem;
@@ -1018,11 +1068,201 @@ aside.widget_lsb_stream_status_widget a {
 	width: 100%;
 }
 
-#primary.content-area main article .entry-summary {
+.home #primary.content-area main article .entry-summary {
 	clear: both;
 	margin-top: 0.5rem;
 }
 
+
+
+
+/* Article view */
+
+
+.single #primary.content-area main article a {
+	color: #e43053;
+	text-decoration: none;
+}
+
+.single #primary.content-area main article.category-hearthstone a {
+	color: #f79224;
+}
+.single #primary.content-area main article.category-dota a {
+	color: #49bae2;
+}
+.single #primary.content-area main article.category-lol a {
+	color: #57c09f;
+}
+.single #primary.content-area main article.category-starcraft a {
+	color: #792c7b; /* #541d59; */
+}
+.single #primary.content-area main article.category-esport a {
+	color: #e43053;
+}
+
+#primary.content-area main {
+	width: 74.46808510638298%; /* 700px of 940px */
+	margin-left: 06.38297872340426%; /* 60px of 940px */
+	overflow: auto;
+	float: left;
+}
+
+#primary.content-area main article {
+	margin-bottom: 4rem;
+}
+
+#primary.content-area main article .single-main {
+	width: 65.71428571428571%; /* 460px of 700px */
+	font-size: 1.5rem;
+}
+
+#primary.content-area main article h1 {
+	font-size: 3.6rem;
+	line-height: 3.6rem;
+}
+
+#primary.content-area main article .entry-meta {
+	font-size: 1.1rem;
+	color: rgba(0,0,0,0.4);
+	text-transform: uppercase;
+	margin-top: 1.4rem;
+}
+
+.single #primary.content-area main article .entry-meta .posted-on a {
+	color: rgba(0,0,0,0.4);
+}
+
+#primary.content-area main article .ingress {
+	font: 300 2.4rem Oswald,sans-serif;
+	line-height: 3rem;
+}
+
+#primary.content-area main article .ingress em {
+	font-style: normal;
+}
+
+
+#primary.content-area main article .entry-content > p:last-child:after {
+	content: " ■";
+	font-size: 2rem;
+	line-height: 2rem;
+	color: #e43053;
+}
+
+
+#primary.content-area main article blockquote {
+	margin: 0 4rem 4rem 6rem;
+	font: 400 2.2rem Oswald,sans-serif;
+}
+
+#primary.content-area main article blockquote:before {
+	content: '”';
+	font-family: Lato, sans-serif;
+	font-size: 19.4rem;
+	line-height: 5rem;
+	float: left;
+	margin-bottom: -4rem;
+	margin-top: 5.3rem;
+	margin-right: 0.8rem;
+}
+
+#primary.content-area main article blockquote,
+.single #primary.content-area main article p.ingress:before {
+	text-transform: uppercase;
+	color: #e43053;
+}
+
+.single #primary.content-area main article.category-hearthstone blockquote,
+.single #primary.content-area main article.category-hearthstone p.ingress:before,
+.single #primary.content-area main article.category-hearthstone .entry-content > p:last-child:after {
+	color: #f79224;
+}
+.single #primary.content-area main article.category-dota blockquote,
+.single #primary.content-area main article.category-dota p.ingress:before,
+.single #primary.content-area main article.category-dota .entry-content > p:last-child:after {
+	color: #49bae2;
+}
+.single #primary.content-area main article.category-lol blockquote,
+.single #primary.content-area main article.category-lol p.ingress:before,
+.single #primary.content-area main article.category-lol .entry-content > p:last-child:after {
+	color: #57c09f;
+}
+.single #primary.content-area main article.category-starcraft blockquote,
+.single #primary.content-area main article.category-starcraft p.ingress:before,
+.single #primary.content-area main article.category-starcraft .entry-content > p:last-child:after {
+	color: #792c7b; /* #541d59; */
+}
+.single #primary.content-area main article.category-esport blockquote,
+.single #primary.content-area main article.category-esport p.ingress:before,
+.single #primary.content-area main article.category-esport .entry-content > p:last-child:after {
+	color: #e43053;
+}
+
+.single #primary.content-area main article.category-news p.ingress:before{
+	content: "Nyhet ";
+}
+.single #primary.content-area main article.category-reportage p.ingress:before{
+	content: "Reportage ";
+}
+.single #primary.content-area main article.category-interview p.ingress:before{
+	content: "Intervju ";
+}
+.single #primary.content-area main article.category-column p.ingress:before{
+	content: "Krönika ";
+}
+.single #primary.content-area main article.category-guide p.ingress:before{
+	content: "Guide ";
+}
+
+
+footer.site-footer {
+	clear: both;
+	width: 100%;
+	margin-top: 2.5rem;
+	padding: 3rem 0;
+	background: black;
+	color: white;
+}
+
+footer.site-footer a {
+	color: white;
+	text-decoration: none;
+}
+
+footer.site-footer ul {
+	margin: 0;
+	list-style-image: url("img/icon/list-bullet.png");
+	list-style-position: inside;
+}
+
+footer.site-footer ul li {
+	font-size: 1.2rem;
+	text-transform: uppercase;
+	line-height: 1.9rem;
+}
+
+footer.site-footer div.site-info {
+	position: relative;
+	width: 100%;
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 0 1rem;
+	overflow: auto;
+}
+
+footer.site-footer .widget {
+	float: left;
+}
+
+footer.site-footer .widget.widget_text {
+	width: 23.40425531914894%; /* 220px of 940px */
+	margin-right: 08.51063829787234%; /* 80px of 940px */
+}
+
+footer.site-footer .widget.widget_nav_menu {
+	min-width: 10.63829787234043%; /* 100px of 940px */
+	margin-right: 02.12765957446809%; /* 20px of 940px */
+}
 
 
 
@@ -1054,10 +1294,7 @@ aside.widget_lsb_stream_status_widget a {
 /*--------------------------------------------------------------
 10.2 Asides
 --------------------------------------------------------------*/
-.blog .format-aside .entry-title,
-.archive .format-aside .entry-title {
-	display: none;
-}
+
 
 /*--------------------------------------------------------------
 10.3 Comments

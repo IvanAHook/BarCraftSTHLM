@@ -59,6 +59,8 @@ get_header();
 		</div>
 	</div>
 
+	<?php get_sidebar('tertiary'); ?>
+
 	<div id="primary" class="content-area">
 
         <?php   // filter
@@ -78,8 +80,6 @@ get_header();
                                             ) ),
                                             'post__not_in'=>array($featured_id) ) );
         ?>
-
-		<?php get_sidebar('tertiary'); ?>
 
 		<main id="main" class="site-main" role="main">
 
@@ -108,7 +108,8 @@ get_header();
 
         </main><!-- #main -->
 
+    <?php get_sidebar(); ?>
+
     </div><!-- #primary -->
 
-<?php get_sidebar(); ?>
 <?php get_footer(); ?>

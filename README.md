@@ -27,9 +27,11 @@ Vi har ett gäng kategorier. Först och främst **spel-kategori** för filtret:
 
 Vi har sedan kategorier för **artikeltyp**:
 
-* Artikel
-* Notis
-* Ledare
+* Nyhet (slug="news")
+* Reportage (slug="reportage")
+* Intervju (slug="interview")
+* Krönika (slug="column")
+* Guide (slug="guide")
 
 etc
 
