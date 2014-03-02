@@ -10,26 +10,66 @@
  * @package sthlmesport
  */
 
-get_header(); ?>
+
+get_header();
+?>
+
+<div id="content" class="site-content">
+
+	<?php while ( have_posts() ) : the_post(); ?>
+
+    <div id="featured-area">
+
+			<div id="featured-post" <?php post_class(); ?>>
+				<div class="entry-image"><?php
+
+					if ( has_post_thumbnail() ) {
+						the_post_thumbnail('top-image');
+					}
+					else {
+						echo '<img src="' . get_bloginfo( 'stylesheet_directory' ) . '/img/thumbnail-fallback.png" />';
+					}
+
+				?></div>
+			</div>
+
+		<div id="schedule">
+
+			<div id="comminty-viewer">
+				<?php include("watch/esport-twitch-status.php"); ?>
+			</div>
+
+			<?php dynamic_sidebar( 'schedulewidgets' ); ?>
+
+		</div>
+	</div>
 
 	<div id="primary" class="content-area">
+
 		<main id="main" class="site-main" role="main">
 
-			<?php while ( have_posts() ) : the_post(); ?>
 
-				<?php get_template_part( 'content', 'page' ); ?>
 
-				<?php
-					// If comments are open or we have at least one comment, load up the comment template
-					if ( comments_open() || '0' != get_comments_number() ) :
-						comments_template();
-					endif;
-				?>
+			<?php get_template_part( 'content', 'single' ); ?>
 
-			<?php endwhile; // end of the loop. ?>
+			<?php sthlmesport_post_nav(); ?>
 
-		</main><!-- #main -->
-	</div><!-- #primary -->
+			<?php
+				// If comments are open or we have at least one comment, load up the comment template
+				/*
+				if ( comments_open() || '0' != get_comments_number() ) :
+					comments_template();
+				endif;
+				*/
+			?>
 
-<?php get_sidebar(); ?>
+		<?php endwhile; // end of the loop. ?>
+
+
+        </main><!-- #main -->
+
+    <?php get_sidebar(); ?>
+
+    </div><!-- #primary -->
+
 <?php get_footer(); ?>

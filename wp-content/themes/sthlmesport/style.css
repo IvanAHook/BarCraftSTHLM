@@ -971,6 +971,7 @@ aside.widget_lsb_stream_status_widget a {
 #tertiary aside article {
 	border-bottom: 1px solid rgba(0,0,0, 0.35);
 	padding-bottom: 1.7rem;
+	padding-top: 0.5rem;
 }
 
 #tertiary aside article .entry-meta {
@@ -987,7 +988,7 @@ aside.widget_lsb_stream_status_widget a {
 	font-family: Lato, sans-serif;
 	font-size: 1.4rem;
 	font-weight: bold;
-	line-height: 1.4rem;
+	line-height: 1.5rem;
 	text-transform: none;
 	color: black;
 }
@@ -1087,6 +1088,11 @@ aside.widget_lsb_stream_status_widget a {
 	line-height: 2.4rem;
 	display: inline-block;
 	width: 100%;
+
+}
+
+.home #primary.content-area main article h1.entry-title a {
+	color: black;
 }
 
 .home #primary.content-area main article .entry-summary {
@@ -1100,24 +1106,24 @@ aside.widget_lsb_stream_status_widget a {
 /* Article view */
 
 
-.single #primary.content-area main article a {
+#primary.content-area main article a {
 	color: #e43053;
 	text-decoration: none;
 }
 
-.single #primary.content-area main article.category-hearthstone a {
+#primary.content-area main article.category-hearthstone a {
 	color: #f79224;
 }
-.single #primary.content-area main article.category-dota a {
+#primary.content-area main article.category-dota a {
 	color: #49bae2;
 }
-.single #primary.content-area main article.category-lol a {
+#primary.content-area main article.category-lol a {
 	color: #57c09f;
 }
-.single #primary.content-area main article.category-starcraft a {
+#primary.content-area main article.category-starcraft a {
 	color: #792c7b; /* #541d59; */
 }
-.single #primary.content-area main article.category-esport a {
+#primary.content-area main article.category-esport a {
 	color: #e43053;
 }
 
@@ -1150,7 +1156,7 @@ aside.widget_lsb_stream_status_widget a {
 	margin-top: 1.4rem;
 }
 
-.single #primary.content-area main article .entry-meta .posted-on a {
+#primary.content-area main article .entry-meta .posted-on a {
 	color: rgba(0,0,0,0.4);
 }
 
@@ -1241,6 +1247,7 @@ aside.widget_lsb_stream_status_widget a {
 
 #primary.content-area main article #quarternary {
 	width: 25.71428571428571%;
+	margin-right: 05.71428571428571%; /* 40px of 700px */
 	float: right;
 }
 
@@ -1250,6 +1257,23 @@ aside.widget_lsb_stream_status_widget a {
 	color: white;
 	padding: 1.2rem;
 }
+
+#primary.content-area main article.category-hearthstone #quarternary .meta-infobox {
+	background-color: #f79224;
+}
+#primary.content-area main article.category-dota #quarternary .meta-infobox {
+	background-color: #49bae2;
+}
+#primary.content-area main article.category-lol #quarternary .meta-infobox {
+	background-color: #57c09f;
+}
+#primary.content-area main article.category-starcraft #quarternary .meta-infobox {
+	background-color: #541d59;
+}
+#primary.content-area main article.category-esport #quarternary .meta-infobox {
+	background-color: #e43053;
+}
+
 
 .meta-infobox h1, .meta-infobox h2, .meta-infobox h3 {
 	font-size: 1.8rem;
