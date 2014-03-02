@@ -12,7 +12,7 @@
 
 		<div class="entry-meta">
 			<?php sthlmesport_posted_on(); ?>
-			<a class="comment-count" href="#comments"><?php comments_number( '', 'en kommentar', '% kommentarer' ); ?></a>
+			<!-- <a class="comment-count" href="#comments"><?php comments_number( '', 'en kommentar', '% kommentarer' ); ?></a> -->
 		</div><!-- .entry-meta -->
 	</header><!-- .entry-header -->
 

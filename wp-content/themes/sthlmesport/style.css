@@ -442,8 +442,9 @@ a {
 }
 
 .main-navigation .menu ul {
-	list-style: none;
 	margin: 0;
+	list-style-image: url("img/icon/list-bullet.png");
+	list-style-position: inside;
 	padding-left: 0;
 	overflow: auto;
 	font-size: 1.6rem;
@@ -455,7 +456,6 @@ a {
 	margin-right: 0.8em;
 }
 .main-navigation a {
-	display: block;
 	text-decoration: none;
 }
 .main-navigation ul ul {
@@ -1118,9 +1118,8 @@ aside.widget_lsb_stream_status_widget a {
 	float:left;
 }
 
-#primary.content-area main article .single-main h1 {
+#primary.content-area main article .entry-title {
 	font-size: 3.6rem;
-	line-height: 3.6rem;
 }
 
 #primary.content-area main article .entry-meta {

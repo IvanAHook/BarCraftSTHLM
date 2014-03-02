@@ -28,18 +28,30 @@ get_header();
 				?></div>
 
 				<?php
-				$category = get_the_category();
-				if ($category) {
-				  echo '<div class="featured-category category-' . $category[0]->slug . '"><a href="' . get_category_link( $category[0]->term_id ) . '" title="' . sprintf( __( "View all posts in %s" ), $category[0]->name ) . '" ' . '>' . $category[0]->name.'</a></div>';
+				if ( in_category( 'esport' )) {
+					echo '<div class="featured-category category-esport"><a href="#">e-sport</a></div>';
+				} elseif (in_category( 'starcraft' )) {
+					echo '<div class="featured-category category-starcraft"><a href="#">StarCraft 2</a></div>';
+				} elseif (in_category( 'lol' )) {
+					echo '<div class="featured-category category-lol"><a href="#">League of Legends</a></div>';
+				} elseif (in_category( 'dota' )) {
+					echo '<div class="featured-category category-dota"><a href="#">Dota 2</a></div>';
+				} elseif (in_category( 'hearthstone' )) {
+					echo '<div class="featured-category category-hearthstone"><a href="#">Hearthstone</a></div>';
 				}
 				?>
-
 			</div>
 
 		<div id="schedule">
+
+			<?php dynamic_sidebar( 'schedulewidgets' ); ?>
+
+			<!--
 			<div id="comminty-viewer">
-				<?php include("watch/esport-twitch-status.php"); ?>
+				<?php // include("watch/esport-twitch-status.php"); ?>
 			</div>
+			-->
+
 		</div>
 	</div>
 
@@ -53,11 +65,15 @@ get_header();
 
 			<?php sthlmesport_post_nav(); ?>
 
+			<?php echo do_shortcode('[fbcomments]'); ?>
+
 			<?php
 				// If comments are open or we have at least one comment, load up the comment template
+				/*
 				if ( comments_open() || '0' != get_comments_number() ) :
 					comments_template();
 				endif;
+				*/
 			?>
 
 		<?php endwhile; // end of the loop. ?>
