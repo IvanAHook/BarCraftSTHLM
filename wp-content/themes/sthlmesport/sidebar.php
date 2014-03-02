@@ -13,8 +13,13 @@ foreach ( $categories as $cat ) {
     $args = array( 'post_type'=>'event',
                    'posts_per_page'=>1,
                    'cat'=>$cat->cat_ID,
-                   'order_by'=>'_date',
-                   'order'=>'ASC',
+                   'order_by'=>'meta_value',
+                   'order'=>'DESC',
+                   'meta_query'=>array(array(
+                       'key'=>'_date',
+                       'value'=>date('Ymd'),
+                       'compare'=>'>'
+                   )),
                    'no_found_rows'=>true,
                    'update_post_meta_cache'=>false,
                    'update_post_term_cache'=>false );
