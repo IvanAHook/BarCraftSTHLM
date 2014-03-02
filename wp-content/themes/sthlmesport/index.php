@@ -53,9 +53,15 @@ get_header();
 <?php endwhile; ?>
 
 		<div id="schedule">
+
+			<?php dynamic_sidebar( 'schedulewidgets' ); ?>
+
+			<!--
 			<div id="comminty-viewer">
-				<?php include("watch/esport-twitch-status.php"); ?>
+				<?php // include("watch/esport-twitch-status.php"); ?>
 			</div>
+			-->
+
 		</div>
 	</div>
 
@@ -67,7 +73,7 @@ get_header();
             if ( empty($_COOKIE['filter']) ) {
                 $selected_cats = '';
             } else {
-                $selected_cats = 'esport, uncategorized' . $_COOKIE['filter'];
+                $selected_cats = 'esport, uncategorized,' . $_COOKIE['filter'];
             }
         $query_post = new WP_Query( array( 'post_type'=>'post',
                                             'posts_per_page'=>6,
