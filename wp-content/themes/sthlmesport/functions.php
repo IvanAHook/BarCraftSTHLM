@@ -182,6 +182,7 @@ function create_post_types() { // add 'supports' => array(),
                                             ),
                             'taxonomies' => array('category', 'post_tag'),
                             'public' => true,
+                            'supports'=> array('title', 'editor', 'thumbnail'),
                             'has_archive' => true,
                             'rewrite' => array( 'slug' => 'event'),
                         )
