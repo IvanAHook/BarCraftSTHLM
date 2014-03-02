@@ -16,7 +16,7 @@
 		</div><!-- .entry-meta -->
 	</header><!-- .entry-header -->
 
-		<div class="single-main">
+	<div class="single-main">
 
 		<div class="entry-content">
 			<?php the_content(); ?>
@@ -26,6 +26,7 @@
 					'after'  => '</div>',
 				) );
 			?>
+
 		</div><!-- .entry-content -->
 
 		<footer class="entry-meta">
@@ -66,5 +67,22 @@
 
 			<?php edit_post_link( __( 'Edit', 'sthlmesport' ), '<span class="edit-link">', '</span>' ); ?>
 		</footer><!-- .entry-meta -->
+
+
+
+	</div> <!-- .single-main -->
+
+	<div id="quarternary" class="widget-area" role="complementary">
+
+		<?php $meta_infobox = get_post_meta($post->ID, 'infobox', true); ?>
+		<?php if ( ! empty ( $meta_infobox ) ) { ?>
+		    
+		    <div class="meta-infobox widget">
+		            <?php echo wpautop($meta_infobox); ?>
+		    </div>
+		<?php } ?>
+
+		<?php dynamic_sidebar( 'articlewidgets' ); ?>
 	</div>
+
 </article><!-- #post-## -->

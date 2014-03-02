@@ -67,7 +67,7 @@ get_header();
             if ( empty($_COOKIE['filter']) ) {
                 $selected_cats = '';
             } else {
-                $selected_cats = 'esport,' . $_COOKIE['filter'];
+                $selected_cats = 'esport, uncategorized' . $_COOKIE['filter'];
             }
         $query_post = new WP_Query( array( 'post_type'=>'post',
                                             'posts_per_page'=>6,

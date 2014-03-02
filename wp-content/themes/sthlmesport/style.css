@@ -651,7 +651,7 @@ a {
 	line-height: 2.6rem;
 	font-size: 1.2rem;
 	font-weight: bold;
-	margin-left: 6rem;
+	margin-left: 6.2rem;
 }
 
 
@@ -1109,14 +1109,16 @@ aside.widget_lsb_stream_status_widget a {
 
 #primary.content-area main article {
 	margin-bottom: 4rem;
+	overflow: hidden;
 }
 
 #primary.content-area main article .single-main {
 	width: 65.71428571428571%; /* 460px of 700px */
 	font-size: 1.5rem;
+	float:left;
 }
 
-#primary.content-area main article h1 {
+#primary.content-area main article .single-main h1 {
 	font-size: 3.6rem;
 	line-height: 3.6rem;
 }
@@ -1214,6 +1216,38 @@ aside.widget_lsb_stream_status_widget a {
 	content: "Guide ";
 }
 
+
+/* Quarternary Article Sidebar Widget Area */
+
+#primary.content-area main article #quarternary {
+	width: 25.71428571428571%;
+	float: right;
+}
+
+#primary.content-area main article #quarternary .meta-infobox {
+	width: 100%;
+	background: #e43053;
+	color: white;
+	padding: 1.2rem;
+}
+
+.meta-infobox h1, .meta-infobox h2, .meta-infobox h3 {
+	font-size: 1.8rem;
+}
+
+.meta-infobox p {
+	margin-bottom: 1rem;
+	line-height: 100%;
+}
+
+.meta-infobox ul {
+	margin: 1rem 0 1rem 1.5rem;
+	list-style: square;
+}
+
+.meta-infobox ul li {
+	margin-bottom: 0.2rem;
+}
 
 footer.site-footer {
 	clear: both;

@@ -14,7 +14,7 @@
 <footer id="colophon" class="site-footer" role="contentinfo">
 	<div class="site-info">
 		
-		<?php dynamic_sidebar( 'footer' ); ?>
+		<?php dynamic_sidebar( 'footerwidgets' ); ?>
 
 	</div><!-- .site-info -->
 </footer><!-- #colophon -->
