@@ -59,7 +59,7 @@ get_header();
 
 			<?php get_template_part( 'content', 'single' ); ?>
 
-			<?php sthlmesport_post_nav(); ?>
+			<?php// sthlmesport_post_nav(); ?>
 
 			<?php echo do_shortcode('[fbcomments]'); ?>
 
