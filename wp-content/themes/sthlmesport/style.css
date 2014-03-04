@@ -576,7 +576,7 @@ a {
 /* feature area */
 
 #featured-area {
-	overflow: auto;
+	overflow: hidden;
 	position: relative;
 }
 
