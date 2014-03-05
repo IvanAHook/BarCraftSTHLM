@@ -48,7 +48,7 @@
                 </div><!-- .entry-meta -->
 
                 <h2 class="entry-title">
-                    <a href="<?php echo get_post_meta( get_the_ID(), 'outbound_link', true ); ?>" target="_blank" rel="bookmark">
+                    <a href="<?php echo get_post_meta( get_the_ID(), 'outbound_link', true ); ?>" rel="bookmark">
                         <div class="entry-icon"></div>
                         <?php the_title(); ?></h2>
                     </a>
