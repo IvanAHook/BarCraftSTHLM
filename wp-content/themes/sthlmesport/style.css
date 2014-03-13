@@ -754,6 +754,11 @@ a {
     font-weight: bold;
 }
 
+#schedule-readmore:before {
+	content: "►";
+	color: #e43053;
+}
+
 
 
 /*--------------------------------------------------------------
