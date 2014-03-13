@@ -410,7 +410,15 @@ if ( ! function_exists( 'rltdpstsplgn_loop' ) ) {
 					'category__in'			=>	$category_ids,
 					'post__not_in'			=>	array( $rltdpstsplgn_post_ID ),
 					'showposts'				=>	$rltdpstsplgn_options['number_post'],
-					'ignore_sticky_posts'	=>	1
+					'ignore_sticky_posts'	=>	1,
+					'tax_query' => array(
+    							array(
+							      'taxonomy' => 'post_format',
+							      'field' => 'slug',
+							      'terms' => 'post-format-aside',
+							      'operator' => 'NOT IN'
+							    	)
+							)
 			    );
 			}
 		} elseif ( 'meta' == $rltdpstsplgn_options['criteria'] ) { /* Sort by meta key */

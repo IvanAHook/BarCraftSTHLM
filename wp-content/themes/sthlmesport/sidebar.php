@@ -10,20 +10,20 @@ $args = array( 'type'=>'post', 'orderby'=>'name',
 $categories = get_categories( $args );
 $event_query = array();
 foreach ( $categories as $cat ) {
-    $args = array( 'post_type'=>'event',
-                   'posts_per_page'=>1,
-                   'cat'=>$cat->cat_ID,
-                   'meta_key'=>'_date',
-                   'order_by'=>'meta_value',
-                   'order'=>'ASC',
-                   'meta_query'=>array(array(
-                       'key'=>'_date',
-                       'value'=>date('Ymd'),
-                       'compare'=>'>='
-                   )),
-                   'no_found_rows'=>true,
-                   'update_post_meta_cache'=>false,
-                   'update_post_term_cache'=>false );
+    $args = array( 'post_type'      => 'event',
+                   'numberposts'    => 1,
+                   'cat'            => $cat->cat_ID,
+                   'meta_key'       => '_date',
+                   'order'          => 'DESC',
+                   'orderby'       => 'meta_value',
+                   'no_found_rows'  => true,
+                   'meta_query'     => array(array(
+                       'key'    => '_date',
+                       'value'  => date('Ymd'),
+                       'compare'=> '>=',
+                       'type'   => 'NUMERIC'
+                   ))
+                  );
     $query = new WP_Query( $args );
     while ( $query->have_posts() ) : $query->the_post();
         $event_query[$cat->slug] = array( 'name'=>$cat->name, 'title'=>get_the_title(get_the_ID()), // ...
@@ -35,7 +35,6 @@ foreach ( $categories as $cat ) {
 ?>
 
             <div id="secondary" class="widget-area" role="complementary">
-
             	<aside class="events-area widget">
 
             	<?php if (isset($event_query['starcraft'])) : ?>
