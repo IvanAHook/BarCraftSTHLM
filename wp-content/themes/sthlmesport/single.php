@@ -15,32 +15,32 @@ get_header();
 
     <div id="featured-area">
 
-			<div id="featured-post" <?php post_class(); ?>>
-				<div class="entry-image"><?php
+		<div id="featured-post" <?php post_class(); ?>>
+			<div class="entry-image"><?php
 
-					if ( has_post_thumbnail() ) {
-						the_post_thumbnail('top-image');
-					}
-					else {
-						echo '<img src="' . get_bloginfo( 'stylesheet_directory' ) . '/img/thumbnail-fallback.png" />';
-					}
-
-				?></div>
-
-				<?php
-				if ( in_category( 'esport' )) {
-					echo '<div class="featured-category category-esport"><a href="#">e-sport</a></div>';
-				} elseif (in_category( 'starcraft' )) {
-					echo '<div class="featured-category category-starcraft"><a href="#">StarCraft 2</a></div>';
-				} elseif (in_category( 'lol' )) {
-					echo '<div class="featured-category category-lol"><a href="#">League of Legends</a></div>';
-				} elseif (in_category( 'dota' )) {
-					echo '<div class="featured-category category-dota"><a href="#">Dota 2</a></div>';
-				} elseif (in_category( 'hearthstone' )) {
-					echo '<div class="featured-category category-hearthstone"><a href="#">Hearthstone</a></div>';
+				if ( has_post_thumbnail() ) {
+					the_post_thumbnail('top-image');
 				}
-				?>
-			</div>
+				else {
+					echo '<img src="' . get_bloginfo( 'stylesheet_directory' ) . '/img/thumbnail-fallback.png" />';
+				}
+
+			?></div>
+
+			<?php
+			if ( in_category( 'esport' )) {
+				echo '<div class="featured-category category-esport"><a href="#">e-sport</a></div>';
+			} elseif (in_category( 'starcraft' )) {
+				echo '<div class="featured-category category-starcraft"><a href="#">StarCraft 2</a></div>';
+			} elseif (in_category( 'lol' )) {
+				echo '<div class="featured-category category-lol"><a href="#">League of Legends</a></div>';
+			} elseif (in_category( 'dota' )) {
+				echo '<div class="featured-category category-dota"><a href="#">Dota 2</a></div>';
+			} elseif (in_category( 'hearthstone' )) {
+				echo '<div class="featured-category category-hearthstone"><a href="#">Hearthstone</a></div>';
+			}
+			?>
+		</div>
 
 		<div id="schedule">
 
@@ -48,7 +48,13 @@ get_header();
 				<?php include("watch/esport-twitch-status.php"); ?>
 			</div>
 
-			<?php dynamic_sidebar( 'schedulewidgets' ); ?>
+			<div id="shedule-list">
+				<?php dynamic_sidebar( 'schedulewidgets' ); ?>
+			</div>
+
+			<div id="schedule-readmore">
+				<a href="http://sthlmesport.se/?page_id=2075">Se hela kalendariet</a>
+			</div>
 
 		</div>
 	</div>

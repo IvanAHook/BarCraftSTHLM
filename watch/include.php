@@ -80,7 +80,7 @@ function currentstream() {
 
 		if (!$someone_online) {
 			$link_url = "http://twitch.tv/directory/all";
-			$title = "TwitchTV";
+			$title = "E-sport";
 			$image_url = "http://www.barcraftsthlm.se/watch/twitch-default-thumb.jpg";
 		}
 
