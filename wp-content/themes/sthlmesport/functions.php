@@ -191,6 +191,34 @@ function create_post_types() { // add 'supports' => array(),
 }
 add_action( 'init', 'create_post_types' );
 
+//function older_posts_query(&$query) {
+//    if ( ! $query->is_posts_page ) {
+//        return;
+//    }
+//
+//    $offset = 6;
+//
+//    $ppp = get_option( 'posts_per_page' );
+//
+//    if ( $query->is_paged ) {
+//        $page_offset = $offset + ( ($query->query_vars['paged']-1) * $ppp );
+//        $query->set( 'offset', $page_offset );
+//    } else {
+//        $query->set( 'offset', $offset );
+//    }
+//}
+//add_action('pre_get_posts', 'older_posts_query', 1);
+//
+//function older_posts_adjust_offset($found_posts, $query) {
+//    $offset = 6;
+//
+//    if ( $query->is_posts_page ) {
+//        return $found_posts - $offset;
+//    }
+//    return $found_posts;
+//}
+//add_filter( 'found_posts', 'older_posts_adjust_offset', 1, 2 );
+
 //function event_delete_transient( $post_id, $post ) {
 //    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 //        return;

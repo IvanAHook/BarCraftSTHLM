@@ -24,8 +24,8 @@ get_header();
     <div id="featured-area">
 
     <?php // i dont like the sound of 'posts_per_page'...
-        delete_transient('event_query');
-        $featured_post = new WP_Query( array( 'post_type'=>'post', 'posts_per_page'=>1, 'category_name'=>'featured' ) );
+        delete_transient('event_query'); // safe to remove?
+        $featured_post = new WP_Query( array( 'post_type'=>'post','numberposts'=>1, 'posts_per_page'=>1, 'category_name'=>'featured' ) );
         while ( $featured_post->have_posts() ) : $featured_post->the_post();
             $featured_id = get_the_ID();
     ?>
@@ -73,6 +73,7 @@ get_header();
             } else {
                 $selected_cats = 'esport, uncategorized,' . $_COOKIE['filter'];
             }
+        global $featured_id;
         $query_post = new WP_Query( array( 'post_type'=>'post',
                                             'posts_per_page'=>6,
                                             'category_name'=>$selected_cats,
@@ -101,7 +102,7 @@ get_header();
 				?>
 
 			<?php endwhile; ?>
-
+        <a href=" <?php echo get_post_type_archive_link( "post" ); ?>"><?php echo get_post_type_archive_link( "post" ); ?></a>
 			<?php sthlmesport_paging_nav(); ?>
 
         <?php else : ?>
