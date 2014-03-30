@@ -253,3 +253,27 @@ require get_template_directory() . '/inc/customizer.php';
  * Load Jetpack compatibility file.
  */
 require get_template_directory() . '/inc/jetpack.php';
+
+
+
+function be_exclude_post_formats_from_blog( $query ) {
+
+	global $show_asides;
+
+	if($show_asides == false) {
+		$tax_query = array( array(
+			'taxonomy' => 'post_format',
+			'field' => 'slug',
+			'terms' => 'post-format-aside',
+			'operator' => 'NOT IN',
+		) );
+		$query->set( 'tax_query', $tax_query );
+	}
+
+}
+add_action( 'pre_get_posts', 'be_exclude_post_formats_from_blog' );
+
+function limit_posts_per_archive_page() {
+	set_query_var('posts_per_archive_page', 7); // or use variable key: posts_per_page
+}
+add_filter('pre_get_posts', 'limit_posts_per_archive_page');

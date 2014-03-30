@@ -83,12 +83,6 @@ get_header();
         $query_post = new WP_Query( array( 'post_type'=>'post',
                                             'posts_per_page'=>6,
                                             'category_name'=>$selected_cats,
-                                            'tax_query'=>array(array( // why double array? i dont know...
-                                                'taxonomy'=>'post_format',
-                                                'field'=>'slug',
-                                                'terms'=>'post-format-aside',
-                                                'operator'=>'NOT IN',
-                                            ) ),
                                             'post__not_in'=>array($featured_id) ) );
         ?>
 
@@ -109,7 +103,14 @@ get_header();
 
 			<?php endwhile; ?>
         <a href=" <?php echo get_post_type_archive_link( "post" ); ?>"><?php echo get_post_type_archive_link( "post" ); ?></a>
-			<?php sthlmesport_paging_nav(); ?>
+
+		<nav role="navigation" class="navigation paging-navigation">
+				<h1 class="screen-reader-text">Posts navigation</h1>
+				<div class="nav-links">
+								<div class="nav-previous"><a href="/?m=2014&paged=2"><span class="meta-nav">←</span> Older posts</a></div>
+				</div><!-- .nav-links -->
+			</nav>
+
 
         <?php else : ?>
 

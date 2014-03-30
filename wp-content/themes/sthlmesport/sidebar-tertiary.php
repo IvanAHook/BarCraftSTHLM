@@ -11,6 +11,10 @@
             <h1 class="widget-title">E-sportnotiser</h1>
 
             <?php   // filter
+            
+                global $show_asides;
+                $show_asides = true;
+
                 if ( empty($_COOKIE['filter']) ) {
                     $selected_cats = '';
                 } else {
@@ -59,6 +63,10 @@
             <?php $aside_counter++ ?>
             <?php endwhile; ?>
             <?php endif; ?>
+
+            <?php 
+                $show_asides = false;
+            ?>
 
         </aside>
 
