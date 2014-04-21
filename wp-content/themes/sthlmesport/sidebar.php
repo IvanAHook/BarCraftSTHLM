@@ -73,6 +73,18 @@ foreach ( $categories as $cat ) {
 	                </div>
 	            <?php endif; ?>
 
+	            <?php if (isset($event_query['hearthstone'])) : ?>
+	                <a href="<?php echo $event_query['hearthstone']['event-link']; ?>" class="event-box" id="hearthstone-event-box">
+	                    <p class="event-text">Nästa Fireside</p>
+	                    <p class="event-date"><?php echo  date("j/n", strtotime($event_query['hearthstone']['event-date']) ); ?></p>
+	                </a>
+	            <?php else: ?>
+	                <div class="event-box" id="hearthstone-event-box">
+	                    <p class="event-text">Nästa Fireside</p>
+	                    <p class="event-date">TBA</p>
+	                </div>
+	            <?php endif; ?>
+
 				<?php if (isset($event_query['esport'])) : ?>
 	                <a href="<?php echo $event_query['esport']['event-link']; ?>" class="event-box" id="esport-event-box">
 	                    <p class="event-text">Nästa Turnering</p>

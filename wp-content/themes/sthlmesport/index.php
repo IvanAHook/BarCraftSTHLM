@@ -107,7 +107,7 @@ get_header();
 		<nav role="navigation" class="navigation paging-navigation">
 				<h1 class="screen-reader-text">Posts navigation</h1>
 				<div class="nav-links">
-								<div class="nav-previous"><a href="/?m=2014&paged=2"><span class="meta-nav">←</span> Older posts</a></div>
+								<div class="nav-previous"><a href="/2014/page/2/"><span class="meta-nav">←</span> Older posts</a></div>
 				</div><!-- .nav-links -->
 			</nav>
 

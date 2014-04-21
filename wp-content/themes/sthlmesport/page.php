@@ -15,7 +15,7 @@ get_header();
 ?>
 
 <div id="content" class="site-content">
-<p>kalsheashehsah</p>
+
 	<?php while ( have_posts() ) : the_post(); ?>
 
     <div id="featured-area">

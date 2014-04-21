@@ -91,12 +91,6 @@ html {
 	-ms-text-size-adjust:     100%; /* www.456bereastreet.com/archive/201012/controlling_text_size_in_safari_for_ios_without_disabling_user_zoom/ */
 }
 
-@media (max-width:960px) {
-	html {
-		font-size: 1vw;
-	}
-}
-
 
 *,
 *:before,
@@ -378,8 +372,7 @@ textarea {
 
 #page {
 	position: relative;
-	width: 100%;
-	max-width: 960px;
+	width: 960px;
 	margin: 0 auto;
 	padding: 0 1rem;
 }
