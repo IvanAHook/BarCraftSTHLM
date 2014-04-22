@@ -37,12 +37,12 @@
             echo '<span id="PasswordsDontMatch" class="Incorrect" style="display: none;">'.T("Passwords don't match").'</span>';
          ?>
       </li>
-      <li class="Gender">
-         <?php
+      <!-- <li class="Gender"> -->
+         <?php/*
             echo $this->Form->Label('Gender', 'Gender');
             echo $this->Form->RadioList('Gender', $this->GenderOptions, array('default' => 'm'))
-         ?>
-      </li>
+         */?>
+      <!-- </li> -->
       <li>
          <?php
             echo $this->Form->CheckBox('TermsOfService', $TermsOfServiceText, array('value' => '1'));

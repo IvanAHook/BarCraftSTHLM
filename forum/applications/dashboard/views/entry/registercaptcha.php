@@ -41,12 +41,12 @@
             echo '<span id="PasswordsDontMatch" class="Incorrect" style="display: none;">'.T("Passwords don't match").'</span>';
          ?>
       </li>
-      <li class="Gender">
-         <?php
+      <!-- <li class="Gender"> -->
+         <?php/*
             echo $this->Form->Label('Gender', 'Gender');
             echo $this->Form->RadioList('Gender', $this->GenderOptions, array('default' => 'm'))
-         ?>
-      </li>
+         */?>
+      <!-- </li> -->
       <li class="CaptchaInput"><?php
          echo $this->Form->Label("Security Check", '');
          echo recaptcha_get_html($CaptchaPublicKey, NULL, $CaptchaSSL);
