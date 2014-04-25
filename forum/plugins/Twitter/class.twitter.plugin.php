@@ -814,3 +814,11 @@ function SliceTwitter($Str) {
 
    return $Str;
 }
+if (!function_exists('Trace')) {
+       function Trace($Value = NULL, $Type = TRACE_INFO) {
+             static $Traces = array();
+                   if ($Value === NULL)
+                            return $Traces;
+             $Traces[] = array($Value, $Type);
+      }
+}
