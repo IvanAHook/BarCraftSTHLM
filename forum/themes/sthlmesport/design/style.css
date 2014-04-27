@@ -19,7 +19,7 @@ Welcome to the Generic Style CSS File! Some things you should know:
 
 /* Google Web Fonts */
 
-@import url(//fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Oswald:400,300);
+@import url(//fonts.googleapis.com/css?family=Lato:300,400,700,400italic,700italic|Oswald:400,300);
 
 
 /* ================================================================ Reset CSS */
@@ -270,11 +270,17 @@ h1 {
    margin-bottom:10px;
 }
 h2 {
-   font-size:130%;
+   font-size: 32px;
    margin-bottom:10px;
+   line-height: normal;
 }
 h3 {
    font-size:120%;
+}
+h3.DiscussionTitle {
+   font: bold 20px "Lato",sans-serif;
+   text-transform: none;
+   margin: 10px 0;
 }
 h4 {
    font-size: 120%;
@@ -353,20 +359,9 @@ a.Button,
    margin: 0;
    font-size: 11px;
    padding: 4px;
-	background: #f8f8f8;
-	background:-webkit-gradient(linear, center bottom, center top, from(#cccccc), to(#ffffff));
-	background:-moz-linear-gradient(top, #ffffff, #cccccc);
-	-pie-background:linear-gradient(top, #ffffff, #cccccc);
-	background:linear-gradient(top, #ffffff, #cccccc);
-   color: black;
-	text-shadow: 0 1px 0 #fff;
-   border: 1px solid #999;
-   border-radius: 3px;
-   -moz-border-radius: 3px;
-   -webkit-border-radius: 3px;
-	box-shadow: 0px 0px 2px #999;
-	-moz-box-shadow: 0px 0px 2px #999;
-	-webkit-box-shadow: 0px 0px 2px #999;
+   border: 0;
+	background: #E43053;
+   color: white;
 	white-space: nowrap;
 }
 a.Button {
@@ -375,16 +370,13 @@ a.Button {
    line-height: 100%;
    margin: 3px auto;
 }
+.Button:hover {
+   color: #EEE;
+}
+
 input.Button {
 	font-size: 14px;
    font-weight: bold;
-}
-.Button:hover {
-   color: #111;
-   border: 1px solid #666;
-}
-.Button:focus {
-   background: #eee;
 }
 .Buttons {
    margin-top: 10px;
@@ -917,34 +909,43 @@ a.BigButton {
    font-size: 15px;
    font-weight: bold;
    padding: 8px 0;
-	background: #f8f8f8;
-	background:-webkit-gradient(linear, center bottom, center top, from(#cccccc), to(#ffffff));
-	background:-moz-linear-gradient(top, #ffffff, #cccccc);
-	-pie-background:linear-gradient(top, #ffffff, #cccccc);
-	background:linear-gradient(top, #ffffff, #cccccc);
-   color: black;
-	text-shadow: 0 1px 0 #fff;
-   border: 1px solid #999;
-   border-radius: 3px;
-   -moz-border-radius: 3px;
-   -webkit-border-radius: 3px;
-	box-shadow: 0px 0px 2px #999;
-	-moz-box-shadow: 0px 0px 2px #999;
-	-webkit-box-shadow: 0px 0px 2px #999;  
+	background: #E43053;
+   color: white;
    }
 a.BigButton:hover {
-   color: #111;
-   border: 1px solid #666;
-	box-shadow: 0px 0px 5px #aaa;
-	-moz-box-shadow: 0px 0px 5px #aaa;
-	-webkit-box-shadow: 0px 0px 5px #aaa;  
+   color: #EEE;
 }
 a.BigButton:focus {
-   background: #eee;
-	box-shadow: 0px 0px 2px #999;
-	-moz-box-shadow: 0px 0px 2px #999;
-	-webkit-box-shadow: 0px 0px 2px #999;  
+
 }
+
+.CategoryList .Depth1 .ItemContent :not(.Title) {
+   display: none;
+}
+
+.CategoryList .Item.Depth1 {
+   background: #E43153;
+   border: 0;
+   margin-top: -1px;
+}
+
+.CategoryList .Item.Depth1 a {
+   font: bold 14px "Lato";
+   color: white;
+   cursor: default;
+}
+
+.CategoryFollowToggleBox {
+   display: none;
+}
+
+
+.PanelCategories .Depth1 a {cursor: default;}
+.PanelCategories .Depth1 .Count {
+   color: inherit;
+   background: inherit;
+}
+
 /* Category Depths */
 .PanelCategories .Depth2 { padding-left: 8px; }
 .PanelCategories .Depth3 { padding-left: 12px; }
@@ -957,7 +958,7 @@ a.BigButton:focus {
 .PanelCategories .Depth10 { padding-left: 40px; }
 .PanelCategories .Depth11 { padding-left: 44px; }
 .PanelCategories .Depth12 { padding-left: 48px; }
-.CategoryList .Depth2 { padding-left: 25px !important; }
+.CategoryList .Depth2 { padding-left: 25px !important; padding-top: 15px !important; padding-bottom: 10px !important }
 .CategoryList .Depth3 { padding-left: 50px !important; }
 .CategoryList .Depth4 { padding-left: 75px !important; }
 .CategoryList .Depth5 { padding-left: 100px !important; }
@@ -1004,10 +1005,13 @@ a.BigButton:focus {
 }
 .DataList .Item {
    margin: 0;
-   padding: 4px 0;
+   padding: 4px 0 ;
    border: 0;
 	position: relative;
    border-bottom: 1px solid #bec8cc;
+}
+.DataList.Discussions .Item {
+   padding: 15px 0 10px 0;
 }
 .DataList .Item .Item {
    border-bottom: none;
@@ -1032,6 +1036,11 @@ a.BigButton:focus {
    font-family: "Oswald", sans-serif;
    text-transform: uppercase;
 }
+.DataList.Discussions .Title {
+   font: bold 20px "Lato", sans-serif;
+   text-transform: none;
+}
+
 .DataList .Title a {
    font-size: 120%;
    font-weight: bold;
@@ -1040,6 +1049,10 @@ a.BigButton:focus {
    font-size: 11px;
    color: #70727c;
 }
+.Categories .Meta .Category {
+   display: none;
+}
+
 .DataList .Excerpt {
    font-size: 12px;
 	line-height: 1.4;
@@ -1225,9 +1238,6 @@ body.Profile ul.Activities {
 }
 .Activities .CommentForm input.Button {
 	font-size: 12px;
-	box-shadow: 0 0 1px #999;
-	-moz-box-shadow: 0 0 1px #999;
-	-webkit-box-shadow: 0 0 1px #999;  
 }
 
 
@@ -1666,10 +1676,50 @@ table.PreferenceGroup td.Description {
    margin: 0 0 0 4px;
 }
 .Tabs .SubTab {
-
+   padding: 4px 9px;
+   font: bold 14px "Lato";
+   background: #E43153;
+   color: white;
+   text-transform: uppercase;
 }
+
+.Tabs .SubTab a {
+   color: white;
+}
+
+#Content .Tabs {
+   display: none;
+}
+
+.BreadcrumbsTab {
+   background: none repeat scroll 0 0 #E43153;
+    color: #FFFFFF;
+    font: bold 14px "Lato";
+    padding: 4px 9px;
+    text-transform: uppercase;
+}
+
+body.Categories.all .BreadcrumbsTab {
+   display: none;
+}
+
+.Breadcrumbs a {
+   color: white;
+}
+
+.Breadcrumbs .CrumbLabel a {
+   cursor: default;
+}
+.Breadcrumbs .CrumbLabel:last-child a {
+   cursor: pointer;
+}
+.Breadcrumbs .CrumbLabel:first-child a {
+   cursor: pointer;
+}
+
 .HeadingTabs {
 	padding: 8px 8px 8px 12px;
+   background: #E43053;
 }
 .HeadingTabs ul {
 	display: inline;
@@ -2001,11 +2051,7 @@ div.Popup form ul li label.RadioLabel {
 .Mine { background: white; }
 
 .DataList .Meta a.Category {
-   background: #fafafa;
    padding: 2px 4px;
-   border-radius: 2px;
-   -moz-border-radius: 2px;
-   -webkit-border-radius: 2px;
 }
 .DataList li.Mine .Meta a.Category {
    background: #eff7ff;
@@ -2078,6 +2124,7 @@ body.Discussion a.Bookmark {
 body.Discussion .Back {
    padding: 3px 6px;
    text-align: left;
+   display: none;
 }
 
 
@@ -2094,6 +2141,11 @@ body.Discussion .Back {
 .Editing {
 	background: white;
 }
+
+h3.AddComment {
+   margin-top: 1em;
+}
+
 .CommentForm textarea.TextBox {
    width: 100%;
    height: 100px;

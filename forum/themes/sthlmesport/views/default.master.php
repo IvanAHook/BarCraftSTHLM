@@ -17,12 +17,20 @@
 			</div>
 
 			<nav role="navigation" class="main-navigation" id="site-navigation">
-				<div class="menu"><ul><li><a href="http://sthlmesport.se/">Home</a></li><li class="page_item page-item-2075"><a href="http://sthlmesport.se/kalender/">Kalender</a></li><li class="page_item page-item-1486"><a href="http://sthlmesport.se/om-sthlm-e-sport/">Om STHLM e-sport</a></li></ul></div>
+				<div class="menu"><ul><li><a href="http://sthlmesport.se/">Home</a></li><li class="page_item page-item-2075"><a href="http://sthlmesport.se/kalender/">Kalender</a></li><li class="page_item page-item-1486"><a href="http://sthlmesport.se/om-sthlm-e-sport/">Om STHLM e-sport</a></li><li class="page_item"><a href="http://sthlmesport.se/forum/">Forum</a></li></ul></div>
 			</nav><!-- #site-navigation -->
 		</header>
 
 
-         <div id="Content"><h2>Forum</h2><?php $this->RenderAsset('Content'); ?></div>
+         <div id="Content">
+         	<a href="http://sthlmesport.se/forum/?ShowAllCategories=true"><h2>Forum</h2></a>
+
+         	<div class="BreadcrumbsTab"><?php echo Gdn_Theme::Breadcrumbs( $this->Data('Breadcrumbs') ) ?></div>
+
+         	<?php $this->RenderAsset('Content'); ?>
+
+         </div>
+         
          <div id="Panel">
 
 				<?php
