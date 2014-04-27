@@ -641,6 +641,10 @@ body #Head h1 {
    font-weight: normal;
    line-height: 100%;
 }
+body.Categories.all .OptionsMenu {
+   display: none;
+}
+
 .Item .OptionsMenu {
    vertical-align: top;
    visibility: hidden;
@@ -730,44 +734,54 @@ body #Head h1 {
    display: none;
 }
 
-.Box {
+.Box, #Menu {
    background: #e43153;
    color: white;
    padding: 6px 10px;
    margin: 0 0 10px;
 }
-.Box h4 {
+.Box:empty, #Menu:empty {
+   display: none;
+}
+.Box h4, #Menu h4 {
    font-size: 110%;
    color: white;
    margin: 0;
    padding: 0 0 1px;
 }
-.Box h4 a {
+.Box h4 a, #Menu h4 a {
    font-weight: normal;
 }
-.Box a {
+.Box a, #Menu a {
    color: white;
    font-weight: bold;
 }
-.Box a:hover {
+.GuestBox a:before, #Menu a:before {
+   content: "► ";
+   font-size: 80%;
+}
+a#FacebookAuth:before, a#GoogleAuth:before, a#OpenIDAuth:before, a#TwitterAuth:before {
+   content: none;
+}
+
+.Box a:hover, #Menu a:hover {
    color: white;
 }
-.Box dl {
+.Box dl, #Menu dl {
    overflow: hidden;
 }
-.Box dl dt {
+.Box dl dt, #Menu dl dt {
 	font-size: 12px;
    float: left;
    width: 80px;
-   color: #555;
 	overflow: hidden;
 	white-space: nowrap;
 }
-.Box dl dd {
+.Box dl dd, #Menu dl dd {
 	font-size: 12px;
    margin-left: 80px;
 }
-.Box p {
+.Box p, #Menu p {
    font-size: 100%;
    padding: 0 0 4px;
    color: white;
@@ -807,8 +821,6 @@ body #Head h1 {
 	font-size: 85%;
 }
 .PanelInfo li {
-   background: white;
-   border-bottom: 1px solid white;
    padding: 2px 4px;
    text-align: right;
 }
@@ -822,17 +834,17 @@ body #Head h1 {
 	border-bottom: 0;
 }
 .PanelInfo li strong {
-   font-weight: normal;
+   font-weight: bold;
    text-align: left;
-   font-weight: normal;
 }
 .PanelInfo li a {
    float: left;
-   color: black;
    font-weight: normal;
 }
+.PanelInfo li.Depth1 strong a {
+   font-weight: bold;
+}
 .PanelInfo li a:hover {
-   color: black;
 }
 .Moderators ul.PanelInfo li {
 	text-align: left;
@@ -942,8 +954,12 @@ a.BigButton:focus {
 
 .PanelCategories .Depth1 a {cursor: default;}
 .PanelCategories .Depth1 .Count {
-   color: inherit;
+   color: #E43153;
    background: inherit;
+}
+
+.PanelCategories .Depth1 .Count {
+
 }
 
 /* Category Depths */
@@ -1051,6 +1067,9 @@ a.BigButton:focus {
 }
 .Categories .Meta .Category {
    display: none;
+}
+.Categories .Meta .LastCommentDate:before {
+   content: " ";
 }
 
 .DataList .Excerpt {
@@ -1653,7 +1672,7 @@ table.PreferenceGroup td.Description {
 }
 .Count {
    background: #444;
-   background-color: rgba(0, 0, 0, .6);
+   background-color: rgba(0, 0, 0, .25);
    border-radius: 3px;
    -webkit-border-radius: 3px;
    -moz-border-radius: 3px;

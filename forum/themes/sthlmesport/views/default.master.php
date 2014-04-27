@@ -36,29 +36,34 @@
 				<?php
 			      $Session = Gdn::Session();
 					if ($this->Menu) {
+						$this->Menu->RemoveLinks('Discussions');
+						
 						$this->Menu->AddLink('Dashboard', T('Dashboard'), '/dashboard/settings', array('Garden.Settings.Manage'), array('class' => 'Dashboard'));
 						// $this->Menu->AddLink('Dashboard', T('Users'), '/user/browse', array('Garden.Users.Add', 'Garden.Users.Edit', 'Garden.Users.Delete'),  array('class' => 'Users'));
-						$this->Menu->AddLink('Activity', T('Activity'), '/activity', FALSE, array('class' => 'Activity'));
+						// $this->Menu->AddLink('Activity', T('Activity'), '/activity', FALSE, array('class' => 'Activity'));
 						if ($Session->IsValid()) {
 							$Name = $Session->User->Name;
 							$CountNotifications = $Session->User->CountNotifications;
 							if (is_numeric($CountNotifications) && $CountNotifications > 0)
 								$Name .= ' <span class="Alert">'.$CountNotifications.'</span>';
-
+						
                      if (urlencode($Session->User->Name) == $Session->User->Name)
                         $ProfileSlug = $Session->User->Name;
                      else
                         $ProfileSlug = $Session->UserID.'/'.urlencode($Session->User->Name);
 							$this->Menu->AddLink('User', $Name, '/profile/'.$ProfileSlug, array('Garden.SignIn.Allow'), array('class' => 'UserNotifications'));
 							$this->Menu->AddLink('SignOut', T('Sign Out'), SignOutUrl(), FALSE, array('class' => 'NonTab SignOut'));
-						} else {
+						} /*else {
 							$Attribs = array();
 							if (SignInPopup() && strpos(Gdn::Request()->Url(), 'entry') === FALSE)
 								$Attribs['class'] = 'SignInPopup';
 								
 							$this->Menu->AddLink('Entry', T('Sign In'), SignInUrl($this->SelfUrl), FALSE, array('class' => 'NonTab SignIn'), $Attribs);
-						}
+						} */
 						echo $this->Menu->ToString();
+
+
+
 					}
 				?>
 
