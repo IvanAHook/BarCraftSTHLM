@@ -503,7 +503,7 @@ $Definition['Item'] = 'Objekt';
 
 $Definition['Jail'] = 'Fängelse';
 $Definition['Jailed users have reduced abilities.'] = 'Fängslade användare har begränsade möjligheter.';
-$Definition['Joined'] = 'Registrerade sig';
+$Definition['Joined'] = 'Registrerad';
 $Definition['Just delete the user record, and keep all of the user\'s content.'] = 'Radera endast användarkontot och behåll alla inlägg av användaren.';
 $Definition['Just expire the warning.'] = 'Låt bara varningen förfalla.';
 $Definition['Just you!'] = 'Bara du!';

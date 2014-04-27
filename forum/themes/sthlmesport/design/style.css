@@ -830,7 +830,6 @@ a#FacebookAuth:before, a#GoogleAuth:before, a#OpenIDAuth:before, a#TwitterAuth:b
    font-weight: bold;
 }
 .PanelInfo {
-   border-top: 1px solid white;
 	border-bottom: 0;
 }
 .PanelInfo li strong {
@@ -904,7 +903,7 @@ a#FacebookAuth:before, a#GoogleAuth:before, a#OpenIDAuth:before, a#TwitterAuth:b
 	margin-bottom: 10px;
 }
 body.Profile .PanelInfo {
-   border-bottom: 1px solid white;
+
 }
 body.Profile .PanelInfo li {
 	border-bottom: 0;
@@ -1446,15 +1445,27 @@ links, sign in buttons, etc */
 
 /* ============================================================= Profile Page */
 body.Profile #Content {
+   /*
    width: auto;
    margin: 0 0 40px 20px;
    width: 690px;
 	float: right;
+   */
 }
 body.Profile #Panel {
+   /*
    float: left;
-   width: 250px;
+   width: 250px; 
+   */
 }
+body.Profile #Panel .Photo img {
+   width: 100%;
+}
+body.Profile #Panel dl dt, body.Profile #Panel dl dd {
+   font-size: 10px;
+
+}
+
 /*
 .SideMenu {
    border-radius: 0;
@@ -1491,7 +1502,7 @@ body.Profile #Panel {
 }
 .User h1 {
    padding: 0 0 8px;
-   margin: 0;
+   margin: 1em 0 0;
    line-height: 100%;
    border: 0;
 }
