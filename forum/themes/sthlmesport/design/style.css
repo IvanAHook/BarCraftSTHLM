@@ -258,6 +258,9 @@ h1, h2, h3, h4, h5, h6 {
    text-transform: uppercase;
    margin: 0;
 }
+#Content h1 {
+   margin: 1em 0 0;
+}
 p {
    margin: 0.5em 0 0 0;
    line-height: 1.25em;
@@ -2322,7 +2325,6 @@ textarea.MultiComplete {
 
 /* ========================================================= Add Message Form */
 #MessageForm {
-	background: #E9F9FF;
 	padding: 4px 8px 8px;
 	margin: 1px 0 0;
    border-bottom-left-radius: 2px;
@@ -2332,9 +2334,9 @@ textarea.MultiComplete {
   -webkit-border-bottom-left-radius: 2px;
   -webkit-border-bottom-right-radius: 2px;
 }
+
 #MessageForm h2 {
   font-size: 115%;
-  color: #2786C2;
   border: 0;
 }
 #MessageForm form div {
@@ -2360,7 +2362,6 @@ body.add #Content {
 	-moz-border-radius: 2px;
    -webkit-border-radius: 2px;
    border-radius: 2px;
-	background:none repeat scroll 0 0 #c4e1ff;
 	margin:0;
 	padding:20px;
 	text-align: right;
