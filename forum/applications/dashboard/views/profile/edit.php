@@ -27,12 +27,12 @@ echo $this->Form->Errors();
          echo $this->Form->CheckBox('ShowEmail', T('Allow other members to see your email?'), array('value' => '1'));
       ?>
    </li>   
-   <li class="Gender">
-      <?php
+   <!-- <li class="Gender"> -->
+      <?php/*
          echo $this->Form->Label('Gender', 'Gender');
          echo $this->Form->RadioList('Gender', $this->GenderOptions, array('default' => 'm'))
-      ?>
-   </li>
+       */?>
+   <!-- </li> -->
    <?php
       $this->FireEvent('EditMyAccountAfter');
    ?>
