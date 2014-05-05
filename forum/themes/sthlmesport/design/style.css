@@ -943,10 +943,11 @@ a.BigButton:focus {
    margin-top: -1px;
 }
 
-.CategoryList .Item.Depth1 a {
+.CategoryList .Item.Depth1 a, .CategoryList .Item.Depth1 .ItemContent {
    font: bold 14px "Lato";
    color: white;
    cursor: default;
+   text-transform: uppercase;
 }
 
 .CategoryFollowToggleBox {
