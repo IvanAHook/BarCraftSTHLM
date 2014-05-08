@@ -16,7 +16,7 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
    $.popup = function(options, data) {
       var settings = $.extend({}, $.popup.settings, options);
       $.popup.init(settings)
-      if (!settings.confrm)
+      if (!settings.confirm)
          $.popup.loading(settings)
 
       $.isFunction(data) ? data.call(this, settings) : $.popup.reveal(settings, data)
@@ -48,13 +48,14 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
                   document.location = target;
                } else {
                   // request the target via ajax
+                  $.popup.loading(settings);
                   $.ajax({
                      type: "GET",
                      url: target,
                      data: {'DeliveryType' : settings.deliveryType, 'DeliveryMethod' : 'JSON'},
                      dataType: 'json',
-                     error: function(XMLHttpRequest, textStatus, errorThrown) {
-                        $.popup({}, XMLHttpRequest.responseText);
+                     error: function(xhr) {
+                        gdn.informError(xhr);
                      },
                      success: function(json) {
                         json = $.postParseJson(json);
@@ -183,8 +184,14 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
             return $.popup.close(settings);
          });
       } else {
-         $('#'+settings.popupId+' .Content h1').text(gdn.definition('ConfirmHeading', 'Confirm'));
-         $('#'+settings.popupId+' .Content p').text(gdn.definition('ConfirmText', 'Are you sure you want to do that?'));
+         // 'Confirm' popup heading
+         var confirmHeading = (settings.confirmHeading) ? settings.confirmHeading : gdn.definition('ConfirmHeading', 'Confirm'); 
+         $('#'+settings.popupId+' .Content h1').text(confirmHeading);
+         
+         // 'Confirm' popup body text
+         var confirmText = (settings.confirmText) ? settings.confirmText : gdn.definition('ConfirmText', 'Are you sure you want to do that?');
+         $('#'+settings.popupId+' .Content p').text(confirmText);            
+         
          $('#'+settings.popupId+' .Okay').val(gdn.definition('Okay', 'Okay'));
          $('#'+settings.popupId+' .Cancel').val(gdn.definition('Cancel', 'Cancel')).click(function() {
             $.popup.close(settings);
@@ -199,6 +206,8 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
     
       $('#'+settings.popupId+' .Content').empty();
       $('#'+settings.popupId+' .Body').children().hide().end().append('<div class="Loading">&#160;</div>');
+      // Trigger an even that plugins can attach to when popups are loading.
+      $('body').trigger('popupLoading');
    }
   
    $.popup.reveal = function(settings, data) {
@@ -212,7 +221,8 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
 
       if (json == false) {
          // This is something other than json, so just put it into the popup directly
-         $('#'+settings.popupId+' .Content').append(data);
+         if (data) // Prevent blank popups
+            $('#'+settings.popupId+' .Content').append(data);
       } else {
          gdn.inform(json);
          formSaved = json['FormSaved'];
@@ -230,11 +240,16 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
          // we need to reload the invitation table. Is there a reason not to reload
          // the content?
          // if (formSaved == false)
-         $('#'+settings.popupId+' .Content').html(data);
+         if (data) // Prevent blank popups
+            $('#'+settings.popupId+' .Content').html(data);
       }
     
       $('#'+settings.popupId+' .Loading').remove();
       $('#'+settings.popupId+' .Body').children().fadeIn('normal');
+      
+      $('#'+settings.popupId+' .Close').unbind().click(function() {
+         return $.popup.close(settings);
+      });
 
       settings.afterLoad();
     
@@ -252,6 +267,7 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
             success: function(json) {
                json = $.postParseJson(json);
                gdn.inform(json);
+               gdn.processTargets(json.Targets);
 
                if (json.FormSaved == true) {
                   if (json.RedirectUrl)
@@ -262,6 +278,10 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
                } else {
                   $.popup.reveal(settings, json) // Setup the form again
                }
+            },
+            error: function(xhr) {
+               $('.InProgress', this).removeClass('InProgress');
+               gdn.informError(xhr);
             }
          });
 
@@ -307,8 +327,7 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
       mouseoverClass:   'Popable',    // CssClass to be applied to a popup link when hovering
       onSave:           function(settings) {
          if (settings.sender) {
-            $('#'+settings.popupId+' .Button:last').attr('disabled', true);
-            $('#'+settings.popupId+' .Button:last').after('<span class="Progress">&#160;</span>');
+            $('#'+settings.popupId+' .Button:submit').attr('disabled', true).addClass('InProgress');
          }
       },
       onLoad:           function(settings) {
@@ -341,8 +360,8 @@ Copyright 2007 Chris Wanstrath [ chris@ozmm.org ]
       <div class="Border"> \
         <div class="Body"> \
           <div class="Content"><h1>Confirm</h1><p>Are you sure you want to do that?</p></div> \
-          <div class="Footer"> \
-            <input type="button" class="Button Okay" value="Okay" /> \
+          <div class="Buttons Footer"> \
+            <input type="button" class="Button Primary Okay" value="OK" /> \
             <input type="button" class="Button Cancel" value="Cancel" /> \
           </div> \
         </div> \

@@ -1,11 +1,13 @@
 <?php if (!defined('APPLICATION')) exit();
-if ($this->ActivityData->NumRows() > 0) {
-   echo '<ul class="DataList Activities">';
+echo '<ul class="DataList Activities">';
+if (count($this->Data('Activities')) > 0) {
    include($this->FetchViewLocation('activities', 'activity', 'dashboard'));
-   echo '</ul>';
-   echo $this->Pager->ToString('more');
 } else {
    ?>
-<div class="Empty"><?php echo T('Not much happening here, yet.'); ?></div>
+<li><div class="Empty"><?php echo T('Not much happening here, yet.'); ?></div></li>
    <?php
 }
+echo '</ul>';
+
+if (count($this->Data('Activities')) > 0)
+   PagerModule::Write(array('CurrentRecords' => count($this->Data('Activities'))));

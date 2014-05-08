@@ -1,41 +1,28 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
+ * Generic SQL database driver
+ * 
  * The Gdn_DatabaseDriver class (equivalent to SqlBuilder from Vanilla 1.x) is used
  * by any given database driver to build and execute database queries.
  *
  * This class is HEAVILY inspired by and, in places, flat out copied from
  * CodeIgniter (http://www.codeigniter.com). My hat is off to them.
  *
- * @author Mark O'Sullivan
- * @copyright 2003 Mark O'Sullivan
+ * @author Todd Burry <todd@vanillaforums.com> 
+ * @copyright 2003 Vanilla Forums, Inc
  * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
  * @package Garden
- * @version @@GARDEN-VERSION@@
- * @namespace Garden.Database
+ * @since 2.0
  */
 
 abstract class Gdn_SQLDriver {
    
-   /// CONSTRUCTOR ///
    public function __construct() {
       $this->ClassName = get_class($this);
       $this->Reset();
    }
    
-   
-   /// PROPERTIES ///
-   
-   
-
    /**
     * An associative array of table alias => table name pairs.
     *
@@ -70,6 +57,7 @@ abstract class Gdn_SQLDriver {
     */
    protected $_CacheKey = NULL;
    protected $_CacheOperation = NULL;
+   protected $_CacheOptions = NULL;
    
    /**
     * An associative array of information about the database to which the
@@ -308,6 +296,7 @@ abstract class Gdn_SQLDriver {
       if($EscapeFieldSql === FALSE) {
          $Field = '@' . $Field;
       }
+      
       if(is_array($Value)) {
          //$ValueStr = var_export($Value, TRUE);
          $ValueStr = 'ARRAY';
@@ -378,13 +367,15 @@ abstract class Gdn_SQLDriver {
     * Set the cache key for this transaction
     * 
     * @param string|array $Key The cache key (or array of keys) that this query will save into.
+    * @param string $Operation The cache operation as a hint to the db.
+    * @param array $Options The cache options as passed into Gdn_Cache::Store().
     * @return Gdn_SQLDriver $this
     */
-   public function Cache($Key, $Operation = NULL, $Backing = NULL) {
+   public function Cache($Key, $Operation = NULL, $Options = NULL) {
       if (!$Key) {
          $this->_CacheKey = NULL;
          $this->_CacheOperation = NULL;
-         $this->_CacheBacking = NULL;
+         $this->_CacheOptions = NULL;
 
          return $this;
       }
@@ -394,8 +385,8 @@ abstract class Gdn_SQLDriver {
       if (!is_null($Operation))
          $this->_CacheOperation = $Operation;
       
-      if (!is_null($Backing))
-         $this->_CacheBacking = $Backing;
+      if (!is_null($Options))
+         $this->_CacheOptions = $Options;
 
       return $this;
    }
@@ -915,10 +906,10 @@ abstract class Gdn_SQLDriver {
     * @param string $OrderFields A string of fields to be ordered.
     * @param string $OrderDirection The direction of the sort.
     * @param int    $Limit The number of records to limit the query to.
-    * @param int    $PageNumber The offset where the query results should begin.
+    * @param int    $Offset The offset where the query results should begin.
     * @return Gdn_DataSet The data returned by the query.
     */
-   public function GetWhere($Table = '', $Where = FALSE, $OrderFields = '', $OrderDirection = 'asc', $Limit = FALSE, $PageNumber = FALSE) {
+   public function GetWhere($Table = '', $Where = FALSE, $OrderFields = '', $OrderDirection = 'asc', $Limit = FALSE, $Offset = 0) {
       if ($Table != '') {
          //$this->MapAliases($Table);
          $this->From($Table);
@@ -929,14 +920,9 @@ abstract class Gdn_SQLDriver {
 
       if ($OrderFields != '')
          $this->OrderBy($OrderFields, $OrderDirection);
-
-      if ($Limit !== FALSE) {
-         if ($PageNumber == FALSE || $PageNumber < 1)
-            $PageNumber = 1;
-
-         $Offset = ($PageNumber - 1) * $Limit;
+      
+      if ($Limit !== FALSE)
          $this->Limit($Limit, $Offset);
-      }
 
       $Result = $this->Query($this->GetSelect());
       
@@ -1171,9 +1157,9 @@ abstract class Gdn_SQLDriver {
 
                // We are assuming here that if the existing record doesn't contain the column then it's just been added.
                if (preg_match('/^`(.+)`$/', $Value, $Matches)) {
-                  if (!isset($Row[$Key]) || $Row[$Key] != $Row[$Matches[1]])
+                  if (!array_key_exists($Key, $Row) || $Row[$Key] != $Row[$Matches[1]])
                      $this->Set('`'.$Key.'`', $Value, FALSE);
-               } elseif (!isset($Row[$Key]) || $Row[$Key] != $Value) {
+               } elseif (!array_key_exists($Key, $Row) || $Row[$Key] != $Value) {
                   $this->Set('`'.$Key.'`', $Value);
                }
                
@@ -1308,7 +1294,7 @@ abstract class Gdn_SQLDriver {
    public function MapAliases($TableString) {
       // Make sure all tables have an alias.
       if(strpos($TableString, ' ') === FALSE) {
-         $TableString .= ' ' . $TableString;
+         $TableString .= " `$TableString`";
       }
       
       // Map the alias to the alias mapping array
@@ -1320,7 +1306,7 @@ abstract class Gdn_SQLDriver {
       $Alias = trim($Alias);
       if(strlen($Alias) == 0) {
          $Alias = $TableName;
-         $TableString .= ' ' . $Alias;
+         $TableString .= " `$Alias`";
       }
       
       //$this->_AliasMap[$Alias] = $TableName;
@@ -1418,6 +1404,9 @@ abstract class Gdn_SQLDriver {
     * @param string $Direction The direction of the sort.
     */
    public function OrderBy($Fields, $Direction = 'asc') {
+      if (!$Fields)
+         return $this;
+         
       if ($Direction && $Direction != 'asc')
          $Direction = 'desc';
       else
@@ -1643,6 +1632,10 @@ abstract class Gdn_SQLDriver {
       if (!is_null($this->_CacheKey))
          $QueryOptions['CacheOperation'] = $this->_CacheOperation;
       
+      if (!is_null($this->_CacheOptions)) {
+         $QueryOptions['CacheOptions'] = $this->_CacheOptions;
+      }
+      
       try {
          if ($this->CaptureModifications && strtolower($Type) != 'select') {
             if(!property_exists($this->Database, 'CapturedSql'))
@@ -1697,6 +1690,7 @@ abstract class Gdn_SQLDriver {
       
       $this->_CacheKey        = NULL;
       $this->_CacheOperation  = NULL;
+      $this->_CacheOptions    = NULL;
       $this->_Distinct        = FALSE;
       $this->_Limit           = FALSE;
       $this->_Offset          = FALSE;
@@ -1956,8 +1950,11 @@ abstract class Gdn_SQLDriver {
          $Field = array($Field => $Value);
 
       foreach ($Field as $SubField => $SubValue) {
-         if(is_array($SubValue) && isset($SubValue[0])) {
-            $this->WhereIn($SubField, $SubValue);
+         if(is_array($SubValue) && (isset($SubValue[0]) || count($SubValue) == 0)) {
+            if (count($SubValue) == 1)
+               $this->Where($SubField, $SubValue[0]);
+            else
+               $this->WhereIn($SubField, $SubValue);
       	} else {
             $WhereExpr = $this->ConditionExpr($SubField, $SubValue, $EscapeFieldSql, $EscapeValueSql);
             if(strlen($WhereExpr) > 0) {

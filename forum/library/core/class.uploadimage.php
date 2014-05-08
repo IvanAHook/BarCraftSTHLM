@@ -1,16 +1,16 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
- * Handles uploading image files.
+ * Handles image uploads
+ *
+ * @author Mark O'Sullivan <markm@vanillaforums.com>
+ * @author Todd Burry <todd@vanillaforums.com> 
+ * @copyright 2003 Vanilla Forums, Inc
+ * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
+ * @package Garden
+ * @since 2.0
  */
+
 class Gdn_UploadImage extends Gdn_Upload {
 
    public static function CanUploadImages() {
@@ -32,22 +32,49 @@ class Gdn_UploadImage extends Gdn_Upload {
       
       return TRUE;
    }
+   
+   public function Clear() {
+      parent::Clear();
+		$this->_AllowedFileExtensions = array('jpg','jpeg','gif','png','bmp','ico');
+   }
+   
+   /**
+    * Gets the image size of a file.
+    * @param string $Path The path to the file.
+    * @param string $Filename The name of the file.
+    * @return array An array of [width, height, image type].
+    * @since 2.1
+    */
+   public static function ImageSize($Path, $Filename = FALSE) {
+      if (!$Filename)
+         $Filename = $Path;
+      
+      if (in_array(strtolower(pathinfo($Filename, PATHINFO_EXTENSION)), array('gif', 'jpg', 'jpeg', 'png'))) {
+         $ImageSize = @getimagesize($Path);
+         if (!is_array($ImageSize) || !in_array($ImageSize[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG)))
+            return array(0, 0, FALSE);
+         return $ImageSize;
+      }
+      return array(0, 0, FALSE);
+   }
 
    /**
     * Validates the uploaded image. Returns the temporary name of the uploaded file.
     */
-   public function ValidateUpload($InputName) {
+   public function ValidateUpload($InputName, $ThrowError = TRUE) {
    
       if (!function_exists('gd_info'))
          throw new Exception(T('The uploaded file could not be processed because GD is not installed.'));
    
       // Make sure that all standard file upload checks are performed.
-      $TmpFileName = parent::ValidateUpload($InputName);
+      $TmpFileName = parent::ValidateUpload($InputName, $ThrowError);
       
-      // Now perform image-specific checks
-      $Size = getimagesize($TmpFileName);
-      if ($Size === FALSE)
-         throw new Exception(T('The uploaded file was not an image.'));
+      // Now perform image-specific checks.
+      if ($TmpFileName) {
+         $Size = getimagesize($TmpFileName);
+         if ($Size === FALSE)
+            throw new Exception(T('The uploaded file was not an image.'));
+      }
       
       return $TmpFileName;
    }
@@ -73,7 +100,7 @@ class Gdn_UploadImage extends Gdn_Upload {
       
       // Make function work like it used to.
       $Args = func_get_args();
-      $SaveGig = FALSE;
+      $SaveGif = FALSE;
       if (count($Args) > 5) {
          $Crop = GetValue(4, $Args, $Crop);
          $OutputType = GetValue(5, $Args, $OutputType);
@@ -104,22 +131,26 @@ class Gdn_UploadImage extends Gdn_Upload {
       if ($Width == '' || !is_numeric($Width))
          $Width = $WidthSource;
 
-      if (!$OutputType) {
-         $OutputTypes = array(1 => 'gif', 2 => 'jpeg', 3 => 'png');
+      if (!$OutputType) {      
+         $OutputTypes = array(1 => 'gif', 2 => 'jpeg', 3 => 'png', 17 => 'ico');
          $OutputType = GetValue($Type, $OutputTypes, 'jpg');
+      }
+      elseif ($Type == 17 && $OutputType != 'ico') {
+         // Icons cannot be converted
+         throw new Exception(T('Upload cannot convert icons.'));
       }
 
       // Figure out the target path.
       $TargetParsed = Gdn_Upload::Parse($Target);
-      $TargetPath = PATH_LOCAL_UPLOADS.'/'.ltrim($TargetParsed['Name'], '/');
+      $TargetPath = PATH_UPLOADS.'/'.ltrim($TargetParsed['Name'], '/');
 
       if (!file_exists(dirname($TargetPath)))
          mkdir(dirname($TargetPath), 0777, TRUE);
       
-      // Don't resize if the source dimensions are smaller than the target dimensions
+      // Don't resize if the source dimensions are smaller than the target dimensions or an icon
       $XCoord = GetValue('SourceX', $Options, 0);
       $YCoord = GetValue('SourceY', $Options, 0);
-      if ($HeightSource > $Height || $WidthSource > $Width) {
+      if (($HeightSource > $Height || $WidthSource > $Width) && $Type != 17) {
          $AspectRatio = (float) $WidthSource / $HeightSource;
          if ($Crop === FALSE) {
             if (round($Width / $AspectRatio) > $Height) {
@@ -144,7 +175,7 @@ class Gdn_UploadImage extends Gdn_Upload {
                
                // And set the original y position to the cropped start point.
                if (!isset($Options['SourceY']))
-                  $YCoord = round(($HeightSource - $NewHeightSource) / 2);
+                  $YCoord = 0; // crop to top because most portraits show the face at the top.
                $HeightSource = $NewHeightSource;
             }
          }
@@ -156,6 +187,11 @@ class Gdn_UploadImage extends Gdn_Upload {
 
       $Process = TRUE;
       if ($WidthSource <= $Width && $HeightSource <= $Height && $Type == 1 && $SaveGif) {
+         $Process = FALSE;
+      }
+      
+      // Never process icons
+      if ($Type == 17) {
          $Process = FALSE;
       }
 
@@ -199,8 +235,10 @@ class Gdn_UploadImage extends Gdn_Upload {
          // No need to check these, if we get here then whichever function we need will be available
          if ($OutputType == 'gif')
             imagegif($TargetImage, $TargetPath);
-         else if ($OutputType == 'png') {
+         elseif ($OutputType == 'png') {
             imagepng($TargetImage, $TargetPath, (int)($ImageQuality/10));
+         } elseif ($OutputType == 'ico') {
+            self::ImageIco($TargetImage, $TargetPath);
          } else
             imagejpeg($TargetImage, $TargetPath, $ImageQuality);
       } else {
@@ -214,25 +252,16 @@ class Gdn_UploadImage extends Gdn_Upload {
       $Parsed = self::Parse($TargetPath);
       $Sender->EventArguments['Parsed'] =& $Parsed;
       $Sender->Returns = array();
-      Gdn::PluginManager()->CallEventHandlers($Sender, 'Gdn_UploadImage', 'SaveImageAs');
+      Gdn::PluginManager()->CallEventHandlers($Sender, 'Gdn_Upload', 'SaveAs');
       return $Sender->EventArguments['Parsed'];
    }
    
-   public function GenerateTargetName($TargetFolder, $Extension = 'jpg', $Chunk = FALSE) {
-      if (!$Extension) {
-         $Extension = trim(pathinfo($this->_UploadedFile['name'], PATHINFO_EXTENSION), '.');
-      }
-
-      do {
-         if ($Chunk) {
-            $Name = RandomString(12);
-            $Subdir = sprintf('%03d', mt_rand(0, 999));
-         } else {
-            $Name = RandomString(12);
-            $Subdir = '';
-         }
-         $Path = "$TargetFolder/$Subdir/$Name.$Extension";
-      } while(file_exists($Path));
-      return $Path;
+   public static function ImageIco($GD, $TargetPath) {
+      require_once PATH_LIBRARY.'/vendors/phpThumb/phpthumb.ico.php';
+      require_once PATH_LIBRARY.'/vendors/phpThumb/phpthumb.functions.php';
+      $Ico = new phpthumb_ico();
+      $Arr = array('ico' => $GD);
+      $IcoString = $Ico->GD2ICOstring($Arr);
+      file_put_contents($TargetPath, $IcoString);
    }
 }

@@ -3,20 +3,9 @@
 <div class="Info">
    <?php echo T('Tags are keywords that users can assign to discussions to help categorize their question with similar questions.'); ?>
 </div>
-<div class="FilterMenu">
-      <?php
-      echo Anchor(
-         T(C('Plugins.Tagging.Enabled') ? 'Disable Tagging' : 'Enable Tagging'),
-         'settings/toggletagging/'.Gdn::Session()->TransientKey(),
-         'SmallButton'
-      );
-   ?>
-</div>
-<?php if (C('Plugins.Tagging.Enabled')): 
-echo $this->Form->Open();   
-?>
-<hr />
-<div class="Info">
+
+<?php echo $this->Form->Open(); ?>
+<div class="Wrap">
    <?php
       echo $this->Form->Errors();
 
@@ -26,11 +15,11 @@ echo $this->Form->Open();
       echo ' '.$this->Form->Button(T('Go'));
       printf(T('%s tag(s) found.'), $this->Data('RecordCount'));
       
+      echo ' '.Anchor('Add Tag', '/settings/tagging/add', 'Popup Button');
+      
    ?>
 </div>
-<div class="Info">
-   <?php echo T('Click a tag name to edit. Click x to remove.'); ?>
-</div>
+<div class="Wrap"><?php echo T('Click a tag name to edit. Click x to remove.'); ?></div>
 <div class="Tags">
    <?php
       $Session = Gdn::Session();
@@ -41,10 +30,14 @@ echo $this->Form->Open();
          $Tags = $this->Data('Tags');
          foreach ($Tags as $Tag) {
             ?>
-            <div class="Tag<?php echo GetValue('Type', $Tag) ? ' Tag-'.$Tag['Type'] : '' ?>">
+            <div class="Tag<?php echo GetValue('Type', $Tag) ? ' Tag-'.$Tag['Type'] : '' ?>" id="Tag-<?php echo $Tag['TagID']; ?>">
                <?php
-               echo Anchor(htmlspecialchars($Tag['Name']).' '.Wrap($Tag['CountDiscussions'], 'span', array('class' => 'Count')), 'settings/edittag/'.$Tag['TagID'], 'TagName');
-               echo ' '.Anchor('×', 'settings/deletetag/'.$Tag['TagID'].'/'.$Session->TransientKey(), 'Delete');
+               echo Anchor(
+                       htmlspecialchars($Tag['Name']).' '.Wrap($Tag['CountDiscussions'], 'span', array('class' => 'Count')), 
+                       "settings/tagging/edit/{$Tag['TagID']}", 
+                       'TagName Tag_'.str_replace(' ', '_', $Tag['Name'])
+                    );
+               echo ' '.Anchor('×', "settings/tagging/delete/{$Tag['TagID']}", 'Popup');
                ?>
             </div>
             <?php
@@ -57,5 +50,3 @@ echo $this->Form->Open();
 PagerModule::Write();
 
 echo $this->Form->Close();
-
-endif;

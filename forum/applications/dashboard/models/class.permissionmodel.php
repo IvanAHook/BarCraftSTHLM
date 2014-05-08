@@ -55,7 +55,7 @@ class PermissionModel extends Gdn_Model {
                $DefaultPermissions[$PermissionName] = 2;
             elseif ($Value === 1)
                $DefaultPermissions[$PermissionName] = 3;
-            elseif (!$Structure->ColumnExists($Value) && in_array($Value, $PermissionNames))
+            elseif (!$Structure->ColumnExists($Value) && array_key_exists($Value, $PermissionNames))
                $DefaultPermissions[$PermissionName] = $PermissionNames[$Value] ? 3 : 2;
             else
                $DefaultPermissions[$PermissionName] = "`{$Value}`"; // default to another field
@@ -87,6 +87,7 @@ class PermissionModel extends Gdn_Model {
             ->Set($this->_Backtick($NewColumns), '', FALSE)
             ->Put('Permission', array(), $Where);
       }
+      $this->ClearPermissions();
    }
    
    public function Delete($RoleID = NULL, $JunctionTable = NULL, $JunctionColumn = NULL, $JunctionID = NULL) {
@@ -137,6 +138,52 @@ class PermissionModel extends Gdn_Model {
       $this->SQL->From('Permission p')
          ->Join('UserRole ur', 'p.RoleID = ur.RoleID')
          ->Where('ur.UserID', $UserID);
+      
+      // Either limit to 1 junction or exclude junctions
+      if ($JunctionTable && $JunctionColumn) {
+         $this->SQL
+            ->Select(array('p.JunctionTable', 'p.JunctionColumn', 'p.JunctionID'))
+            ->GroupBy(array('p.JunctionTable', 'p.JunctionColumn', 'p.JunctionID'));
+         if ($ForeignKey && $ForeignID) {
+            $this->SQL
+               ->Join("$JunctionTable j", "j.$JunctionColumn = p.JunctionID")
+               ->Where("j.$ForeignKey", $ForeignID);
+         }
+      } else {
+         $this->SQL->Where('p.JunctionTable is null');
+      }
+      
+      return $this->SQL->Get()->ResultArray();
+   }
+   
+   /**
+    * Get the permissions of a role.
+    *
+    * If no junction table is specified, will return ONLY non-junction permissions.
+    * If you need every permission regardless of junction & suffix, see CachePermissions.
+    *
+    * @param int $RoleID Unique identifier for role.
+    * @param string $LimitToSuffix String permission name must match, starting on right (ex: 'View' would match *.*.View)
+    * @param string $JunctionTable Optionally limit returned permissions to 1 junction (ex: 'Category').
+    * @param string $JunctionColumn Column to join junction table on (ex: 'CategoryID'). Required if using $JunctionTable.
+    * @param string $ForeignKey Foreign table column to join on.
+    * @param int $ForeignID Foreign ID to limit join to.
+    * @return array Permission records.
+    */
+   public function GetRolePermissions($RoleID, $LimitToSuffix = '', $JunctionTable = FALSE, $JunctionColumn = FALSE, $ForeignKey = FALSE, $ForeignID = FALSE) {
+      // Get all permissions
+      $PermissionColumns = $this->PermissionColumns($JunctionTable, $JunctionColumn);
+
+      // Select any that match $LimitToSuffix
+      foreach($PermissionColumns as $ColumnName => $Value) {
+         if (!empty($LimitToSuffix) && substr($ColumnName, -strlen($LimitToSuffix)) != $LimitToSuffix)
+            continue; // permission not in $LimitToSuffix
+         $this->SQL->Select('p.`'.$ColumnName.'`', 'MAX');
+      }
+      
+      // Generic part of query
+      $this->SQL->From('Permission p')
+         ->Where('p.RoleID', $RoleID);
       
       // Either limit to 1 junction or exclude junctions
       if ($JunctionTable && $JunctionColumn) {
@@ -267,7 +314,8 @@ class PermissionModel extends Gdn_Model {
             if(!empty($LimitToSuffix) && substr($PermissionName, -strlen($LimitToSuffix)) != $LimitToSuffix)
                continue; // permission not in $LimitToSuffix
             if($index = strpos($PermissionName, '.')) {
-               if(!in_array(substr($PermissionName, 0, $index), $Namespaces))
+               if(!in_array(substr($PermissionName, 0, $index), $Namespaces) &&
+                  !in_array(substr($PermissionName, 0, strrpos($PermissionName, '.')), $Namespaces))
                   continue; // permission not in allowed namespaces
             }
 
@@ -771,6 +819,18 @@ class PermissionModel extends Gdn_Model {
          $this->_UnpivotPermissionsRow($Row, $Result, $IncludeRole);
       }
       return $Result;
+   }
+   
+   public function Undefine($Names) {
+      $Names = (array)$Names;
+      $St = $this->Database->Structure();
+      $St->Table('Permission');
+      
+      foreach ($Names as $Name) {
+         if ($St->ColumnExists($Name))
+            $St->DropColumn($Name);
+      }
+      $St->Reset();
    }
    
    protected function _UnpivotPermissionsRow($Row, &$Result, $IncludeRole = FALSE) {

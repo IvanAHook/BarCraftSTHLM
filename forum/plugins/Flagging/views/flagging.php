@@ -1,17 +1,11 @@
 <?php if (!defined('APPLICATION')) exit(); ?>
+
 <h1><?php echo T($this->Data['Title']); ?></h1>
 <div class="Info">
    <?php echo T('FlaggedContent', 'The following content has been flagged by users for moderator review.'); ?>
 </div>
-<div class="FilterMenu">
-   <?php
-      $ToggleName = C('Plugins.Flagging.Enabled') ? T('Disable Content Flagging') : T('Enable Content Flagging');
-      echo "<div>".Wrap(Anchor($ToggleName, 'plugin/flagging/toggle/'.Gdn::Session()->TransientKey(), 'SmallButton'))."</div>";
-   ?>
-</div>
 
 <?php 
-if (C('Plugins.Flagging.Enabled')) {
    // Settings
    echo $this->Form->Open();
    echo $this->Form->Errors();
@@ -22,7 +16,7 @@ if (C('Plugins.Flagging.Enabled')) {
       <li>
          <?php
             echo $this->Form->Label('Category to Use', 'Plugins.Flagging.CategoryID');
-            echo $this->Form->CategoryDropDown('CategoryID', C('Plugins.Flagging.CategoryID'));
+            echo $this->Form->CategoryDropDown('Plugins.Flagging.CategoryID', C('Plugins.Flagging.CategoryID'));
          ?>
       </li>
    </ul>
@@ -36,7 +30,10 @@ if (C('Plugins.Flagging.Enabled')) {
    if (!$NumFlaggedItems) {
       echo T('FlagQueueEmpty', "There are no items awaiting moderation at this time.");
    } else {
-      echo $NumFlaggedItems." ".Plural($NumFlaggedItems,"item","items")." in queue\n";
+      echo sprintf(
+         T('Flagging queue counter', '%s in queue.'),
+         Plural($NumFlaggedItems, '%s post', '%s posts')
+      );
       foreach ($this->FlaggedItems as $URL => $FlaggedList) {
 ?>
             <div class="FlaggedItem">
@@ -53,12 +50,12 @@ if (C('Plugins.Flagging.Enabled')) {
                            <div class="FlaggedItemInfo">
                               <?php
                                  if ($NumComplaintsInThread > 1)
-                                    $OtherString = T(' and').' '.($NumComplaintsInThread-1).' '.T(Plural($NumComplaintsInThread-1, 'other', 'others')).' '.T('person');
+                                    $OtherString = T(' and').' '.($NumComplaintsInThread-1).' '.T(Plural($NumComplaintsInThread-1, 'other', 'others'));
                                  else
                                     $OtherString = '';
                               ?>
                               <span><?php echo T('FlaggedBy', "Reported by:"); ?> </span>
-                              <span><?php echo "<strong>".Anchor($Flag['InsertName'],"profile/{$Flag['InsertUserID']}/{$Flag['InsertName']}")."</strong>{$OtherString} ".T('on').' '.$Flag['DateInserted']; ?></span>
+                              <span><?php printf(T('<strong>%s</strong>%s on %s'), Anchor($Flag['InsertName'],"profile/{$Flag['InsertUserID']}/{$Flag['InsertName']}"), $OtherString, $Flag['DateInserted']); ?></span>
                            </div>
                            <div class="FlaggedItemComment">"<?php echo Gdn_Format::Text($Flag['Comment']); ?>"</div>
                            <div class="FlaggedActions">
@@ -95,4 +92,3 @@ if (C('Plugins.Flagging.Enabled')) {
       }
    ?>
 </div>
-<?php } ?>

@@ -3,19 +3,34 @@ $Session = Gdn::Session();
 $Alt = FALSE;
 $SubjectsVisible = C('Conversations.Subjects.Visible');
 
-foreach ($this->ConversationData->Result() as $Conversation) {
+foreach ($this->Data('Conversations') as $Conversation) {
+   $Conversation = (object)$Conversation;
    $Alt = $Alt == TRUE ? FALSE : TRUE;
-   $LastAuthor = UserBuilder($Conversation, 'LastMessage');
-   $LastPhoto = UserPhoto($LastAuthor, 'Photo');
+   
+   
+   // Figure out the last photo.
+   $LastPhoto = '';
+   foreach ($Conversation->Participants as $User) {
+      if ($User['UserID'] == $Conversation->LastInsertUserID) {
+         $LastPhoto = UserPhoto($User);
+         if ($LastPhoto)
+            break;
+      } elseif (!$LastPhoto) {
+         $LastPhoto = UserPhoto($User);
+      }
+   }
+   
    $CssClass = 'Item';
    $CssClass .= $Alt ? ' Alt' : '';
    $CssClass .= $Conversation->CountNewMessages > 0 ? ' New' : '';
    $CssClass .= $LastPhoto != '' ? ' HasPhoto' : '';
+   $CssClass .= ' '.($Conversation->CountNewMessages <= 0 ? 'Read' : 'Unread');
+   
    $JumpToItem = $Conversation->CountMessages - $Conversation->CountNewMessages;
-   if ($Conversation->Format == 'Text')
-      $Message = (SliceString(Gdn_Format::To($Conversation->LastMessage, $Conversation->Format), 100));
+   if ($Conversation->LastFormat == 'Text')
+      $Message = (SliceString(Gdn_Format::To($Conversation->LastBody, $Conversation->LastFormat), 100));
    else
-      $Message = (SliceString(Gdn_Format::Text(Gdn_Format::To($Conversation->LastMessage, $Conversation->Format), FALSE), 100));
+      $Message = (SliceString(Gdn_Format::Text(Gdn_Format::To($Conversation->LastBody, $Conversation->LastFormat), FALSE), 100));
 
    if (StringIsNullOrEmpty(trim($Message)))
       $Message = T('Blank Message');
@@ -26,13 +41,8 @@ foreach ($this->ConversationData->Result() as $Conversation) {
 <li class="<?php echo $CssClass; ?>">
    <?php
    $Names = '';
-   $PhotoUser = NULL;
    foreach ($Conversation->Participants as $User) {
-      if (GetValue('UserID', $User) == Gdn::Session()->UserID)
-         continue;
-      $Names = ConcatSep(', ', $Names, GetValue('Name', $User));
-      if (!$PhotoUser && GetValue('Photo', $User))
-         $PhotoUser = $User;
+      $Names = ConcatSep(', ', $Names, FormatUsername($User, 'You'));
    }
    ?>
    <div class="ItemContent Conversation">
@@ -42,8 +52,8 @@ foreach ($this->ConversationData->Result() as $Conversation) {
       if ($Names) {
          echo '<h3 class="Users">';
          
-         if ($PhotoUser) {
-            echo '<div class="Author Photo">'.UserPhoto($PhotoUser).'</div>';
+         if ($LastPhoto) {
+            echo '<div class="Author Photo">'.$LastPhoto.'</div>';
          }
 
          echo Anchor(htmlspecialchars($Names), $Url), '</h3>';
@@ -57,13 +67,13 @@ foreach ($this->ConversationData->Result() as $Conversation) {
          <?php 
          $this->FireEvent('BeforeConversationMeta');
 
-         echo '<span class="MetaItem">'.sprintf(Plural($Conversation->CountMessages, '%s message', '%s messages'), $Conversation->CountMessages).'</span>';
+         echo ' <span class="MItem CountMessages">'.sprintf(Plural($Conversation->CountMessages, '%s message', '%s messages'), $Conversation->CountMessages).'</span> ';
 
          if ($Conversation->CountNewMessages > 0) {
-            echo '<strong class="MetaItem">'.Plural($Conversation->CountNewMessages, '%s new', '%s new').'</strong>';
+            echo ' <strong class="HasNew"> '.Plural($Conversation->CountNewMessages, '%s new', '%s new').'</strong> ';
          }
          
-         echo '<span class="MetaItem">'.Gdn_Format::Date($Conversation->DateLastMessage).'</span>';
+         echo ' <span class="MItem LastDateInserted">'.Gdn_Format::Date($Conversation->LastDateInserted).'</span> ';
          ?>
       </div>
    </div>

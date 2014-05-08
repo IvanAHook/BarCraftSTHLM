@@ -20,9 +20,9 @@ ul.token-input-list-focus,
 ul.token-input-list-focus input {
     background: #ffe;
 }
-#DiscussionForm input.Button {
+/*#DiscussionForm input.Button {
     margin-top: 20px;
-}
+}*/
 ul.token-input-list li input {
     border: 0;
     width: 100px;
@@ -46,11 +46,20 @@ li.token-input-token {
     -webkit-border-radius: 5px;
     float: left;
 }
+li.token-input-token.not-allowed {
+    background-color: #FFC2C2;
+    color: #C91313;
+    border: 1px solid #FF3232;
+}
+li.token-input-token.not-allowed span {
+    color: #C91313;
+}
 li.token-input-token p {
     display: inline;
     padding: 0;
     margin: 0;
     line-height: 1.4;
+    vertical-align: middle;
 }
 li.token-input-token span {
     color: #a6b3cf;
@@ -65,6 +74,14 @@ li.token-input-selected-token {
     background-color: #5670a6;
     border: 1px solid #3b5998;
     color: #fff;
+}
+li.token-input-selected-token.not-allowed {
+    background-color: red;
+    color: #ffffff;
+    border: 1px solid #FF3232;
+}
+li.token-input-selected-token.not-allowed span {
+    color: #ffffff;
 }
 li.token-input-input-token {
     float: left;

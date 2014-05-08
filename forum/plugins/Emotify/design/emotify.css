@@ -118,17 +118,22 @@
     background: url('images/arrow.png') 0 0 no-repeat;
     position: absolute;
     text-align: left;
-    top: 1px;
-    right: -7px;
+    top: 0;
+    right: 0;
     cursor: pointer;
 }
+
+.EmbedCommentForm .EmotifyDropdown {
+   top: -29px;
+}
+
 .EmotifyDropdownActive {
     background-color: #eee;
 }
 .EmoticonContainer {
     position: absolute;
-    top: 21px;
-    right: -8px;
+    top: 23px;
+    right: 0;
     border: 1px solid #aaa;
     border-bottom: 0;
     border-right: 0;
@@ -153,5 +158,14 @@
     width: 22px;
     overflow: hidden;
     cursor: pointer;
+    position: relative;
 }
 
+.EmoticonBox:hover {
+   width: 42px;
+   height: 32px;
+   margin: -5px -10px;
+   z-index: 10;
+   border-radius: 2px;
+   box-shadow: 0 2px 7px #000;
+}

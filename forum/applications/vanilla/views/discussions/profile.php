@@ -1,4 +1,7 @@
 <?php if (!defined('APPLICATION')) exit();
+
+echo '<h2 class="H">'.T('Discussions').'</h2>';
+
 // Create some variables so that they aren't defined in every loop.
 $ViewLocation = $this->FetchViewLocation('discussions', 'discussions', 'vanilla');
 

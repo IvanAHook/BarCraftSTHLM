@@ -33,9 +33,8 @@ jQuery(document).ready(function($) {
             url: $(frm).attr('action'),
             data: postValues,
             dataType: 'json',
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-               $('div.Popup').remove();
-               $.popup({}, XMLHttpRequest.responseText);
+            error: function(xhr) {
+               gdn.informError(xhr);
             },
             success: function(json) {
                json = $.postParseJson(json);
@@ -63,6 +62,11 @@ jQuery(document).ready(function($) {
                   if (target.offset()) {
                      $('html,body').animate({scrollTop: target.offset().top}, 'fast');
                   }
+
+                  // Let listeners know that the message was added.
+                  $(document).trigger('MessageAdded');
+                  $(frm).triggerHandler('complete');
+
                   gdn.inform(json);
                }
             },
@@ -83,6 +87,7 @@ jQuery(document).ready(function($) {
       $('div.Popup').remove();
       var frm = $('#Form_ConversationMessage');
       frm.find('textarea').val('');
+      frm.trigger('clearCommentForm');
       frm.find('div.Errors').remove();
       $('div.Information').fadeOut('fast', function() { $(this).remove(); });
    }
@@ -98,11 +103,6 @@ jQuery(document).ready(function($) {
             selectFirst: true
          }
       ).autogrow();
-   });
-   
-   // Set up paging
-   $('.MorePager').morepager({
-      pageContainerSelector: 'ul.Conversations, ul.Conversation'
    });
    
    $('#Form_AddPeople :submit').click(function() {
@@ -127,7 +127,7 @@ jQuery(document).ready(function($) {
          success: function(json) {
             gdn.inform(json);
             if (json.RedirectUrl)
-              setTimeout("document.location='" + json.RedirectUrl + "';", 300);
+              setTimeout(function() { window.location.replace(json.RedirectUrl); }, 300);
          }
       });
       return false;

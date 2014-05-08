@@ -35,10 +35,10 @@ $Construct
    ->Column('FirstMessageID', 'int', TRUE, 'key')
    ->Column('InsertUserID', 'int', FALSE, 'key')
    ->Column('DateInserted', 'datetime', NULL, 'key')
-   ->Column('InsertIPAddress', 'varchar(15)', TRUE)
-   ->Column('UpdateUserID', 'int', FALSE, 'key')
-   ->Column('DateUpdated', 'datetime')
-   ->Column('UpdateIPAddress', 'varchar(15)', TRUE)
+   ->Column('InsertIPAddress', 'varchar(39)', TRUE)
+   ->Column('UpdateUserID', 'int', NULL, 'key')
+   ->Column('DateUpdated', 'datetime', NULL)
+   ->Column('UpdateIPAddress', 'varchar(39)', TRUE)
    ->Column('CountMessages', 'int', 0)
    ->Column('LastMessageID', 'int', NULL)
    ->Column('RegardingID', 'int(11)', TRUE, 'index')
@@ -51,17 +51,26 @@ $Construct
 $Construct->Table('UserConversation');
 
 $UpdateCountReadMessages = $Construct->TableExists() && !$Construct->ColumnExists('CountReadMessages');
+$DateConversationUpdatedExists = $Construct->ColumnExists('DateConversationUpdated');
 
 $Construct
-   ->Column('UserID', 'int', FALSE, 'primary')
-   ->Column('ConversationID', 'int', FALSE, 'primary')
+   ->Column('UserID', 'int', FALSE, array('primary', 'index.Inbox'))
+   ->Column('ConversationID', 'int', FALSE, array('primary', 'key'))
    ->Column('CountReadMessages', 'int', 0) // # of read messages
-   ->Column('LastMessageID', 'int', NULL, 'key') // The last message posted by a user other than this one, unless this user is the only person who has added a message
-   ->Column('DateLastViewed', 'datetime', NULL)
-   ->Column('DateCleared', 'datetime', NULL)
+   ->Column('LastMessageID', 'int', TRUE) // The last message posted by a user other than this one, unless this user is the only person who has added a message
+   ->Column('DateLastViewed', 'datetime', TRUE)
+   ->Column('DateCleared', 'datetime', TRUE)
    ->Column('Bookmarked', 'tinyint(1)', '0')
-   ->Column('Deleted', 'tinyint(1)', '0') // User deleted this conversation
+   ->Column('Deleted', 'tinyint(1)', '0', 'index.Inbox') // User deleted this conversation
+   ->Column('DateConversationUpdated', 'datetime', TRUE, 'index.Inbox') // For speeding up queries.
    ->Set($Explicit, $Drop);
+
+if (!$DateConversationUpdatedExists) {
+   $SQL->Update('UserConversation uc')
+      ->Join('Conversation c', 'uc.ConversationID = c.ConversationID')
+      ->Set('DateConversationUpdated', 'c.DateUpdated', FALSE)
+      ->Put();
+}
    
 // Contains messages for each conversation, as well as who inserted the message
 // and when it was inserted. Users cannot edit or delete their messages once
@@ -71,9 +80,9 @@ $Construct->Table('ConversationMessage')
    ->Column('ConversationID', 'int', FALSE, 'key')
    ->Column('Body', 'text')
    ->Column('Format', 'varchar(20)', NULL)
-   ->Column('InsertUserID', 'int', NULL)
+   ->Column('InsertUserID', 'int', NULL, 'key')
    ->Column('DateInserted', 'datetime', FALSE)
-   ->Column('InsertIPAddress', 'varchar(15)', TRUE)
+   ->Column('InsertIPAddress', 'varchar(39)', TRUE)
    ->Set($Explicit, $Drop);
 
 if ($UpdateCountMessages) {
@@ -131,5 +140,6 @@ if ($SQL->GetWhere('ActivityType', array('Name' => 'AddedToConversation'))->NumR
 
 $PermissionModel = Gdn::PermissionModel();
 $PermissionModel->Define(array(
-   'Conversations.Moderation.Manage' => 0
+   'Conversations.Moderation.Manage' => 0,
+   'Conversations.Conversations.Add' => 'Garden.Profiles.Edit',
 ));

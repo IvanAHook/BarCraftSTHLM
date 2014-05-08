@@ -202,7 +202,9 @@ class MorePagerModule extends Gdn_Module {
 
             $Pager .= Anchor(
                sprintf(T($this->MoreCode), $ActualRecordsLeft),
-               self::FormatUrl($this->Url, $NextOffset, $this->Limit)
+               self::FormatUrl($this->Url, $NextOffset, $this->Limit),
+               '',
+               array('rel' => 'nofollow')
             );
          }
       } else if ($Type == 'less') {
@@ -220,7 +222,9 @@ class MorePagerModule extends Gdn_Module {
                
             $Pager .= Anchor(
                sprintf(T($this->LessCode), $this->Offset),
-               self::FormatUrl($this->Url, $PreviousOffset, $RecordsBefore)
+               self::FormatUrl($this->Url, $PreviousOffset, $RecordsBefore),
+               '',
+               array('rel' => 'nofollow')
             );
          }
       }
@@ -229,4 +233,12 @@ class MorePagerModule extends Gdn_Module {
       else
          return sprintf($this->Wrapper, Attribute(array('id' => $ClientID, 'class' => $this->CssClass)), $Pager);
    }
+   
+   /** 
+    * Are there more pages after the current one?
+    */
+   public function HasMorePages() {
+      return $this->TotalRecords > $this->Offset + $this->Limit;
+   }
+   
 }

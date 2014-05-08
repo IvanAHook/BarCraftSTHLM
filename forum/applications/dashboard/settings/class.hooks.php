@@ -17,7 +17,7 @@ class DashboardHooks implements Gdn_IPlugin {
     *
     * @param Gdn_Controller $Sender
     */
-   public function Base_Render_Before(&$Sender) {
+   public function Base_Render_Before($Sender) {
       $Session = Gdn::Session();
 
       // Enable theme previewing
@@ -28,9 +28,9 @@ class DashboardHooks implements Gdn_IPlugin {
             $Sender->Theme = $PreviewThemeName;
 				$Sender->InformMessage(
 					sprintf(T('You are previewing the %s theme.'), Wrap($PreviewThemeName, 'em'))
-						.'<div class="PreviewButtons">'
-						.Anchor(T('Apply'), 'settings/themes/'.$PreviewThemeName.'/'.$Session->TransientKey(), 'PreviewButton')
-						.' '.Anchor(T('Cancel'), 'settings/cancelpreview/', 'PreviewButton')
+						.'<div class="PreviewThemeButtons">'
+						.Anchor(T('Apply'), 'settings/themes/'.$PreviewThemeName.'/'.$Session->TransientKey(), 'PreviewThemeButton')
+						.' '.Anchor(T('Cancel'), 'settings/cancelpreview/', 'PreviewThemeButton')
 						.'</div>',
 					'DoNotDismiss'
 				);
@@ -69,83 +69,144 @@ class DashboardHooks implements Gdn_IPlugin {
 //		else if (in_array($Sender->MasterView, array('', 'default')))
 		if (in_array($Sender->MasterView, array('', 'default')))
 			$Exceptions[] = '[NonAdmin]';
+      
+      // SignIn popup is a special case
+      $SignInOnly = ($Sender->DeliveryType() == DELIVERY_TYPE_VIEW && $Location == 'Dashboard/entry/signin');
+      if ($SignInOnly)
+         $Exceptions = array();
 			
-		if ($Sender->MasterView != 'admin' && (GetValue('MessagesLoaded', $Sender) != '1' && $Sender->MasterView != 'empty' && ArrayInArray($Exceptions, $MessageCache, FALSE) || InArrayI($Location, $MessageCache))) {
+		if ($Sender->MasterView != 'admin' && !$Sender->Data('_NoMessages') && (GetValue('MessagesLoaded', $Sender) != '1' && $Sender->MasterView != 'empty' && ArrayInArray($Exceptions, $MessageCache, FALSE) || InArrayI($Location, $MessageCache))) {
          $MessageModel = new MessageModel();
          $MessageData = $MessageModel->GetMessagesForLocation($Location, $Exceptions);
          foreach ($MessageData as $Message) {
             $MessageModule = new MessageModule($Sender, $Message);
-            $Sender->AddModule($MessageModule);
+            if ($SignInOnly) // Insert special messages even in SignIn popup
+               echo $MessageModule;
+            elseif ($Sender->DeliveryType() == DELIVERY_TYPE_ALL)
+               $Sender->AddModule($MessageModule);
          }
 			$Sender->MessagesLoaded = '1'; // Fixes a bug where render gets called more than once and messages are loaded/displayed redundantly.
       }
-		// If there are applicants, alert admins by showing in the main menu
-		if (in_array($Sender->MasterView, array('', 'default')) && $Sender->Menu && C('Garden.Registration.Method') == 'Approval') {
-			$CountApplicants = Gdn::UserModel()->GetApplicantCount();
-			if ($CountApplicants > 0)
-				$Sender->Menu->AddLink('Applicants', T('Applicants').' <span class="Alert">'.$CountApplicants.'</span>', '/dashboard/user/applicants', array('Garden.Applicants.Manage'));
-		}
 		
       if ($Sender->DeliveryType() == DELIVERY_TYPE_ALL) {
          $Gdn_Statistics = Gdn::Factory('Statistics');
          $Gdn_Statistics->Check($Sender);
       }
 		
-		// Allow forum embedding
-		if (C('Garden.Embed.Allow'))
-			$Sender->AddJsFile('js/embed_local.js');
+      // Allow forum embedding
+      if ($Embed = C('Garden.Embed.Allow')) {
+         // Record the remote url where the forum is being embedded.
+         $RemoteUrl = C('Garden.Embed.RemoteUrl');
+         if (!$RemoteUrl) {
+            $RemoteUrl = GetIncomingValue('remote');
+            if ($RemoteUrl)
+               SaveToConfig('Garden.Embed.RemoteUrl', $RemoteUrl);
+         }
+         if ($RemoteUrl)
+            $Sender->AddDefinition('RemoteUrl', $RemoteUrl);
+
+         // Force embedding?
+         if (!IsSearchEngine() && !IsMobile()) {
+            $Sender->AddDefinition('ForceEmbedForum', C('Garden.Embed.ForceForum') ? '1' : '0');
+            $Sender->AddDefinition('ForceEmbedDashboard', C('Garden.Embed.ForceDashboard') ? '1' : '0');
+         }
+
+         $Sender->AddDefinition('Path', Gdn::Request()->Path());
+         // $Sender->AddDefinition('MasterView', $Sender->MasterView);
+         $Sender->AddDefinition('InDashboard', $Sender->MasterView == 'admin' ? '1' : '0');
+         
+         if ($Embed === 2)
+            $Sender->AddJsFile('vanilla.embed.local.js');
+         else
+            $Sender->AddJsFile('embed_local.js');
+      } else {
+         $Sender->SetHeader('X-Frame-Options', 'SAMEORIGIN');
+      }
+         
+      // Allow return to mobile site
+		$ForceNoMobile = Gdn_CookieIdentity::GetCookiePayload('VanillaNoMobile');
+		if ($ForceNoMobile !== FALSE && is_array($ForceNoMobile) && in_array('force', $ForceNoMobile))
+		   $Sender->AddAsset('Foot', Wrap(Anchor(T('Back to Mobile Site'), '/profile/nomobile/1'), 'div'), 'MobileLink');
    }
    
-   public function Base_GetAppSettingsMenuItems_Handler(&$Sender) {
+   public function Base_GetAppSettingsMenuItems_Handler($Sender) {
       $Menu = &$Sender->EventArguments['SideMenu'];
       $Menu->AddItem('Dashboard', T('Dashboard'), FALSE, array('class' => 'Dashboard'));
-      $Menu->AddLink('Dashboard', FALSE, '/dashboard/settings', 'Garden.Settings.Manage');
+      $Menu->AddLink('Dashboard', T('Dashboard'), '/dashboard/settings', 'Garden.Moderation.Manage');
+		$Menu->AddLink('Dashboard', T('Getting Started'), '/dashboard/settings/gettingstarted', 'Garden.Settings.Manage');
+		$Menu->AddLink('Dashboard', T('Help &amp; Tutorials'), '/dashboard/settings/tutorials', 'Garden.Settings.Manage');
 
       $Menu->AddItem('Appearance', T('Appearance'), FALSE, array('class' => 'Appearance'));
-		$Menu->AddLink('Appearance', T('Homepage'), '/dashboard/settings/homepage', 'Garden.Settings.Manage');
 		$Menu->AddLink('Appearance', T('Banner'), '/dashboard/settings/banner', 'Garden.Settings.Manage');
-      $Menu->AddLink('Appearance', T('Themes'), '/dashboard/settings/themes', 'Garden.Themes.Manage');
+      $Menu->AddLink('Appearance', T('Homepage'), '/dashboard/settings/homepage', 'Garden.Settings.Manage');
+      $Menu->AddLink('Appearance', T('Themes'), '/dashboard/settings/themes', 'Garden.Settings.Manage');
       if ($ThemeOptionsName = C('Garden.ThemeOptions.Name')) 
-         $Menu->AddLink('Appearance', T('Theme Options'), '/dashboard/settings/themeoptions', 'Garden.Themes.Manage');
+         $Menu->AddLink('Appearance', T('Theme Options'), '/dashboard/settings/themeoptions', 'Garden.Settings.Manage');
 
-		$Menu->AddLink('Appearance', T('Messages'), '/dashboard/message', 'Garden.Messages.Manage');
-		// May 18, 2011 - Not quite ready for prime time - mosullivan
-		// $Menu->AddLink('Appearance', T('Embed Vanilla'), 'dashboard/embed', 'Garden.Settings.Manage');
-		
+		$Menu->AddLink('Appearance', T('Messages'), '/dashboard/message', 'Garden.Settings.Manage');
 
       $Menu->AddItem('Users', T('Users'), FALSE, array('class' => 'Users'));
       $Menu->AddLink('Users', T('Users'), '/dashboard/user', array('Garden.Users.Add', 'Garden.Users.Edit', 'Garden.Users.Delete'));
-		$Menu->AddLink('Users', T('Roles & Permissions'), 'dashboard/role', 'Garden.Roles.Manage');
+		$Menu->AddLink('Users', T('Roles & Permissions'), 'dashboard/role', 'Garden.Settings.Manage');
 			
-      if (C('Garden.Registration.Manage', TRUE))
-			$Menu->AddLink('Users', T('Registration'), 'dashboard/settings/registration', 'Garden.Registration.Manage');
-      
+      $Menu->AddLink('Users', T('Registration'), 'dashboard/settings/registration', 'Garden.Settings.Manage');
 		$Menu->AddLink('Users', T('Authentication'), 'dashboard/authentication', 'Garden.Settings.Manage');
 			
       if (C('Garden.Registration.Method') == 'Approval')
-         $Menu->AddLink('Users', T('Applicants').' <span class="Popin" rel="/dashboard/user/applicantcount"></span>', 'dashboard/user/applicants', 'Garden.Applicants.Manage');
+         $Menu->AddLink('Users', T('Applicants').' <span class="Popin" rel="/dashboard/user/applicantcount"></span>', 'dashboard/user/applicants', 'Garden.Users.Approve');
 
       $Menu->AddItem('Moderation', T('Moderation'), FALSE, array('class' => 'Moderation'));
-      $Menu->AddLink('Moderation', T('Manage Spam').' <span class="Popin" rel="/dashboard/log/count/spam"></span>', 'dashboard/log/spam', 'Garden.Moderation.Manage');
+      $Menu->AddLink('Moderation', T('Spam Queue'), 'dashboard/log/spam', 'Garden.Moderation.Manage');
       $Menu->AddLink('Moderation', T('Moderation Queue').' <span class="Popin" rel="/dashboard/log/count/moderate"></span>', 'dashboard/log/moderation', 'Garden.Moderation.Manage');
-      $Menu->AddLink('Moderation', T('Edit/Delete Log'), 'dashboard/log/edits', 'Garden.Moderation.Manage');
-      $Menu->AddLink('Moderation', T('Ban List'), 'dashboard/settings/bans', 'Garden.Moderation.Manage');
+      $Menu->AddLink('Moderation', T('Change Log'), 'dashboard/log/edits', 'Garden.Moderation.Manage');
+      $Menu->AddLink('Moderation', T('Banning'), 'dashboard/settings/bans', 'Garden.Moderation.Manage');
 		
 		$Menu->AddItem('Forum', T('Forum Settings'), FALSE, array('class' => 'Forum'));
+      $Menu->AddLink('Forum', T('Social'), 'dashboard/social', 'Garden.Settings.Manage');
 		
 		$Menu->AddItem('Reputation', T('Reputation'), FALSE, array('class' => 'Reputation'));
 		
 		$Menu->AddItem('Add-ons', T('Addons'), FALSE, array('class' => 'Addons'));
-      $Menu->AddLink('Add-ons', T('Plugins'), 'dashboard/settings/plugins', 'Garden.Plugins.Manage');
-      $Menu->AddLink('Add-ons', T('Applications'), 'dashboard/settings/applications', 'Garden.Applications.Manage');
+      $Menu->AddLink('Add-ons', T('Plugins'), 'dashboard/settings/plugins', 'Garden.Settings.Manage');
+      $Menu->AddLink('Add-ons', T('Applications'), 'dashboard/settings/applications', 'Garden.Settings.Manage');
       $Menu->AddLink('Add-ons', T('Locales'), 'dashboard/settings/locales', 'Garden.Settings.Manage');
 
       $Menu->AddItem('Site Settings', T('Settings'), FALSE, array('class' => 'SiteSettings'));
       $Menu->AddLink('Site Settings', T('Outgoing Email'), 'dashboard/settings/email', 'Garden.Settings.Manage');
-      $Menu->AddLink('Site Settings', T('Routes'), 'dashboard/routes', 'Garden.Routes.Manage');
+      $Menu->AddLink('Site Settings', T('Routes'), 'dashboard/routes', 'Garden.Settings.Manage');
       $Menu->AddLink('Site Settings', T('Statistics'), 'dashboard/statistics', 'Garden.Settings.Manage');
 		
 		$Menu->AddItem('Import', T('Import'), FALSE, array('class' => 'Import'));
 		$Menu->AddLink('Import', FALSE, 'dashboard/import', 'Garden.Settings.Manage');
    }
+   
+   /**
+    * Set P3P header because IE won't allow cookies thru the iFrame without it.
+    *
+    * This must be done in the Dispatcher because of PrivateCommunity.
+    * That precludes using Controller->SetHeader.
+    * This is done so comment & forum embedding can work in old IE.
+    */
+   public function Gdn_Dispatcher_AppStartup_Handler($Sender) {
+      header('P3P: CP="CAO PSA OUR"', TRUE);
+      
+      if (!Gdn::Session()->IsValid() && $SSO = Gdn::Request()->Get('sso')) {
+         SaveToConfig('Garden.Registration.SendConnectEmail', FALSE, FALSE);
+         
+         $UserID = FALSE;
+         try {
+            $UserID = Gdn::UserModel()->SSO($SSO);
+         } catch (Exception $Ex) {
+            Trace($Ex, TRACE_ERROR);
+         }
+         
+         if ($UserID) {
+            Gdn::Session()->Start($UserID, TRUE, TRUE);
+            Gdn::UserModel()->FireEvent('AfterSignIn');
+         } else {
+            // There was some sort of error. Let's print that out.
+            Trace(Gdn::UserModel()->Validation->ResultsText(), TRACE_WARNING);
+         }
+      }
+   }   
 }

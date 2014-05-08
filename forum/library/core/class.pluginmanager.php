@@ -1,26 +1,25 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
- * Garden.Core
- */
-
-/**
+ * Plugin Manager 
+ * 
  * A singleton class used to identify extensions, register them in a central
  * location, and instantiate/call them when necessary.
+ *
+ * @author Mark O'Sullivan <markm@vanillaforums.com>
+ * @author Todd Burry <todd@vanillaforums.com> 
+ * @author Tim Gunter <tim@vanillaforums.com>
+ * @copyright 2003 Vanilla Forums, Inc
+ * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
+ * @package Garden
+ * @since 2.0
  */
+
 class Gdn_PluginManager extends Gdn_Pluggable {
 
    const ACTION_ENABLE  = 1;
    const ACTION_DISABLE = 2;
-   const ACTION_REMOVE  = 3;
+   //const ACTION_REMOVE  = 3;
 
    const ACCESS_CLASSNAME = 'classname';
    const ACCESS_PLUGINNAME = 'pluginname';
@@ -32,7 +31,7 @@ class Gdn_PluginManager extends Gdn_Pluggable {
    protected $PluginCache = NULL;
    protected $PluginsByClass = NULL;
    protected $PluginFoldersByPath = NULL;
-
+   
    /**
     * A simple list of enabled plugins
     */
@@ -71,6 +70,19 @@ class Gdn_PluginManager extends Gdn_Pluggable {
    protected $Instances = array();
 
    protected $Started = FALSE;
+   
+   /**
+    *
+    * @var bool Whether or not to trace some event information
+    * @since 2.1 
+    */
+   public $Trace = FALSE;
+   
+   /**
+    * Whether to use APC for plugin cache storage
+    * @var type 
+    */
+   protected $Apc = FALSE;
 
    public function __construct() {
       parent::__construct();
@@ -85,6 +97,9 @@ class Gdn_PluginManager extends Gdn_Pluggable {
     * methods.
     */
    public function Start($Force = FALSE) {
+      
+      if (function_exists('apc_fetch') && C('Garden.Apc', FALSE))
+         $this->Apc = TRUE;
 
       // Build list of all available plugins
       $this->AvailablePlugins($Force);
@@ -97,9 +112,9 @@ class Gdn_PluginManager extends Gdn_Pluggable {
 
       // Register hooked methods
       $this->RegisterPlugins();
-
+      
       $this->Started = TRUE;
-
+      $this->FireEvent('AfterStart');
    }
 
    public function Started() {
@@ -120,7 +135,11 @@ class Gdn_PluginManager extends Gdn_Pluggable {
 
             // Check Cache
             $SearchPathCacheKey = 'Garden.Plugins.PathCache.'.$SearchPath;
-            $SearchPathCache = Gdn::Cache()->Get($SearchPathCacheKey, array(Gdn_Cache::FEATURE_NOPREFIX => TRUE));
+            if ($this->Apc) {
+               $SearchPathCache = apc_fetch($SearchPathCacheKey);
+            } else {
+               $SearchPathCache = Gdn::Cache()->Get($SearchPathCacheKey, array(Gdn_Cache::FEATURE_NOPREFIX => TRUE));
+            }
 
             $CacheHit = ($SearchPathCache !== Gdn_Cache::CACHEOP_FAILURE);
             $CacheIntegrityCheck = FALSE;
@@ -149,6 +168,7 @@ class Gdn_PluginManager extends Gdn_Pluggable {
             $PathIntegrityHash = md5(serialize($PathListing));
             $CacheIntegrityHash = GetValue('CacheIntegrityHash',$SearchPathCache);
             if ($CacheIntegrityHash != $PathIntegrityHash) {
+               Trace('Need to re-index plugin cache');
                // Need to re-index this folder
                
                // Since we're re-indexing this folder, need to unset all the plugins it was previously responsible for 
@@ -163,7 +183,11 @@ class Gdn_PluginManager extends Gdn_Pluggable {
                   continue;
 
                $SearchPathCache['CacheIntegrityHash'] = $PathIntegrityHash;
-               Gdn::Cache()->Store($SearchPathCacheKey, $SearchPathCache, array(Gdn_Cache::FEATURE_NOPREFIX => TRUE));
+               if ($this->Apc) {
+                  apc_store($SearchPathCacheKey, $SearchPathCache);
+               } else {
+                  Gdn::Cache()->Store($SearchPathCacheKey, $SearchPathCache, array(Gdn_Cache::FEATURE_NOPREFIX => TRUE));
+               }
             }
 
             $this->PluginCache = array_merge($this->PluginCache, $CachePluginInfo);
@@ -173,6 +197,20 @@ class Gdn_PluginManager extends Gdn_Pluggable {
       }
 
       return $this->PluginCache;
+   }
+   
+   public function ForceAutoloaderIndex() {
+      $AutoloaderMap = Gdn_Autoloader::GetMap(Gdn_Autoloader::MAP_LIBRARY, Gdn_Autoloader::CONTEXT_PLUGIN);
+      if (!$AutoloaderMap) return;
+      
+      $ExtraPaths = array();
+      foreach ($this->AvailablePlugins() as $AvailablePlugin)
+         $ExtraPaths[] = array(
+            'path'  => GetValue('RealRoot', $AvailablePlugin),
+            'topic' => strtolower(GetValue('Folder', $AvailablePlugin))
+         );
+      
+      $AutoloaderMap->Index($ExtraPaths);
    }
    
    public function ClearPluginCache($SearchPaths = NULL) {
@@ -185,7 +223,11 @@ class Gdn_PluginManager extends Gdn_Pluggable {
       
       foreach ($SearchPaths as $SearchPath => $SearchPathName) {
          $SearchPathCacheKey = "Garden.Plugins.PathCache.{$SearchPath}";
-         $SearchPathCache = Gdn::Cache()->Remove($SearchPathCacheKey, array(Gdn_Cache::FEATURE_NOPREFIX => TRUE));
+         if ($this->Apc) {
+            apc_delete($SearchPathCacheKey);
+         } else {
+            Gdn::Cache()->Remove($SearchPathCacheKey, array(Gdn_Cache::FEATURE_NOPREFIX => TRUE));
+         }
       }
    }
 
@@ -359,6 +401,10 @@ class Gdn_PluginManager extends Gdn_Pluggable {
 
    public function RegisterPlugin($ClassName) {
       $ClassMethods = get_class_methods($ClassName);
+      if ($ClassMethods === NULL) {
+         throw new Exception("There was an error getting the $ClassName class methods.", 401);
+      }
+      
       foreach ($ClassMethods as $Method) {
          $MethodName = strtolower($Method);
          // Loop through their individual methods looking for event handlers and method overrides.
@@ -471,8 +517,8 @@ class Gdn_PluginManager extends Gdn_Pluggable {
             $PluginName = GetValue($AccessName, $this->PluginsByClass, FALSE);
          break;
       }
-
-      return ($PluginName !== FALSE) ? GetValue($PluginName, $this->AvailablePlugins(), FALSE) : FALSE;
+      $Available = $this->AvailablePlugins();
+      return ($PluginName !== FALSE) ? GetValue($PluginName, $Available, FALSE) : FALSE;
    }
 
    /**
@@ -561,8 +607,10 @@ class Gdn_PluginManager extends Gdn_Pluggable {
       $EventKey = strtolower($EventClassName == '' ? $NewMethodName : $EventClassName.'_'.$EventName.'_Create');
 
       // Throw an error if this method has already been created.
-      if (array_key_exists($EventKey, $this->_NewMethodCollection) === TRUE)
-         trigger_error(ErrorMessage('New object methods must be unique. The new "'.$EventKey.'" method has already been assigned by the "'.$this->_NewMethodCollection[$EventKey].'" plugin. It cannot also be assigned by the "'.$NewMethodClassName.'" plugin.', 'PluginManager', 'RegisterNewMethod'), E_USER_ERROR);
+      if (array_key_exists($EventKey, $this->_NewMethodCollection) === TRUE) {
+         trigger_error('New object methods must be unique. The new "'.$EventKey.'" method has already been assigned by the "'.$this->_NewMethodCollection[$EventKey].'" plugin. It cannot also be assigned by the "'.$NewMethodClassName.'" plugin.', E_USER_NOTICE);
+         return;
+      }
 
       // Otherwise, specify this class as the source for the new method.
       $this->_NewMethodCollection[$EventKey] = $NewMethodKey;
@@ -603,8 +651,14 @@ class Gdn_PluginManager extends Gdn_Pluggable {
 
       return $Return;
    }
+   
+   public function Trace($Message, $Type = TRACE_INFO) {
+      if ($this->Trace)
+         Trace($Message, $Type);
+   }
 
    public function CallEventHandler($Sender, $EventClassName, $EventName, $EventHandlerType, $Options = array()) {
+      $this->Trace("CallEventHandler $EventClassName $EventName $EventHandlerType");
       $Return = FALSE;
 
       // Backwards compatible for event key.
@@ -616,7 +670,6 @@ class Gdn_PluginManager extends Gdn_Pluggable {
       }
 
       $EventKey = strtolower($EventClassName.'_'.$EventName.'_'.$EventHandlerType);
-      
       if (!array_key_exists($EventKey, $this->_EventHandlerCollection))
          return FALSE;
       
@@ -636,18 +689,26 @@ class Gdn_PluginManager extends Gdn_Pluggable {
          $Sender->EventArguments['WildEventStack'] = $EventCaller;
       }
       
+      $this->Trace($this->_EventHandlerCollection[$EventKey], 'Event Handlers');
+      
       // Loop through the handlers and execute them
       foreach ($this->_EventHandlerCollection[$EventKey] as $PluginKey) {
          $PluginKeyParts = explode('.', $PluginKey);
          if (count($PluginKeyParts) == 2) {
             list($PluginClassName, $PluginEventHandlerName) = $PluginKeyParts;
 
-            if (array_key_exists($EventKey, $Sender->Returns) === FALSE || is_array($Sender->Returns[$EventKey]) === FALSE)
-               $Sender->Returns[$EventKey] = array();
+            
+            if (isset($Sender->Returns)) {
+               if (array_key_exists($EventKey, $Sender->Returns) === FALSE || is_array($Sender->Returns[$EventKey]) === FALSE)
+                  $Sender->Returns[$EventKey] = array();
 
-            $Return = $this->GetPluginInstance($PluginClassName)->$PluginEventHandlerName($Sender, $Sender->EventArguments, $PassedEventKey);
-            $Sender->Returns[$EventKey][$PluginKey] = $Return;
-            $Return = TRUE;
+               $Return = $this->GetPluginInstance($PluginClassName)->$PluginEventHandlerName($Sender, $Sender->EventArguments, $PassedEventKey);
+               
+               $Sender->Returns[$EventKey][$PluginKey] = $Return;
+               $Return = TRUE;
+            } else {
+               $this->GetPluginInstance($PluginClassName)->$PluginEventHandlerName($Sender, array(), $PassedEventKey);
+            }
          }
       }
       
@@ -665,7 +726,7 @@ class Gdn_PluginManager extends Gdn_Pluggable {
     * @param string The name of the method that is being overridden.
     * @return mixed Return value of overridden method.
     */
-   public function CallMethodOverride(&$Sender, $ClassName, $MethodName) {
+   public function CallMethodOverride($Sender, $ClassName, $MethodName) {
       $EventKey = strtolower($ClassName.'_'.$MethodName.'_Override');
       $OverrideKey = ArrayValue($EventKey, $this->_MethodOverrideCollection, '');
       $OverrideKeyParts = explode('.', $OverrideKey);
@@ -700,7 +761,7 @@ class Gdn_PluginManager extends Gdn_Pluggable {
     * @param string The name of the method that is being created.
     * @return mixed Return value of new method.
     */
-   public function CallNewMethod(&$Sender, $ClassName, $MethodName) {
+   public function CallNewMethod($Sender, $ClassName, $MethodName) {
       $Return = FALSE;
       $EventKey = strtolower($ClassName.'_'.$MethodName.'_Create');
       $NewMethodKey = ArrayValue($EventKey, $this->_NewMethodCollection, '');
@@ -712,6 +773,35 @@ class Gdn_PluginManager extends Gdn_Pluggable {
 
       return $this->GetPluginInstance($NewMethodClassName, self::ACCESS_CLASSNAME, $Sender)->$NewMethodName($Sender, GetValue('RequestArgs', $Sender, array()));
    }
+   /**
+    * Get the callback for an event handler.
+    * @param string $ClassName The name of the class throwing the event.
+    * @param string $MethodName The name of the event.
+    * @param string $Type The type of event handler.
+    *  - Create: A new method creation.
+    *  - Override: A method override.
+    * @return callback 
+    * @since 2.1
+    */
+   public function GetCallback($ClassName, $MethodName, $Type = 'Create') {
+      $EventKey = strtolower("{$ClassName}_{$MethodName}_{$Type}");
+      
+      switch ($Type) {
+         case 'Create':
+            $MethodKey = GetValue($EventKey, $this->_NewMethodCollection);
+            break;
+         case 'Override':
+            $MethodKey = GetValue($EventKey, $this->_MethodOverrideCollection);
+            break;
+      }
+      $Parts = explode('.', $MethodKey, 2);
+      if (count($Parts) != 2)
+         return FALSE;
+      
+      list($ClassName, $MethodName) = $Parts;
+      $Instance = $this->GetPluginInstance($ClassName, self::ACCESS_CLASSNAME);
+      return array($Instance, $MethodName);
+   }
 
    /**
     * Checks to see if there are any plugins that create the method being
@@ -722,7 +812,13 @@ class Gdn_PluginManager extends Gdn_Pluggable {
     * @return True if method exists.
     */
    public function HasNewMethod($ClassName, $MethodName) {
-      return array_key_exists(strtolower($ClassName.'_'.$MethodName.'_Create'), $this->_NewMethodCollection) ? TRUE : FALSE;
+      $Key = strtolower($ClassName.'_'.$MethodName.'_Create');
+      if (array_key_exists($Key, $this->_NewMethodCollection)) {
+         $Result = explode('.', $this->_NewMethodCollection[$Key]);
+         return $Result[0];
+      } else {
+         return FALSE;
+      }
    }
 
    public function ScanPluginFile($PluginFile, $VariableName = NULL) {
@@ -804,7 +900,6 @@ class Gdn_PluginManager extends Gdn_Pluggable {
          $this->AlternatePluginSearchPaths = array();
 
          // Add default search path(s) to list
-         $this->PluginSearchPaths[rtrim(PATH_LOCAL_PLUGINS,'/')] = 'local';
          $this->PluginSearchPaths[rtrim(PATH_PLUGINS,'/')] = 'core';
 
          // Check for, and load, alternate search paths from config
@@ -908,8 +1003,8 @@ class Gdn_PluginManager extends Gdn_Pluggable {
          return FALSE;
 
       // Write enabled state to config
-      SaveToConfig('EnabledPlugins.'.$PluginName, TRUE);
-
+      SaveToConfig("EnabledPlugins.{$PluginName}", TRUE);
+      
       $this->EnabledPlugins[$PluginName] = TRUE;
 
       $PluginClassName = GetValue('ClassName', $PluginInfo);
@@ -941,7 +1036,7 @@ class Gdn_PluginManager extends Gdn_Pluggable {
       $this->_PluginHook($PluginName, self::ACTION_DISABLE, TRUE);
 
       // 3. Disable it
-      RemoveFromConfig('EnabledPlugins'.'.'.$PluginName);
+      RemoveFromConfig("EnabledPlugins.{$PluginName}");
       unset($this->EnabledPlugins[$PluginName]);
 
       // Redefine the locale manager's settings $Locale->Set($CurrentLocale, $EnabledApps, $EnabledPlugins, TRUE);
@@ -983,26 +1078,6 @@ class Gdn_PluginManager extends Gdn_Pluggable {
       return $Result;
       
    }
-   
-    /**
-    * Remove the plugin.
-    *
-    * @param string $PluginName
-    * @return void
-    */
-   public function RemovePlugin($PluginName) {
-      $this->_PluginHook($PluginName, self::ACTION_REMOVE, TRUE);
-   }
-
-   /**
-    * Remove the plugin folder.
-    *
-    * @param string $PluginFolder
-    * @return void
-    */
-   private function _RemovePluginFolder($PluginFolder) {
-      Gdn_FileSystem::RemoveFolder(PATH_PLUGINS.DS.$PluginFolder);
-   }
 
    /**
     * Hooks to the various actions, i.e. enable, disable and remove.
@@ -1017,17 +1092,13 @@ class Gdn_PluginManager extends Gdn_Pluggable {
       switch ($ForAction) {
          case self::ACTION_ENABLE:  $HookMethod = 'Setup'; break;
          case self::ACTION_DISABLE: $HookMethod = 'OnDisable'; break;
-         case self::ACTION_REMOVE:  $HookMethod = 'CleanUp'; break;
+         //case self::ACTION_REMOVE:  $HookMethod = 'CleanUp'; break;
          case self::ACTION_ONLOAD:  $HookMethod = 'OnLoad'; break;
       }
 
       $PluginInfo      = ArrayValue($PluginName, $this->AvailablePlugins(), FALSE);
       $PluginFolder    = ArrayValue('Folder', $PluginInfo, FALSE);
       $PluginClassName = ArrayValue('ClassName', $PluginInfo, FALSE);
-
-      if ($ForAction === self::ACTION_REMOVE) {
-         $this->_RemovePluginFolder($PluginFolder);
-      }
 
       if ($PluginFolder !== FALSE && $PluginClassName !== FALSE && class_exists($PluginClassName) === FALSE) {
          if ($ForAction !== self::ACTION_DISABLE) {

@@ -1,14 +1,8 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
+ * Validation functions
+ * 
  * All of these functions are used by ./class.validation.php to validate form
  * input strings. With the exception of ValidateRegex, each function receives
  * two parameters (the field value and the related database field properties)
@@ -20,7 +14,11 @@ Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
  * are: (string) Name, (bool) PrimaryKey, (string) Type, (bool) AllowNull,
  * (string) Default, (int) Length, (array) Enum.
  *
+ * @author Mark O'Sullivan <markm@vanillaforums.com>
+ * @copyright 2003 Vanilla Forums, Inc
+ * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
  * @package Garden
+ * @since 2.0
  */
 
 if (!function_exists('ValidateCaptcha')) {
@@ -50,6 +48,32 @@ if (!function_exists('ValidateRequired')) {
          return TRUE;
 
       return FALSE;
+   }
+}
+
+if (!function_exists('ValidateMeAction')) {
+   function ValidateMeAction($Value) {
+      $Matched = preg_match('`^/me .*`i', $Value);
+      if ($Matched) {
+         $HasPermission = Gdn::Session()->CheckPermission('Vanilla.Comments.Me');
+         if (!$HasPermission)
+            return T('ErrorPermission');
+      }
+      return TRUE;
+   }
+}
+
+if (!function_exists('ValidateNoLinks')) {
+   /**
+    * Check whether or not a
+    * 
+    * @param string $Value
+    * @return bool
+    * @since 2.1
+    */
+   function ValidateNoLinks($Value) {
+      $Matched = preg_match('`https?://`i', $Value);
+      return !$Matched;
    }
 }
 
@@ -101,6 +125,9 @@ if (!function_exists('ValidateOldPassword')) {
 
 if (!function_exists('ValidateEmail')) {
    function ValidateEmail($Value, $Field = '') {
+      if (!ValidateRequired($Value))
+         return TRUE;
+      
       $Result = PHPMailer::ValidateAddress($Value);
       $Result = (bool)$Result;
       return $Result;
@@ -258,7 +285,7 @@ if (!function_exists('ValidateLength')) {
 
 if (!function_exists('ValidateEnum')) {
    function ValidateEnum($Value, $Field) {
-      return in_array($Value, $Field->Enum);
+      return (in_array($Value, $Field->Enum) || ($Field->AllowNull && is_null($Value)));
    }
 }
 
@@ -299,6 +326,21 @@ if (!function_exists('ValidateMatch')) {
    function ValidateMatch($Value, $Field, $PostedFields) {
       $MatchValue = ArrayValue($Field->Name.'Match', $PostedFields);
       return $Value == $MatchValue ? TRUE : FALSE;
+   }
+}
+
+if (!function_exists('ValidateStrength')) {
+   /**
+    * Validate a password's strength
+    * 
+    * @param string $Value
+    * @param string $Field
+    * @param array $FormValues
+    */
+   function ValidateStrength($Value, $Field, $PostedFields) {
+      $UsernameValue = GetValue('Name', $PostedFields);
+      $PScore = PasswordStrength($Value, $UsernameValue);
+      return $PScore['Pass'] ? TRUE : FALSE;
    }
 }
 

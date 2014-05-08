@@ -35,6 +35,23 @@ echo $this->Form->Errors();
          echo $this->Form->TextBox('Description', array('MultiLine' => TRUE));
       ?>
    </li>
+   <li>
+      <?php
+         echo $this->Form->Label('Css Class', 'CssClass');
+         echo $this->Form->TextBox('CssClass', array('MultiLine' => FALSE));
+      ?>
+   </li>
+   <li>
+      <?php
+         echo $this->Form->Label('Display As', 'DisplayAs');
+         echo $this->Form->DropDown('DisplayAs', array('Default' => 'Default', 'Categories' => 'Categories', 'Discussions' => 'Discussions'));
+      ?>
+   </li>
+   <li>
+      <?php
+      echo $this->Form->CheckBox('HideAllDiscussions', 'Hide from the recent discussions page.');
+      ?>
+   </li>
    <?php
    echo $this->Form->Simple(
       $this->Data('_ExtendedFields', array()),

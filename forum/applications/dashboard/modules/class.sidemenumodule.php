@@ -20,6 +20,8 @@ if (!class_exists('SideMenuModule', FALSE)) {
        */
       public $AutoLinkGroups;
       
+      public $EventName = FALSE;
+      
       /**
        * An array of menu items.
        */
@@ -53,10 +55,12 @@ if (!class_exists('SideMenuModule', FALSE)) {
       private $_HighlightRoute;
    
       public function __construct($Sender = '') {
+         parent::__construct($Sender);
+         
+         $this->_ApplicationFolder = 'dashboard';
          $this->HtmlId = 'SideMenu';
          $this->AutoLinkGroups = TRUE;
          $this->ClearGroups();
-         parent::__construct($Sender);
       }
       
       public function AddLink($Group, $Text, $Url, $Permission = FALSE, $Attributes = array()) {
@@ -80,9 +84,10 @@ if (!class_exists('SideMenuModule', FALSE)) {
       
       public function AddItem($Group, $Text, $Permission = FALSE, $Attributes = array()) {
          if (!array_key_exists($Group, $this->Items))
-            $Item = array('Group' => $Group, 'Links' => array(), '_Sort' => count($this->Items));
-         else
+            $Item = array('Group' => $Group, 'Links' => array(), 'Attributes' => array(), '_Sort' => count($this->Items));
+         else {
             $Item = $this->Items[$Group];
+         }
 
 
          if (isset($Attributes['After'])) {
@@ -92,7 +97,7 @@ if (!class_exists('SideMenuModule', FALSE)) {
 
          $Item['Text'] = $Text;
          $Item['Permission'] = $Permission;
-         $Item['Attributes'] = $Attributes;
+         $Item['Attributes'] = array_merge($Item['Attributes'], $Attributes);
 
          $this->Items[$Group] = $Item;
       }      
@@ -207,6 +212,11 @@ if (!class_exists('SideMenuModule', FALSE)) {
       }
 
       public function ToString($HighlightRoute = '') {
+         Gdn::Controller()->EventArguments['SideMenu'] = $this;
+         if ($this->EventName)
+            Gdn::Controller()->FireEvent($this->EventName);
+         
+         
          if ($HighlightRoute == '')
             $HighlightRoute = $this->_HighlightRoute;
          if ($HighlightRoute == '')

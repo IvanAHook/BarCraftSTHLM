@@ -4,7 +4,7 @@ jQuery(document).ready(function($) {
    $('form.Activity textarea').setMaxChars(1000);
    
    // Hide activity deletes and hijack their clicks to confirm
-   $('ul.Activities a.Delete, ul.Activities a.DeleteComment').popup({
+   $('li.Activity a.Delete, ul.Activities a.DeleteComment').popup({
       confirm: true,
       followConfirm: false,
       afterConfirm: function(json, sender) {
@@ -16,14 +16,14 @@ jQuery(document).ready(function($) {
    });
    
    // Reveal activity deletes on hover
-   $('ul.Activities li').livequery(function() {
-      $(this).find('a.Delete').hide();
-      $(this).hover(function() {
-         $(this).find('a.Delete').show();
-      }, function() {
-         $(this).find('a.Delete').hide();
-      });
-   });
+//   $('ul.Activities li').livequery(function() {
+//      $(this).find('a.Delete').hide();
+//      $(this).hover(function() {
+//         $(this).find('a.Delete').show();
+//      }, function() {
+//         $(this).find('a.Delete').hide();
+//      });
+//   });
 
 /* Comments */
 
@@ -51,7 +51,7 @@ jQuery(document).ready(function($) {
       textbox.focus().blur(function() {
          // Hide the form onblur if empty
          if (this.value == '') {
-            var comments = $(anchor).parents('.Comments');
+            var comments = $(anchor).parents('.ActivityComments');
             var children = $(comments).children();
             var rowCount = children.length - 1; // Subtract the commentform row
             if (rowCount > 0) {
@@ -71,6 +71,7 @@ jQuery(document).ready(function($) {
    // Hijack comment form button clicks
    $('ul.ActivityComments form input.Button').live('click', function() {
       var button = this;
+      gdn.disable(button);
       var frm = $(button).parents('form');
       var row = $(frm).parents('li.CommentForm');
       var textbox = $(row).find('textarea');
@@ -84,11 +85,13 @@ jQuery(document).ready(function($) {
          url: action,
          data: postValues,
          dataType: 'json',
-         error: function(XMLHttpRequest, textStatus, errorThrown) {
-            $.popup({}, XMLHttpRequest.responseText);
+         error: function(xhr) {
+            gdn.informError(xhr);
          },
          success: function(json) {
             json = $.postParseJson(json);
+            
+            gdn.inform(json);
             
             // Remove any old errors from the form
             $('div.Errors').remove();
@@ -102,6 +105,9 @@ jQuery(document).ready(function($) {
                // Make sure that hidden items appear
                $('ul.ActivityComments li.Hidden').slideDown('fast');
             }
+         },
+         complete: function() {
+            gdn.enable(button);
          }
       });
       return false;
@@ -114,8 +120,7 @@ jQuery(document).ready(function($) {
       var inp = $(frm).find('textarea');
       // Only submit the form if the textarea isn't empty
       if ($(inp).val() != '') {
-         $('span.Progress').remove();
-         $(but).after('<span class="Progress">&#160;</span>');
+         gdn.disable(but);
          var postValues = $(frm).serialize();
          postValues += '&DeliveryType=VIEW&DeliveryMethod=JSON';
          $.ajax({
@@ -123,15 +128,20 @@ jQuery(document).ready(function($) {
             url: $(frm).attr('action'),
             data: postValues,
             dataType: 'json',
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-               $.popup({}, XMLHttpRequest.responseText);
+            complete: function() {
+               gdn.enable(but);
+            },
+            error: function(xhr) {
+               gdn.informError(xhr);
             },
             success: function(json) {
                json = $.postParseJson(json);
-               $('span.Progress').remove();
+               
+               gdn.inform(json);
+               
                if (json['FormSaved'] == true) {
-                  $(inp).val('');
-                  // If there were no activities
+                  $(inp).val('').closest('form').trigger('clearCommentForm');
+                  // If there were no activities.
                   if ($('ul.Activities').length == 0) {
                      // Make sure that empty rows are removed
                      $('div.EmptyInfo').slideUp('fast');
@@ -142,10 +152,8 @@ jQuery(document).ready(function($) {
                   // Make sure that hidden items appear
                   $('ul.Activities li.Hidden').slideDown('fast');
                   // If the user's status was updated, show it.
-                  if (typeof(json['UserData']) != 'undefined') {
-                     $('div.User').remove();
-                     $('div.Profile').prepend(json['UserData']);
-                  }
+                  if (typeof(json['StatusMessage']) != 'undefined')
+                     $('#Status span').html(json['StatusMessage']);
                }
             }
          });

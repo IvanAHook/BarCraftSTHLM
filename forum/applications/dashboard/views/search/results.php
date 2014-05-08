@@ -1,3 +1,6 @@
+<?php if (!defined('APPLICATION')) exit();
+$SearchTerm = GetValue('SearchTerm', $this);
+?>
 <ul class="DataList SearchResults">
 <?php
 if (is_array($this->SearchResults) && count($this->SearchResults) > 0) {
@@ -9,23 +12,30 @@ if (is_array($this->SearchResults) && count($this->SearchResults) > 0) {
 		<?php $this->FireEvent('BeforeItemContent'); ?>
 		<div class="ItemContent">
 			<?php echo Anchor(Gdn_Format::Text($Row->Title), $Row->Url, 'Title'); ?>
-			<div class="Excerpt"><?php
-				echo Anchor(nl2br(SliceString(Gdn_Format::Text($Row->Summary, FALSE), 250)), $Row->Url);
+			<div class="Message Excerpt"><?php
+            if ($SearchTerm)
+               echo MarkString($SearchTerm, $Row->Summary);
+            else
+               echo $Row->Summary;
 			?></div>
-			<div class="Meta">
-				<span><?php printf(T('by %s'), UserAnchor($Row)); ?></span>
-				<span><?php echo Gdn_Format::Date($Row->DateInserted); ?></span>
+         <div class="Item-Footer">
             <?php
-            if (isset($Row->CategoryID)) {
-               $Category = CategoryModel::Categories($Row->CategoryID);
-               if ($Category !== NULL) {
-                  $Url = Url('categories/'.$Category['UrlCode']);
-                  echo "<span><a class='Category' href='{$Url}'>{$Category['Name']}</a></span>";
-               }
-            }
+               echo UserPhoto($Row, array('Size' => 'Small')).' '.UserAnchor($Row); 
             ?>
-				<span><?php echo Anchor(T('permalink'), $Row->Url); ?></span>
-			</div>
+            <span class="Meta"><span class="MItem">
+               <?php
+                  echo Anchor(Gdn_Format::Date($Row->DateInserted, 'html'), $Row->Url); 
+                 
+                  if (isset($Row->CategoryID)) {
+                     $Category = CategoryModel::Categories($Row->CategoryID);
+                     if ($Category) {
+                        $Url = CategoryUrl($Category);
+                        echo ' in '.Anchor($Category['Name'], $Url, 'Category');
+                     }
+                  }
+               ?>
+            </span></span>
+         </span>
 		</div>
 	</li>
 <?php

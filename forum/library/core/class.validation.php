@@ -1,33 +1,18 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
+ * Data validation
+ * 
  * Manages data integrity validation rules. Can automatically define a set of
  * validation rules based on a @@Schema with $this->GenerateBySchema($Schema);
  *
- *
- * @author Mark O'Sullivan
- * @copyright 2009 Mark O'Sullivan
+ * @author Mark O'Sullivan <markm@vanillaforums.com>
+ * @copyright 2003 Vanilla Forums, Inc
  * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
  * @package Garden
- * @version @@GARDEN-VERSION@@
- * @namespace Garden.Core
+ * @since 2.0
  */
 
-
-/**
- * Manages data integrity validation rules. Can automatically define a set of
- * validation rules based on a @@Schema with $this->GenerateBySchema($Schema);
- *
- * @package Garden
- */
 class Gdn_Validation {
 
 
@@ -134,6 +119,7 @@ class Gdn_Validation {
       $this->AddRule('MinimumAge', 'function:ValidateMinimumAge');
       $this->AddRule('Captcha', 'function:ValidateCaptcha');
       $this->AddRule('Match', 'function:ValidateMatch');
+      $this->AddRule('Strength', 'function:ValidateStrength');
       $this->AddRule('OldPassword', 'function:ValidateOldPassword');
       $this->AddRule('Version', 'function:ValidateVersion');
       $this->AddRule('PhoneNA', 'function:ValidatePhoneNA');
@@ -167,13 +153,13 @@ class Gdn_Validation {
 
             // Force other constraints based on field type.
             switch($Properties->Type) {
-               case 'tinyint':
                case 'bit':
                case 'bool':
                case 'boolean':
                   $RuleNames[] = 'Boolean';
                   break;
 
+               case 'tinyint':
                case 'smallint':
                case 'mediumint':
                case 'int':
@@ -253,7 +239,7 @@ class Gdn_Validation {
       // Make sure that $FieldName is in the validation fields collection
       $this->ValidationFields();
       
-      if (!array_key_exists($FieldName, $this->_ValidationFields))
+      if (!array_key_exists($FieldName, $this->_ValidationFields)) //  && $RuleName == 'Required'
          $this->_ValidationFields[$FieldName] = '';
          
       $this->_ApplyRule($FieldName, $RuleName, $CustomError);
@@ -303,7 +289,7 @@ class Gdn_Validation {
          $this->_FieldRules[$FieldName] = array_unique(array_merge($ExistingRules, $RuleName));
       }
    }
-
+   
 
    /**
     * Allows the explicit definition of a schema to use
@@ -479,7 +465,7 @@ class Gdn_Validation {
       // Figure out the type of rule.
       if (is_string($Rule)) {
          if (StringBeginsWith($Rule, 'regex:', TRUE)) {
-            $RuleName = 'regex';
+            $RuleName = 'validateregex';
             $Args = substr($Rule, 6);
          } elseif (StringBeginsWith($Rule, 'function:', TRUE)) {
             $RuleName = substr($Rule, 9);
@@ -508,7 +494,21 @@ class Gdn_Validation {
          return sprintf('Validation does not exist: %s.', $RuleName);
       }
    }
-
+   
+   public function UnapplyRule($FieldName, $RuleName = FALSE) {
+      if ($RuleName) {
+         if (isset($this->_FieldRules[$FieldName])) {
+            $Index = array_search($RuleName, $this->_FieldRules[$FieldName]);
+            
+            if ($Index !== FALSE)
+               unset($this->_FieldRules[$FieldName][$Index]);
+         }
+      } else {
+         unset($this->_FieldRules[$FieldName]);
+         unset($this->_ValidationFields[$FieldName]);
+      }
+      
+   }
 
    /**
     * Examines the posted fields, defines $this->_ValidationFields, and
@@ -533,6 +533,7 @@ class Gdn_Validation {
       if ($HoneypotContents != '')
          $this->AddValidationResult($HoneypotName, "You've filled our honeypot! We use honeypots to help prevent spam. If you're  not a spammer or a bot, you should contact the application administrator for help.");
 
+      
       // Loop through the fields that should be validated
       foreach($this->_ValidationFields as $FieldName => $FieldValue) {
          // If this field has rules to be enforced...
@@ -552,9 +553,10 @@ class Gdn_Validation {
 
                      // Call the function. Core-defined validation functions can
                      // be found in ./functions.validation.php
-                     $FieldInfo = NULL;
+                     $FieldInfo = array('Name' => $FieldName);
                      if (is_array($this->_Schema) && array_key_exists($FieldName, $this->_Schema))
-                        $FieldInfo = $this->_Schema[$FieldName];
+                        $FieldInfo = array_merge($FieldInfo, (array)$this->_Schema[$FieldName]);
+                     $FieldInfo = (object)$FieldInfo;
 
                      $ValidationResult = $Function($FieldValue, $FieldInfo, $PostedFields);
                      if ($ValidationResult !== TRUE) {
@@ -589,7 +591,7 @@ class Gdn_Validation {
     *
     * @param string $FieldName The name of the form field that has the error.
     * @param string $ErrorCode The translation code of the error.
-    *    Codes thst begin with an '@' symbol are treated as literals and not translated.
+    *    Codes that begin with an '@' symbol are treated as literals and not translated.
     */
    public function AddValidationResult($FieldName, $ErrorCode = '') {
       if (!is_array($this->_ValidationResults))
@@ -620,8 +622,12 @@ class Gdn_Validation {
    }
    
    public function ResultsText() {
+      return self::ResultsAsText($this->Results());
+   }
+   
+   public static function ResultsAsText($Results) {
       $Errors = array();
-      foreach ($this->Results() as $Name => $Value) {
+      foreach ($Results as $Name => $Value) {
          if (is_array($Value)) {
             foreach ($Value as $Code) {
                $Errors[] = trim(sprintf(T($Code), T($Name)), '.');
@@ -631,7 +637,7 @@ class Gdn_Validation {
          }
       }
       
-      $Result = implode('. ', $Errors);
+      $Result = implode('. ', $Errors).'.';
       return $Result;
    }
 }

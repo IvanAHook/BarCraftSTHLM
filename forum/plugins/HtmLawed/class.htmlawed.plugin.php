@@ -36,17 +36,25 @@ class HTMLawedPlugin extends Gdn_Plugin {
 
 	/// METHODS ///
 	public function Format($Html) {
+      $Attributes = C('Garden.Html.BlockedAttributes', 'on*');
       $Config = array(
        'anti_link_spam' => array('`.`', ''),
        'comment' => 1,
        'cdata' => 3,
        'css_expression' => 1,
-       'deny_attribute' => 'on*',
-       'elements' => '*-applet-form-input-textarea-iframe-script-style', // object, embed allowed
+       'deny_attribute' => $Attributes,
+       'unique_ids' => 0,
+       'elements' => '*-applet-form-input-textarea-iframe-script-style-embed-object',
        'keep_bad' => 0,
        'schemes' => 'classid:clsid; href: aim, feed, file, ftp, gopher, http, https, irc, mailto, news, nntp, sftp, ssh, telnet; style: nil; *:file, http, https', // clsid allowed in class
-       'valid_xml' => 2
+       'valid_xhtml' => 0,
+       'direct_list_nest' => 1,
+       'balance' => 1
       );
+      
+      // Turn embedded videos into simple links (legacy workaround)
+      $Html = Gdn_Format::UnembedVideos($Html);
+      
       // We check the flag within Gdn_Format to see
       // if htmLawed should place rel="nofollow" links
       // within output or not.
@@ -65,8 +73,8 @@ class HTMLawedPlugin extends Gdn_Plugin {
          // Deny all class and style attributes.
          // A lot of damage can be done by hackers with these attributes.
          $Config['deny_attribute'] .= ',style';
-      } else {
-         $Config['hook_tag'] = 'HTMLawedHookTag';
+//      } else {
+//         $Config['hook_tag'] = 'HTMLawedHookTag';
       }
 
       $Spec = 'object=-classid-type, -codebase; embed=type(oneof=application/x-shockwave-flash)';
@@ -80,7 +88,38 @@ class HTMLawedPlugin extends Gdn_Plugin {
 	}
 }
 
-function HTMLawedHookTag($Element, $Attributes) {
+if (!function_exists('FormatRssCustom')):
+   
+function FormatRssHtmlCustom($Html) {
+   require_once(dirname(__FILE__).'/htmLawed/htmLawed.php');
+   
+   $Config = array(
+       'anti_link_spam' => array('`.`', ''),
+       'comment' => 1,
+       'cdata' => 3,
+       'css_expression' => 1,
+       'deny_attribute' => 'on*,style,class',
+       'elements' => '*-applet-form-input-textarea-iframe-script-style-object-embed-comment-link-listing-meta-noscript-plaintext-xmp',
+       'keep_bad' => 0,
+       'schemes' => 'classid:clsid; href: aim, feed, file, ftp, gopher, http, https, irc, mailto, news, nntp, sftp, ssh, telnet; style: nil; *:file, http, https', // clsid allowed in class
+       'valid_xml' => 2,
+       'anti_link_spam' => array('`.`', '')
+      );
+
+      $Spec = 'object=-classid-type, -codebase; embed=type(oneof=application/x-shockwave-flash)';
+
+      $Result = htmLawed($Html, $Config, $Spec);
+      
+      return $Result;
+}
+endif;
+
+function HTMLawedHookTag($Element, $Attributes = 0) {
+   // If second argument is not received, it means a closing tag is being handled 
+   if($Attributes === 0){ 
+      return "</$Element>"; 
+   }
+   
    $Attribs = '';
    foreach ($Attributes as $Key => $Value) {
       if (strcasecmp($Key, 'style') == 0) {
@@ -90,5 +129,8 @@ function HTMLawedHookTag($Element, $Attributes) {
 
       $Attribs .= " {$Key}=\"{$Value}\"";
    }
-   return "<{$Element}{$Attribs}>";
+   
+   static $empty_elements = array('area'=>1, 'br'=>1, 'col'=>1, 'embed'=>1, 'hr'=>1, 'img'=>1, 'input'=>1, 'isindex'=>1, 'param'=>1); 
+   
+   return "<{$Element}{$Attribs}". (isset($empty_elements[$Element]) ? ' /' : ''). '>';
 }

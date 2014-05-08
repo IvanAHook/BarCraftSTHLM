@@ -1,26 +1,17 @@
 // This file contains javascript that is specific to the dashboard/profile controller.
 jQuery(document).ready(function($) {
-   
-   // Hijack "clear status" link clicks
-   $('#Status a.Change').live('click', function() {
-      // hijack the request and clear out the status
-      jQuery.get($(this).attr('href') + '?DeliveryType=BOOL');
-      $('#Status').remove();      
-      return false;
-   });
-
    // Set the max chars in the about form.
    $('form.About textarea').setMaxChars(1000);
    
    // Popup the picture form when the link is clicked
-   $('li.PictureLink a').popup({hijackForms: false, afterLoad: function() {
+   $('.ChangePicture,.AddPicture').popup({hijackForms: false, afterLoad: function() {
       $('.Popup :submit').hide();
       $('.Popup :input').change(function() {
          $('.Popup form').submit();
          $('.Popup .Body').html('<div class="Loading">&nbsp;</div>');
       });
    }});
-
+   
    // Ajax invitation uninvites and send agains if they're in a popup
    $('div.Popup a.Uninvite, div.Popup a.SendAgain').live('click', function() {
       var btn = this;
@@ -42,27 +33,12 @@ jQuery(document).ready(function($) {
       return false;
    });
 
-   // Thumbnail Cropper
-   // Popup the picture form when the link is clicked
-   $('li.ThumbnailLink a').popup({hijackForms: false, afterLoad: function() {
+   if ($.Jcrop)
       $('#cropbox').Jcrop({
          onChange: setPreviewAndCoords,
          onSelect: setPreviewAndCoords,
          aspectRatio: 1
       });
-      
-      $('.Popup :submit').click(function() {
-         $('.Popup .Body').children().hide().end().append('<div class="Loading">&nbsp;</div>');
-      });
-   }});
-   
-   $('li.Popup a').popup();
-
-   $('#cropbox').Jcrop({
-      onChange: setPreviewAndCoords,
-      onSelect: setPreviewAndCoords,
-      aspectRatio: 1
-   });
 
    function setPreviewAndCoords(c) {
       var thumbSize = $('#Form_ThumbSize').val();
@@ -81,26 +57,20 @@ jQuery(document).ready(function($) {
          marginTop: '-' + Math.round(ry * c.y) + 'px'
       });
    }
-   
-   // Remove Profile Picture
-   $('a.RemovePictureLink').popup({
-      confirm: true,
-      followConfirm: false
-   });
-   
+
    // Handle heading clicks on preferences form
-   $('table.PreferenceGroup thead td.PrefCheckBox').livequery(function() {
+   $('table.PreferenceGroup thead .PrefCheckBox').each(function() {
       var cell = this;
-      var columnIndex = $(cell).attr('cellIndex');
       $(cell).css('cursor', 'pointer');
       cell.onclick = function() {
+        var columnIndex = $(this)[0].cellIndex;
         var rows = $(this).parents('table').find('tbody tr');
         var checkbox = false;
-        var state = false;
+        var state = -1;
         for (i = 0; i < rows.length; i++) {
           checkbox = $(rows[i]).find('td:eq(' + (columnIndex) + ') :checkbox');
-          if (checkbox) {
-            if (i == 0)
+          if ($(checkbox).is(':checkbox')) {
+            if (state == -1)
                state = $(checkbox).attr('checked');
                
             if (state) {
@@ -115,9 +85,9 @@ jQuery(document).ready(function($) {
    });
 
    // Handle description clicks on preferences form
-   $('table.PreferenceGroup tbody td.Description').livequery(function() {
+   $('table.PreferenceGroup tbody .Description, table.PreferenceGroup tbody .Depth_2').each(function() {
       var cell = this;
-      var columnIndex = $(cell).attr('cellIndex');
+      var columnIndex = $(cell)[0].cellIndex;
       $(cell).css('cursor', 'pointer');
       cell.onclick = function() {
          var checkboxes = $(this).parents('tr').find('td.PrefCheckBox :checkbox');

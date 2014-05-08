@@ -1,22 +1,16 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
+ * Database manager
+ * 
  * The Database object contains connection and engine information for a single database.
  * It also allows a database to execute string sql statements against that database.
- *
- * @author Todd Burry
- * @copyright 2003 Mark O'Sullivan
+ * 
+ * @author Todd Burry <todd@vanillaforums.com>
+ * @copyright 2003 Vanilla Forums, Inc
  * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
- * @version @@GARDEN-VERSION@@
- * @namespace Garden.Database
+ * @package Garden
+ * @since 2.0
  */
 
 class Gdn_Database {
@@ -57,7 +51,19 @@ class Gdn_Database {
             $this->_Connection = new PDO(strtolower($this->Engine) . ':' . $this->Dsn, $this->User, $this->Password, $this->ConnectionOptions);
             if($this->ConnectionOptions[1002])
                $this->Query($this->ConnectionOptions[1002]);
+            
+            // We only throw exceptions during connect
+            $this->_Connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
          } catch (Exception $ex) {
+            $Timeout = FALSE;
+            if ($ex->getCode() == '2002' && preg_match('/Operation timed out/i', $ex->getMessage()))
+               $Timeout = TRUE;
+            if ($ex->getCode() == '2003' && preg_match("/Can't connect to MySQL/i", $ex->getMessage()))
+               $Timeout = TRUE;
+                    
+            if ($Timeout)
+               throw new Exception(ErrorMessage('Timeout while connecting to the database', $this->ClassName, 'Connection', $ex->getMessage()), 504);
+            
             trigger_error(ErrorMessage('An error occurred while attempting to connect to the database', $this->ClassName, 'Connection', $ex->getMessage()), E_USER_ERROR);
          }
       }
@@ -106,6 +112,14 @@ class Gdn_Database {
          $this->CommitTransaction();
          $this->_Connection = NULL;
       }
+   }
+   
+   /**
+    * Hook for cleanup via Gdn_Factory 
+    * 
+    */
+   public function Cleanup() {
+      $this->CloseConnection();
    }
    
    /**
@@ -263,15 +277,15 @@ class Gdn_Database {
                break;
          }
 		}
+      
+      // Make sure other unbufferred queries are not open
+      if (is_object($this->_CurrentResultSet)) {
+         $this->_CurrentResultSet->Result();
+         $this->_CurrentResultSet->FreePDOStatement(FALSE);
+      }
 
       // Run the Query
       if (!is_null($InputParameters) && count($InputParameters) > 0) {
-         // Make sure other unbufferred queries are not open
-         if (is_object($this->_CurrentResultSet)) {
-            $this->_CurrentResultSet->Result();
-            $this->_CurrentResultSet->FreePDOStatement(FALSE);
-         }
-
          $PDOStatement = $this->Connection()->prepare($Sql);
 
          if (!is_object($PDOStatement)) {
@@ -290,18 +304,27 @@ class Gdn_Database {
       // Did this query modify data in any way?
       if ($ReturnType == 'ID') {
          $this->_CurrentResultSet = $this->Connection()->lastInsertId();
+         if (is_a($PDOStatement, 'PDOStatement')) {
+            $PDOStatement->closeCursor();
+         }
       } else {
          if ($ReturnType == 'DataSet') {
             // Create a DataSet to manage the resultset
             $this->_CurrentResultSet = new Gdn_DataSet();
             $this->_CurrentResultSet->Connection = $this->Connection();
             $this->_CurrentResultSet->PDOStatement($PDOStatement);
+         } elseif (is_a($PDOStatement, 'PDOStatement')) {
+            $PDOStatement->closeCursor();
          }
       }
       
       if (isset($StoreCacheKey)) {
          if ($CacheOperation == 'get')
-            Gdn::Cache()->Store($StoreCacheKey, (($this->_CurrentResultSet instanceof Gdn_DataSet) ? $this->_CurrentResultSet->ResultArray() : $this->_CurrentResultSet));
+            Gdn::Cache()->Store(
+               $StoreCacheKey, 
+               (($this->_CurrentResultSet instanceof Gdn_DataSet) ? $this->_CurrentResultSet->ResultArray() : $this->_CurrentResultSet),
+               GetValue('CacheOptions', $Options, array())
+               );
       }
       
       return $this->_CurrentResultSet;

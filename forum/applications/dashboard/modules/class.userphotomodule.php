@@ -12,12 +12,9 @@ Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
  * Renders a user's photo (if they've uploaded one).
  */
 class UserPhotoModule extends Gdn_Module {
-   
-   public $User;
-   
-   public function __construct($Sender = '') {
-      $this->User = FALSE;
-      parent::__construct($Sender);
+   public function __construct() {
+      parent::__construct();
+      $this->_ApplicationFolder = 'dashboard';
    }
    
    public function AssetTarget() {
@@ -25,9 +22,7 @@ class UserPhotoModule extends Gdn_Module {
    }
 
    public function ToString() {
-      $Session = Gdn::Session();
+      $this->CanEditPhotos = C('Garden.Profile.EditPhotos') || Gdn::Session()->CheckPermission('Garden.Users.Edit');
 		return parent::ToString();
-			
-		return '';
    }
 }

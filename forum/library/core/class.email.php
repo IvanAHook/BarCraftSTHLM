@@ -1,25 +1,18 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
- * Object Representation of an email. All public methods return $this for
+ * Object Representation of an email. 
+ * 
+ * All public methods return $this for
  * chaining purposes. ie. $Email->Subject('Hi')->Message('Just saying hi!')-
  * To('joe@vanillaforums.com')->Send();
  *
- * @author Mark O'Sullivan
- * @copyright 2003 Mark O'Sullivan
+ * @author Mark O'Sullivan <markm@vanillaforums.com>
+ * @author Todd Burry <todd@vanillaforums.com> 
+ * @copyright 2003 Vanilla Forums, Inc
  * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
  * @package Garden
- * @version @@GARDEN-VERSION@@
- * @todo This class needs to be tested on a function mail server and with SMTP
- * @namespace Garden.Core
+ * @since 2.0
  */
 
 class Gdn_Email extends Gdn_Pluggable {
@@ -33,17 +26,35 @@ class Gdn_Email extends Gdn_Pluggable {
     * @var boolean
     */
    private $_IsToSet;
+   
+   /**
+    *
+    * @var array Recipients that were skipped because they lack permission.
+    */
+   public $Skipped = array();
 
    /**
     * Constructor
     */
    function __construct() {
       $this->PhpMailer = new PHPMailer();
-      $this->PhpMailer->CharSet = Gdn::Config('Garden.Charset', 'utf-8');
-      $this->PhpMailer->SingleTo = Gdn::Config('Garden.Email.SingleTo', FALSE);
-      $this->PhpMailer->PluginDir = PATH_LIBRARY.DS.'vendors'.DS.'phpmailer'.DS;
+      $this->PhpMailer->CharSet = C('Garden.Charset', 'utf-8');
+      $this->PhpMailer->SingleTo = C('Garden.Email.SingleTo', FALSE);
+      $this->PhpMailer->PluginDir = CombinePaths(array(PATH_LIBRARY,'vendors/phpmailer/'));
+      $this->PhpMailer->Hostname = C('Garden.Email.Hostname', '');
+      $this->PhpMailer->Encoding = 'quoted-printable';
       $this->Clear();
       parent::__construct();
+   }
+   
+   /**
+    * Add a custom header to the outgoing email.
+    * @param string $Name
+    * @param string $Value
+    * @since 2.1
+    */
+   public function AddHeader($Name, $Value) {
+      $this->PhpMailer->AddCustomHeader("$Name:$Value");
    }
 
 
@@ -91,6 +102,7 @@ class Gdn_Email extends Gdn_Pluggable {
       $this->_IsToSet = FALSE;
       $this->MimeType(Gdn::Config('Garden.Email.MimeType', 'text/plain'));
       $this->_MasterView = 'email.master';
+      $this->Skipped = array();
       return $this;
    }
 
@@ -138,7 +150,7 @@ class Gdn_Email extends Gdn_Pluggable {
     * The message to be sent.
     *
     * @param string $Message The message to be sent.
-    * @tod: implement
+    * @param string $TextVersion Optional plaintext version of the message
     * @return Email
     */
    public function Message($Message) {
@@ -147,11 +159,45 @@ class Gdn_Email extends Gdn_Pluggable {
       // which, untreated, would result in &#039; in the message in place of single quotes.
    
       if ($this->PhpMailer->ContentType == 'text/html') {
+         $TextVersion = FALSE;
+         if (stristr($Message, '<!-- //TEXT VERSION FOLLOWS//')) {
+            $EmailParts = explode('<!-- //TEXT VERSION FOLLOWS//', $Message);
+            $TextVersion = array_pop($EmailParts);
+            $Message = array_shift($EmailParts);
+            $TextVersion = trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/s','',$TextVersion)));
+            $Message = trim($Message);
+         }
+         
          $this->PhpMailer->MsgHTML(htmlspecialchars_decode($Message,ENT_QUOTES));
+         if ($TextVersion !== FALSE && !empty($TextVersion)) {
+            $TextVersion = html_entity_decode($TextVersion);
+            $this->PhpMailer->AltBody = $TextVersion;
+         }
       } else {
          $this->PhpMailer->Body = htmlspecialchars_decode($Message,ENT_QUOTES);
       }
       return $this;
+   }
+   
+   public static function GetTextVersion($Template) {
+      if (stristr($Template, '<!-- //TEXT VERSION FOLLOWS//')) {
+         $EmailParts = explode('<!-- //TEXT VERSION FOLLOWS//', $Template);
+         $TextVersion = array_pop($EmailParts);
+         $TextVersion = trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/s','',$TextVersion)));
+         return $TextVersion;
+      }
+      return FALSE;
+   }
+   
+   public static function GetHTMLVersion($Template) {
+      if (stristr($Template, '<!-- //TEXT VERSION FOLLOWS//')) {
+         $EmailParts = explode('<!-- //TEXT VERSION FOLLOWS//', $Template);
+         $TextVersion = array_pop($EmailParts);
+         $Message = array_shift($EmailParts);
+         $Message = trim($Message);
+         return $Message;
+      }
+      return $Template;
    }
 
    /**
@@ -171,6 +217,9 @@ class Gdn_Email extends Gdn_Pluggable {
     * @todo add port settings
     */
    public function Send($EventName = '') {
+      if (C('Garden.Email.Disabled')) {
+         return;
+      }
       
       if (Gdn::Config('Garden.Email.UseSmtp')) {
          $this->PhpMailer->IsSMTP();
@@ -197,13 +246,18 @@ class Gdn_Email extends Gdn_Pluggable {
          $this->EventArguments['EventName'] = $EventName;
          $this->FireEvent('SendMail');
       }
+      
+      if (!empty($this->Skipped) && $this->PhpMailer->CountRecipients() == 0) {
+         // We've skipped all recipients.
+         return TRUE;
+      }
 
       $this->PhpMailer->ThrowExceptions(TRUE);
       if (!$this->PhpMailer->Send()) {
          throw new Exception($this->PhpMailer->ErrorInfo);
       }
       
-      return true;
+      return TRUE;
    }
    
    /**
@@ -247,9 +301,23 @@ class Gdn_Email extends Gdn_Pluggable {
             $this->Cc($RecipientEmail, $RecipientName);
          return $this;
          
-      } elseif ($RecipientEmail instanceof stdClass) {
-         $RecipientName = GetValue('Name', $RecipientEmail);
-         $RecipientEmail = GetValue('Email', $RecipientEmail);
+      } elseif ((is_object($RecipientEmail) && property_exists($RecipientEmail, 'Email'))
+         || (is_array($RecipientEmail) && isset($RecipientEmail['Email']))) {
+         
+         $User = $RecipientEmail;
+         $RecipientName = GetValue('Name', $User);
+         $RecipientEmail = GetValue('Email', $User);
+         $UserID = GetValue('UserID', $User, FALSE);
+         
+         if ($UserID !== FALSE) {
+            // Check to make sure the user can receive email.
+            if (!Gdn::UserModel()->CheckPermission($UserID, 'Garden.Email.View')) {
+               $this->Skipped[] = $User;
+               
+               return $this;
+            }
+         }
+         
          return $this->To($RecipientEmail, $RecipientName);
       
       } elseif ($RecipientEmail instanceof Gdn_DataSet) {

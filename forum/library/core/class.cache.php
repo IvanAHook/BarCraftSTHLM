@@ -1,21 +1,19 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
+ * Cache layer base class
+ * 
+ * All cache objects should extend this to ensure a consistent public api for 
+ * caching.
  *
- * @author Tim Gunter
+ * @author Tim Gunter <tim@vanillaforums.com>
+ * @copyright 2003 Vanilla Forums, Inc
+ * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
  * @package Garden
- * @version @@GARDEN-VERSION@@
- * @namespace Garden.Core
+ * @since 2.0.10
+ * @abstract
  */
- 
+
 abstract class Gdn_Cache {
    
    /**
@@ -38,9 +36,9 @@ abstract class Gdn_Cache {
    
    // Allows items to be internally compressed/decompressed
    const FEATURE_COMPRESS     = 'f_compress';
-   // Allows items to autoexpire
+   // Allows items to autoexpire (seconds)
    const FEATURE_EXPIRY       = 'f_expiry';
-   // Allows set/get timeouts
+   // Allows set/get timeouts (seconds)
    const FEATURE_TIMEOUT      = 'f_timeout';
    // Allows disabling usage of key prefix
    const FEATURE_NOPREFIX     = 'f_noprefix';
@@ -48,6 +46,8 @@ abstract class Gdn_Cache {
    const FEATURE_FORCEPREFIX  = 'f_forceprefix';
    // Allows querying DB for missing keys, or firing a callback
    const FEATURE_FALLBACK     = 'f_fallback';
+   // In incr/decr ops, what should the initial value be
+   const FEATURE_INITIAL      = 'f_initial';
    
    /**
     * Location - SERVER:IP, Filepath, etc
@@ -100,6 +100,20 @@ abstract class Gdn_Cache {
    const CACHE_TYPE_MEMORY = 'ct_memory';
    const CACHE_TYPE_FILE = 'ct_file';
    const CACHE_TYPE_NULL = 'ct_null';
+   
+   /**
+    * Local in-memory cache of fetched data
+    * This prevents duplicate gets to memcache
+    * @var array
+    */
+   protected static $localCache = array();
+   
+   public static $trace = true;
+   public static $trackGet = array();
+   public static $trackGets = 0;
+   public static $trackSet = array();
+   public static $trackSets = 0;
+   public static $trackTime = 0;
 
    public function __construct() {
       $this->Containers = array();
@@ -333,6 +347,18 @@ abstract class Gdn_Cache {
    abstract public function AddContainer($Options);
    
    /**
+    * Invalidate all items in the cache
+    * 
+    * Gdn_Cache::Flush() invalidates all existing cache items immediately.
+    * After invalidation none of the items will be returned in response to a 
+    * retrieval command (unless it's stored again under the same key after 
+    * Gdn_Cache::Flush() has invalidated the items).
+    * 
+    * @return boolean TRUE on success of FALSE on failure
+    */
+   abstract public function Flush();
+   
+   /**
     * 
     * 
     * @param type $Key Cache key
@@ -443,10 +469,20 @@ abstract class Gdn_Cache {
       $UsePrefix = !GetValue(Gdn_Cache::FEATURE_NOPREFIX, $Options, FALSE);
       $ForcePrefix = GetValue(Gdn_Cache::FEATURE_FORCEPREFIX, $Options, NULL);
       
+      $Prefix = '';
       if ($UsePrefix)
-         $Key = $this->GetPrefix($ForcePrefix).'!'.$Key;
+         $Prefix = $this->GetPrefix($ForcePrefix).'!';
       
-      return $Key;
+      if (is_array($Key)) {
+         $Result = array();
+         foreach ($Key as $i => $v) {
+            $Result[$i] = $Prefix.$v;
+         }
+      } else {
+         $Result = $Prefix.$Key;
+      }
+      
+      return $Result;
    }
    
    /*
@@ -497,6 +533,26 @@ abstract class Gdn_Cache {
       }
       
       return GetValue($Key, $ActiveConfig, $Default);
+   }
+   
+   /**
+    * 
+    */
+   public static function Trace($trace = null) {
+      if (!is_null($trace))
+         Gdn_Cache::$trace = (bool)$trace;
+      return Gdn_Cache::$trace;
+   }
+   
+   protected static function LocalGet($key) {
+      if (!array_key_exists($key, self::$localCache)) return Gdn_Cache::CACHEOP_FAILURE;
+      return self::$localCache[$key];
+   }
+   
+   protected static function LocalSet($key, $value = null) {
+      if (!is_array($key))
+         $key = array($key => $value);
+      self::$localCache = array_merge(self::$localCache, $key);
    }
    
    /**

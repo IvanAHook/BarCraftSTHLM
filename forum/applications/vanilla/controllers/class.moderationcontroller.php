@@ -1,24 +1,14 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of empCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
-/**
- * Moderation Controller
- *
- * @package Vanilla
- */
- 
+
 /**
  * Handles content moderation
  *
+ * @copyright Copyright 2008, 2009 Vanilla Forums Inc.
+ * @license http://www.opensource.org/licenses/gpl-2.0.php GPLv2
  * @since 2.0.18
  * @package Vanilla
  */
+
 class ModerationController extends VanillaController {
    
    /**
@@ -103,14 +93,16 @@ class ModerationController extends VanillaController {
       }
       if ($CountComments > 0) {
          $SelectionMessage =  Wrap(sprintf(
-            'You have selected %1$s in this discussion.',
+            T('You have selected %1$s in this discussion.'),
             Plural($CountComments, '%s comment', '%s comments')
          ), 'div');
          $ActionMessage = T('Take Action:');
+         
          // Can the user delete the comment?
          $DiscussionModel = new DiscussionModel();
          $Discussion = $DiscussionModel->GetID($DiscussionID);
-         if ($Session->CheckPermission('Vanilla.Comments.Delete', TRUE, 'Category', $Discussion->CategoryID))
+         $PermissionCategory = CategoryModel::Categories(GetValue('CategoryID', $Discussion));
+         if ($Session->CheckPermission('Vanilla.Comments.Delete', TRUE, 'Category', GetValue('PermissionCategoryID', $PermissionCategory)))
             $ActionMessage .= ' '.Anchor(T('Delete'), 'vanilla/moderation/confirmcommentdeletes/'.$DiscussionID, 'Delete Popup');
          
          $Sender->EventArguments['SelectionMessage'] = &$SelectionMessage;
@@ -138,11 +130,11 @@ class ModerationController extends VanillaController {
     * have been checked for administration, and if so, adds an inform message to
     * $Sender to take action.
     */
-   public static function InformCheckedDiscussions($Sender) {
+   public static function InformCheckedDiscussions($Sender, $Force = FALSE) {
       $Session = Gdn::Session();
-      $HadCheckedDiscussions = FALSE;
+      $HadCheckedDiscussions = $Force;
       $TransientKey = GetValue('TransientKey', $_POST);
-      if ($Session->IsValid() && $Session->ValidateTransientKey($TransientKey)) {
+      if ($Session->IsValid() && Gdn::Request()->IsPostBack()) {
          // Form was posted, so accept changes to checked items.
          $CheckIDs = GetValue('CheckIDs', $_POST);
          if (empty($CheckIDs))
@@ -154,7 +146,7 @@ class ModerationController extends VanillaController {
             $CheckedDiscussions = array();
             
          // Were there checked discussions before the form was posted?
-         $HadCheckedDiscussions = count($CheckedDiscussions) > 0;
+         $HadCheckedDiscussions |= count($CheckedDiscussions) > 0;
 
          foreach ($CheckIDs as $Check) {
             if (GetValue('checked', $Check)) {
@@ -178,11 +170,12 @@ class ModerationController extends VanillaController {
       $CountDiscussions = count($CheckedDiscussions);
       if ($CountDiscussions > 0) {
          $SelectionMessage =  Wrap(sprintf(
-            'You have selected %1$s.',
+            T('You have selected %1$s.'),
             Plural($CountDiscussions, '%s discussion', '%s discussions')
          ), 'div');
          $ActionMessage = T('Take Action:');
          $ActionMessage .= ' '.Anchor(T('Delete'), 'vanilla/moderation/confirmdiscussiondeletes/', 'Delete Popup');
+         $ActionMessage .= ' '.Anchor(T('Move'), 'vanilla/moderation/confirmdiscussionmoves/', 'Move Popup');
          
          $Sender->EventArguments['SelectionMessage'] = &$SelectionMessage;
          $Sender->EventArguments['ActionMessage'] = &$ActionMessage;
@@ -241,7 +234,8 @@ class ModerationController extends VanillaController {
          return;
       
       // Verify that the user has permission to perform the delete
-      $this->Permission('Vanilla.Comment.Delete', TRUE, 'Category', $Discussion->CategoryID);
+      $PermissionCategory = CategoryModel::Categories($Discussion->CategoryID);
+      $this->Permission('Vanilla.Comments.Delete', TRUE, 'Category', GetValue('PermissionCategoryID', $PermissionCategory));
       $this->Title(T('Confirm'));
       
       $CheckedComments = Gdn::UserModel()->GetAttribute($Session->User->UserID, 'CheckedComments', array());
@@ -288,7 +282,7 @@ class ModerationController extends VanillaController {
       $DiscussionModel = new DiscussionModel();
       
       // Verify that the user has permission to perform the deletes
-      $this->Permission('Vanilla.Comment.Delete', TRUE, 'Category', 'any');
+      $this->Permission('Vanilla.Discussions.Delete', TRUE, 'Category', 'any');
       $this->Title(T('Confirm'));
       
       $CheckedDiscussions = Gdn::UserModel()->GetAttribute($Session->User->UserID, 'CheckedDiscussions', array());
@@ -303,7 +297,9 @@ class ModerationController extends VanillaController {
       $AllowedDiscussions = array();
       $DiscussionData = $DiscussionModel->SQL->Select('DiscussionID, CategoryID')->From('Discussion')->WhereIn('DiscussionID', $DiscussionIDs)->Get();
       foreach ($DiscussionData->Result() as $Discussion) {
-         if ($Session->CheckPermission('Vanilla.Discussions.Delete', TRUE, 'Category', $Discussion->CategoryID))
+         $PermissionCategory = CategoryModel::Categories(GetValue('CategoryID', $Discussion));
+         $CountCheckedDiscussions = $DiscussionData->NumRows();
+         if ($Session->CheckPermission('Vanilla.Discussions.Delete', TRUE, 'Category', GetValue('PermissionCategoryID', $PermissionCategory)))
             $AllowedDiscussions[] = $Discussion->DiscussionID;
       }
       $this->SetData('CountAllowed', count($AllowedDiscussions));
@@ -313,15 +309,72 @@ class ModerationController extends VanillaController {
       if ($this->Form->AuthenticatedPostBack()) {
          // Delete the selected discussions (that the user has permission to delete).
          foreach ($AllowedDiscussions as $DiscussionID) {
-            $DiscussionModel->Delete($DiscussionID);
+            $Deleted = $DiscussionModel->Delete($DiscussionID);
+            if ($Deleted) {
+               $this->JsonTarget("#Discussion_$DiscussionID", '', 'SlideUp');
+            }
+         }
+
+         // Clear selections
+         Gdn::UserModel()->SaveAttribute($Session->UserID, 'CheckedDiscussions', NULL);
+         ModerationController::InformCheckedDiscussions($this, TRUE);
+      }
+      
+      $this->Render();
+   }
+
+   /**
+    * Form to ask for the destination of the move, confirmation and permission check.
+    */
+   public function ConfirmDiscussionMoves() {
+      $Session = Gdn::Session();
+      $this->Form = new Gdn_Form();
+      $DiscussionModel = new DiscussionModel();
+
+      $this->Title(T('Confirm'));
+
+      $CheckedDiscussions = Gdn::UserModel()->GetAttribute($Session->User->UserID, 'CheckedDiscussions', array());
+      if (!is_array($CheckedDiscussions))
+         $CheckedDiscussions = array();
+
+      $DiscussionIDs = $CheckedDiscussions;
+      $CountCheckedDiscussions = count($DiscussionIDs);
+      $this->SetData('CountCheckedDiscussions', $CountCheckedDiscussions);
+
+      // Check for edit permissions on each discussion
+      $AllowedDiscussions = array();
+      $DiscussionData = $DiscussionModel->SQL->Select('DiscussionID, CategoryID')->From('Discussion')->WhereIn('DiscussionID', $DiscussionIDs)->Get();
+      foreach ($DiscussionData->Result() as $Discussion) {
+         $Category = CategoryModel::Categories($Discussion->CategoryID);
+         if ($Category && $Category['PermsDiscussionsEdit'])
+            $AllowedDiscussions[] = $Discussion->DiscussionID;
+      }
+      $this->SetData('CountAllowed', count($AllowedDiscussions));
+      $CountNotAllowed = $CountCheckedDiscussions - count($AllowedDiscussions);
+      $this->SetData('CountNotAllowed', $CountNotAllowed);
+
+      if ($this->Form->AuthenticatedPostBack()) {
+         // Retrieve the category id
+         $CategoryID = $this->Form->GetFormValue('CategoryID');
+         $Category = CategoryModel::Categories($CategoryID);
+
+         // User must have add permission on the target category
+         if (!$Category['PermsDiscussionsAdd']) {
+            throw ForbiddenException('@'.T('You do not have permission to add discussions to this category.'));
+         }
+
+         // Iterate and move.
+         foreach ($AllowedDiscussions as $DiscussionID) {
+            $DiscussionModel->SetField($DiscussionID, 'CategoryID', $CategoryID);
          }
 
          // Clear selections
          Gdn::UserModel()->SaveAttribute($Session->UserID, 'CheckedDiscussions', FALSE);
          ModerationController::InformCheckedDiscussions($this);
-         $this->RedirectUrl = 'discussions';
+         
+         $this->JsonTarget('', '', 'Refresh');
       }
-      
+
       $this->Render();
    }
 }

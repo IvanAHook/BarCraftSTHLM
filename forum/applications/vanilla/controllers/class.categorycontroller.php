@@ -1,8 +1,12 @@
 <?php if (!defined('APPLICATION')) exit();
+
 /**
+ * Category controller
+ * 
  * @copyright Copyright 2008, 2009 Vanilla Forums Inc.
  * @license http://www.opensource.org/licenses/gpl-2.0.php GPLv2
  * @since 2.0.17.9
+ * @package Vanilla
  */
 
 class CategoryController extends VanillaController {
@@ -22,7 +26,7 @@ class CategoryController extends VanillaController {
       }
 
       if ($this->DeliveryType() == DELIVERY_TYPE_ALL)
-         Redirect('/categories/all');
+         Redirect('/categories');
 
       $this->Render();
    }
@@ -32,7 +36,7 @@ class CategoryController extends VanillaController {
          $this->CategoryModel->SaveUserTree($CategoryID, array('DateMarkedRead' => Gdn_Format::ToDateTime()));
       }
       if ($this->DeliveryType() == DELIVERY_TYPE_ALL)
-         Redirect('/categories/all');
+         Redirect('/categories');
 
       $this->Render();
    }

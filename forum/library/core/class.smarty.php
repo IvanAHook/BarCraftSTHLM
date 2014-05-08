@@ -1,12 +1,16 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
+
+/**
+ * Smart abstraction layer
+ * 
+ * Vanilla implementation of Smarty templating engine.
+ *
+ * @author Mark O'Sullivan <markm@vanillaforums.com>
+ * @copyright 2003 Vanilla Forums, Inc
+ * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
+ * @package Garden
+ * @since 2.0
+ */
 
 class Gdn_Smarty {
    /// Constructor ///
@@ -20,13 +24,8 @@ class Gdn_Smarty {
 
    /// Methods ///
 
-   /**
-    * Render the given view.
-    *
-    * @param string $Path The path to the view's file.
-    * @param Controller $Controller The controller that is rendering the view.
-    */
-   public function Render($Path, $Controller) {
+   
+   public function Init($Path, $Controller) {
       $Smarty = $this->Smarty();
 
       // Get a friendly name for the controller.
@@ -45,9 +44,25 @@ class Gdn_Smarty {
       if($Session->IsValid()) {
          $User = array(
             'Name' => $Session->User->Name,
-            'CountNotifications' => (int)GetValue('CountNotifications', $Session->User->CountNotifications, 0),
+            'Photo' => '',
+            'CountNotifications' => (int)GetValue('CountNotifications', $Session->User, 0),
             'CountUnreadConversations' => (int)GetValue('CountUnreadConversations', $Session->User, 0),
             'SignedIn' => TRUE);
+         
+         $Photo = $Session->User->Photo;
+         if ($Photo) {
+            if (!preg_match('`^https?://`i', $Photo)) {
+               $Photo = Gdn_Upload::Url(ChangeBasename($Photo, 'n%s'));
+            }
+         } else {
+            if (function_exists('UserPhotoDefaultUrl'))
+               $Photo = UserPhotoDefaultUrl($Session->User, 'ProfilePhoto');
+            elseif ($ConfigPhoto = C('Garden.DefaultAvatar'))
+               $Photo = Gdn_Upload::Url($ConfigPhoto);
+            else
+               $Photo = Asset('/applications/dashboard/design/images/defaulticon.png', TRUE);
+         }
+         $User['Photo'] = $Photo;
       } else {
          $User = FALSE; /*array(
             'Name' => '',
@@ -64,8 +79,16 @@ class Gdn_Smarty {
             $Controller->Data[$Key] = (array)$Value;
          }
       }
+      
+      $BodyClass = GetValue('CssClass', $Controller->Data, '', TRUE);
+      $Sections = Gdn_Theme::Section(NULL, 'get');
+      if (is_array($Sections)) {
+         foreach ($Sections as $Section) {
+            $BodyClass .= ' Section-'.$Section;
+         }
+      }
      
-      $Controller->Data['BodyClass'] = GetValue('CssClass', $Controller->Data, '', TRUE);
+      $Controller->Data['BodyClass'] = $BodyClass;
 
       $Smarty->assign('Assets', (array)$Controller->Assets);
       $Smarty->assign('Path', Gdn::Request()->Path());
@@ -75,10 +98,30 @@ class Gdn_Smarty {
 
       $Smarty->Controller = $Controller; // for smarty plugins
       $Smarty->security = TRUE;
+      
       $Smarty->security_settings['IF_FUNCS'] = array_merge($Smarty->security_settings['IF_FUNCS'],
-         array('CheckPermission', 'MultiCheckPermission', 'GetValue', 'SetValue', 'Url'));
+         array('Category', 'CheckPermission', 'InSection', 'InCategory', 'MultiCheckPermission', 'GetValue', 'SetValue', 'Url'));
+      
+      $Smarty->security_settings['MODIFIER_FUNCS'] = array_merge($Smarty->security_settings['MODIFIER_FUNCS'],
+         array('sprintf'));
+      
       $Smarty->secure_dir = array($Path);
-      $Smarty->display($Path);
+   }   
+   
+   /**
+    * Render the given view.
+    *
+    * @param string $Path The path to the view's file.
+    * @param Controller $Controller The controller that is rendering the view.
+    */
+   public function Render($Path, $Controller) {
+      $Smarty = $this->Smarty();
+      $this->Init($Path, $Controller);
+      $CompileID = $Smarty->compile_id;
+      if (defined('CLIENT_NAME'))
+         $CompileID = CLIENT_NAME;
+      
+      $Smarty->display($Path, NULL, $CompileID);
    }
 
    /**
@@ -88,12 +131,38 @@ class Gdn_Smarty {
       if(is_null($this->_Smarty)) {
          $Smarty = Gdn::Factory('Smarty');
 
-         $Smarty->cache_dir = PATH_LOCAL_CACHE . DS . 'Smarty' . DS . 'cache';
-         $Smarty->compile_dir = PATH_LOCAL_CACHE . DS . 'Smarty' . DS . 'compile';
+         $Smarty->cache_dir = PATH_CACHE . DS . 'Smarty' . DS . 'cache';
+         $Smarty->compile_dir = PATH_CACHE . DS . 'Smarty' . DS . 'compile';
          $Smarty->plugins_dir[] = PATH_LIBRARY . DS . 'vendors' . DS . 'SmartyPlugins';
-
+         
+//         Gdn::PluginManager()->Trace = TRUE;
+         Gdn::PluginManager()->CallEventHandlers($Smarty, 'Gdn_Smarty', 'Init');
+         
          $this->_Smarty = $Smarty;
       }
       return $this->_Smarty;
+   }
+   
+   /** 
+    * See if the provided template causes any errors. 
+    * @param type $Path Path of template file to test.
+    * @return boolean TRUE if template loads successfully.
+    */
+   public function TestTemplate($Path) {
+      $Smarty = $this->Smarty();
+      $this->Init($Path, Gdn::Controller());
+      $CompileID = $Smarty->compile_id;
+      if (defined('CLIENT_NAME'))
+         $CompileID = CLIENT_NAME;
+
+      $Return = TRUE;
+      try {
+         $Result = $Smarty->fetch($Path, NULL, $CompileID);
+         // echo Wrap($Result, 'textarea', array('style' => 'width: 900px; height: 400px;'));
+         $Return = ($Result == '' || strpos($Result, '<title>Fatal Error</title>') > 0 || strpos($Result, '<h1>Something has gone wrong.</h1>') > 0) ? FALSE : TRUE;
+      } catch(Exception $ex) {
+         $Return = FALSE;
+      }
+      return $Return;
    }
 }

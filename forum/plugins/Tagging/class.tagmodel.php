@@ -60,14 +60,20 @@ class TagModel extends Gdn_Model {
             $this->Database->RollbackTransaction();
             throw $Ex;
          }
+         
+         return $ToID;
       } else {
-         parent::Save($FormPostValues, $Settings);
+         if (Gdn::Session()->CheckPermission('Plugins.Tagging.Add')) {
+            return parent::Save($FormPostValues, $Settings);
+         } else {
+            return FALSE; 
+         }
       }
    }
 
    public static function ValidateTag($Tag) {
-      // Tags can't contain whitespace.
-      if (preg_match('`\s`', $Tag))
+      // Tags can't contain commas.
+      if (preg_match('`,`', $Tag))
          return FALSE;
       return TRUE;
    }
@@ -84,7 +90,7 @@ class TagModel extends Gdn_Model {
    }
 
    public static function SplitTags($TagsString) {
-      $Tags = preg_split('`[\s]`', $TagsString);
+      $Tags = preg_split('`[,]`', $TagsString);
       // Trim each tag.
       foreach ($Tags as $Index => $Tag) {
          $Tag = trim($Tag);

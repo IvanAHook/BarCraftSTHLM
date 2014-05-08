@@ -1,21 +1,41 @@
 <?php if (!defined('APPLICATION')) exit();
 ?>
-<div class="Tabs ConversationsTabs">
-   <ul>
-      <li class="Active"><?php echo Anchor(T('Inbox'), '/messages/inbox', array('class' => 'TabLink')); ?></li>
-   </ul>
-</div>
+<h1 class="H"><?php echo $this->Data('Title'); ?></h1>
 <?php
-if ($this->ConversationData->NumRows() > 0) {
+
+// Pager setup
+$PagerOptions = array('CurrentRecords' => count($this->Data('Conversations')));
+if ($this->Data('_PagerUrl'))
+   $PagerOptions['Url'] = $this->Data('_PagerUrl');
+
+// Pre Pager
+echo '<div class="PageControls Top">';
+   PagerModule::Write($PagerOptions);
+   if (CheckPermission('Conversations.Conversations.Add')) {
+      echo '<div class="BoxButtons BoxNewConversation">';
+      echo Anchor(T('New Message'), '/messages/add', 'Button NewConversation Primary');
+      echo '</div>';
+   }
+echo '</div>';
 ?>
 <ul class="Condensed DataList Conversations">
-   <?php
+<?php
+if (count($this->Data('Conversations') > 0)):
    $ViewLocation = $this->FetchViewLocation('conversations');
-   include($ViewLocation);
+   include $ViewLocation;
+else:
    ?>
+   <li class="Item Empty Center"><?php echo sprintf(T('You do not have any %s yet.'), T('messages')); ?></li>
+   <?php
+endif;
+?>
 </ul>
 <?php
-echo $this->Pager->ToString();
-} else {
-   echo '<div class="Empty">'.T('You do not have any conversations.').'</div>';
-}
+// Post Pager
+echo '<div class="PageControls Bottom">';
+   PagerModule::Write($PagerOptions);
+   
+//   echo '<div class="BoxButtons BoxNewConversation">';
+//   echo Anchor(T('New Message'), '/messages/add', 'Button NewConversation Primary');
+//   echo '</div>';
+echo '</div>';

@@ -19,16 +19,10 @@ if (!function_exists('FormatPossessive')) {
    }
 }
 
-if (!function_exists('Plural')) {
-   function Plural($Number, $Singular, $Plural) {
-		// Make sure to fix comma-formatted numbers
-      $WorkingNumber = str_replace(',', '', $Number);
-      return sprintf(T($WorkingNumber == 1 ? $Singular : $Plural), $Number);
-   }
-}
-
 $Definition['Locale'] = 'en-CA';
 $Definition['_Locale'] = 'Locale';
+
+$Definition['Apply for Membership'] = 'Register';
 
 // THESE ARE RELATED TO VALIDATION FUNCTIONS IN /garden/library/core/validation.functions.php
 $Definition['ValidateRegex'] = '%s does not appear to be in the correct format.';
@@ -49,17 +43,23 @@ $Definition['ValidateOneOrMoreArrayItemRequired'] = 'You must select at least on
 $Definition['ValidateConnection'] = 'The connection parameters you specified failed to open a connection to the database. The database reported the following error: <code>%s</code>';
 //$Definition['ValidateMinimumAge'] = 'You are too young to proceed.';
 $Definition['ValidateMatch'] = 'The %s fields do not match.';
+$Definition['ValidateStrength'] = 'The supplied %s is too weak. Try using a stronger password and use the strength meter as a guide.';
 $Definition['ValidateVersion'] = 'The %s field is not a valid version number. See the php version_compare() function for examples of valid version numbers.';
 $Definition['ValidateBanned'] = 'That %s is not allowed.';
 $Definition['ValidateUrlStringRelaxed'] = '%s can not contain slashes, quotes or tag characters.';
 $Definition['ErrorPermission'] = 'Sorry, permission denied.';
 $Definition['InviteErrorPermission'] = 'Sorry, permission denied.';
+$Definition['PermissionRequired.Garden.Moderation.Manage'] = 'You need to be a moderator to do that.';
+$Definition['PermissionRequired.Garden.Settings.Manage'] = 'You need to be an administrator to do that.';
+$Definition['PermissionRequired.Javascript'] = 'You need to enable javascript to do that.';
 $Definition['ErrorBadInvitationCode'] = 'The invitation code you supplied is not valid.';
 $Definition['ErrorCredentials'] = 'Sorry, no account could be found related to the email/username and password you entered.';
+$Definition['User not found.'] = 'Sorry, no account could be found related to the %s you entered.';
+$Definition['Invalid password.'] = 'The password you entered was incorrect. Remember that passwords are case-sensitive.';
 $Definition['ErrorPluginVersionMatch'] = 'The enabled {0} plugin (version {1}) failed to meet the version requirements ({2}).';
 $Definition['ErrorPluginDisableRequired'] = 'You cannot disable the {0} plugin because the {1} plugin requires it in order to function.';
 $Definition['ErrorPluginEnableRequired'] = 'This plugin requires that the {0} plugin be enabled before it can be enabled itself.';
-$Definition['ErrorTermsOfService'] = 'You must agree to the terms of service.';
+//$Definition['ErrorTermsOfService'] = 'You must agree to the terms of service.';
 $Definition['ErrorRecordNotFound'] = 'The requested record could not be found.';
 
 $Definition['PageDetailsMessageFull'] = '%1$s to %2$s of %3$s';
@@ -94,10 +94,8 @@ $Definition['EmailWelcome'] = '%2$s has created an account for you at %3$s. Your
   Email: %6$s
   Password: %5$s
   Url: %4$s';
-$Definition['EmailPassword'] = '%2$s has reset your password at %3$s. Your login credentials are now:
+$Definition['EmailPassword'] = '%2$s has reset your password at %3$s for your login with email address %6$s. Please contact them if you do not know the new password.
 
-  Email: %6$s
-  Password: %5$s
   Url: %4$s';
 $Definition['EmailConfirmEmail'] = 'You need to confirm your email address before you can continue. Please confirm your email address by clicking on the following link: {/entry/emailconfirm,exurl,domain}/{User.UserID,rawurlencode}/{EmailKey,rawurlencode}';
 $Definition['EmailWelcomeRegister'] = 'You have successfully registered for an account at {Title}. Here is your information:
@@ -142,35 +140,37 @@ $Definition['Date.DefaultYearFormat'] = '%B %Y';
 $Definition['Date.DefaultTimeFormat'] = '%l:%M%p';
 $Definition['Date.DefaultDateTimeFormat'] = '%B %e, %Y %l:%M%p';
 $Definition['Saved'] = 'Your changes have been saved.';
-$Definition['%s New Plural'] = '%s new';
-
+$Definition['%s new plural'] = '%s new';
 $Definition['TermsOfService'] = 'Terms of Service';
-$Definition['TermsOfServiceText'] = "
-   <p>You agree, through your use of this service, that you will not use this
-   community to post any material which is knowingly false and/or defamatory,
-   inaccurate, abusive, vulgar, hateful, harassing, obscene, profane, sexually
-   oriented, threatening, invasive of a person's privacy, or otherwise violative
-   of any law. You agree not to post any copyrighted material unless the
-   copyright is owned by you.</p>
-   
-   <p>We at this community also reserve the right to reveal your identity (or
-   whatever information we know about you) in the event of a complaint or legal
-   action arising from any message posted by you. We log all internet protocol
-   addresses accessing this web site.</p>
-   
-   <p>Please note that advertisements, chain letters, pyramid schemes, and
-   solicitations are inappropriate on this community.</p>
-   
-   <p>We reserve the right to remove any content for any reason or no reason at
-   all. We reserve the right to terminate any membership for any reason or no
-   reason at all.</p>
-   
-   <p>You must be at least 13 years of age to use this service.</p>
-";
+$Definition['TermsOfServiceText'] = 
+"You agree, through your use of this service, that you will not use this
+community to post any material which is knowingly false and/or defamatory,
+inaccurate, abusive, vulgar, hateful, harassing, obscene, profane, sexually
+oriented, threatening, invasive of a person's privacy, or otherwise violative
+of any law. You agree not to post any copyrighted material unless the
+copyright is owned by you.
+
+We at this community also reserve the right to reveal your identity (or
+whatever information we know about you) in the event of a complaint or legal
+action arising from any message posted by you. We log all internet protocol
+addresses accessing this web site.
+
+Please note that advertisements, chain letters, pyramid schemes, and
+solicitations are inappropriate on this community.
+
+We reserve the right to remove any content for any reason or no reason at
+all. We reserve the right to terminate any membership for any reason or no
+reason at all.
+
+You must be at least 13 years of age to use this service.";
 
 $Definition['Warning: This is for advanced users.'] = '<b>Warning</b>: This is for advanced users and requires that you make additional changes to your web server. This is usually only available if you have dedicated or vps hosting. Do not attempt this if you do not know what you are doing.';
 $Definition['Activity.Delete'] = '×';
 $Definition['Draft.Delete'] = '×';
 $Definition['ConnectName'] = 'Username';
+//$Definition['EmbededDiscussionFormat'] = '<div class="EmbeddedContent">{Image}<strong>{Title}</strong>
+//<p>{Excerpt}</p>
+//<p><a href="{Url}">Read the full story here</a></p><div class="ClearFix"></div></div>';
+
 
 // TODO: PROVIDE TRANSLATIONS FOR ALL CONFIGURATION SETTINGS THAT ARE EDITABLE ON ADMIN FORMS (ie. Vanilla.Comments.MaxLength, etc).

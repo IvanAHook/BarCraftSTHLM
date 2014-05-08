@@ -1,12 +1,21 @@
 <?php if (!defined('APPLICATION')) exit();
 $Session = Gdn::Session();
 ?>
+<style>
+   .CategoryPhoto {
+      float: left;
+      margin-right: 8px;
+      max-height: 64px;
+      max-width: 64px;
+   }
+</style>
 <div class="Help Aside">
    <?php
-   echo '<h2>', T('Need More Help?'), '</h2>';
+   echo Wrap(T('Need More Help?'), 'h2');
    echo '<ul>';
-   echo '<li>', Anchor(T('Managing Categories'), 'http://vanillaforums.org/docs/managecategories'), '</li>';
-   echo '<li>', Anchor(T('Adding & Editing Categories'), 'http://vanillaforums.org/docs/managecategories#add'), '</li>';
+   echo Wrap(Anchor(T("Video tutorial on managing categories"), 'settings/tutorials/category-management-and-advanced-settings'), 'li');
+   echo Wrap(Anchor(T('Managing Categories'), 'http://vanillaforums.org/docs/managecategories'), 'li');
+   echo Wrap(Anchor(T('Adding & Editing Categories'), 'http://vanillaforums.org/docs/managecategories#add'), 'li');
    echo '</ul>';
    ?>
 </div>
@@ -30,7 +39,7 @@ if (C('Vanilla.Categories.Use')) {
       echo '<h2>', T('Did You Know?'), '</h2>';
       echo '<ul>';
       echo '<li>', sprintf(T('You can make the categories page your homepage.', 'You can make your categories page your homepage <a href="%s">here</a>.'), Url('/dashboard/settings/homepage')), '</li>';
-      echo '<li>', sprintf(T('Make sure you click View Page', 'Make sure you click <a href="%s">View Page</a> to see what your categories page looks like after saving.'), Url('/categories/all')), '</li>';
+      echo '<li>', sprintf(T('Make sure you click View Page', 'Make sure you click <a href="%s">View Page</a> to see what your categories page looks like after saving.'), Url('/categories')), '</li>';
       echo '<li>', T('Drag and drop the categories below to sort and nest them.'), '</li>';
       echo '</ul>';
       ?>
@@ -38,7 +47,7 @@ if (C('Vanilla.Categories.Use')) {
    <h1><?php
       echo T('Category Page Layout');
       echo ' ';
-      echo Anchor(T('View Page'), 'categories/all');
+      echo Anchor(T('View Page'), 'categories');
    ?></h1>
    <?php
    echo $this->Form->Open();
@@ -52,7 +61,10 @@ if (C('Vanilla.Categories.Use')) {
       .Wrap($this->Form->CheckBox('Vanilla.Categories.DoHeadings', 'Display root categories as headings.'), 'div')
       .Wrap($this->Form->CheckBox('Vanilla.Categories.HideModule', 'Do not display the categories in the side panel.'), 'div')
    .'</div>'
-   .$this->Form->Close('Save');
+   .'<div class="Buttons Wrap">'
+   .$this->Form->Button('Save')
+   .'</div>'
+   .$this->Form->Close();
 
    echo Wrap(T('Organize Categories'), 'h1')
    .'<ol class="Sortable">';
@@ -90,12 +102,20 @@ if (C('Vanilla.Categories.Use')) {
          
          echo "\n".'<li id="list_'.$Category->CategoryID.'">';
          // DEBUG: echo Wrap($Category->Name.' [countright: '.$CountRight.' lastcount: '.$LastRight.' opencount: '.$OpenCount.']', 'div');
-         $CategoryUrl = Url('categories/'.rawurlencode($Category->UrlCode).'/', TRUE);
+         $CategoryUrl = CategoryUrl($Category);
+         
+         if ($Category->Photo) {
+            $Photo = Img(Gdn_Upload::Url($Category->Photo), array('class' => 'CategoryPhoto'));
+         } else {
+            $Photo = '';
+         }
+         
          echo Wrap(
             '<table'.($OpenCount > 0 ? ' class="Indented"' : '').'>
                <tr>
                   <td>
-                     <strong>'.$Category->Name.'</strong>
+                     '.$Photo.'
+                     <strong>'.htmlspecialchars($Category->Name).'</strong>
                      '.Anchor(htmlspecialchars(rawurldecode($CategoryUrl)), $CategoryUrl).'
                      '.Wrap($Category->Description, 'blockquote').'
                      './*Wrap("ID: {$Category->CategoryID}, PermID: {$Category->PermissionCategoryID}", 'div').*/'

@@ -1,9 +1,10 @@
-<?php if (!defined('APPLICATION')) exit();
-$this->Title(T('Start a New Conversation'));
-?>
-<div id="ConversationForm">
-   <h1><?php echo T('Start a New Conversation'); ?></h1>
+<?php if (!defined('APPLICATION')) exit(); ?>
+<div id="ConversationForm" class="FormTitleWrapper ConversationForm">
    <?php
+   echo Wrap($this->Data('Title'), 'h1', array('class' => 'H'));
+   $this->FireEvent('BeforeMessageAdd');
+   
+   echo '<div class="FormWrapper">'; 
    echo $this->Form->Open();
    echo $this->Form->Errors();
    
@@ -23,9 +24,11 @@ $this->Title(T('Start a New Conversation'));
    }
    
    echo '<div class="P">';
-      echo Wrap($this->Form->TextBox('Body', array('MultiLine' => TRUE)), 'div', array('class' => 'TextBoxWrapper'));
+   echo $this->Form->BodyBox('Body', array('Table' => 'ConversationMessage'));
+//      echo Wrap($this->Form->TextBox('Body', array('MultiLine' => TRUE)), 'div', array('class' => 'TextBoxWrapper'));
    echo '</div>';
    
-   echo $this->Form->Close('Start Conversation');
+   echo $this->Form->Close('Start Conversation', '', array('class' => 'Button Primary'));
+   echo '</div>';
    ?>
 </div>

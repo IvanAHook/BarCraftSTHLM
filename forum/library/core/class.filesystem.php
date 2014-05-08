@@ -1,23 +1,18 @@
 <?php if (!defined('APPLICATION')) exit();
-/*
-Copyright 2008, 2009 Vanilla Forums Inc.
-This file is part of Garden.
-Garden is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-Garden is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Garden.  If not, see <http://www.gnu.org/licenses/>.
-Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
-*/
 
 /**
- * Load files and either return their contents or send them to the browser.
+ * Framework filesystem layer
+ * 
+ * Abstract many common filesystem tasks such as deleting and creating folders,
+ * reading files, and creating blank files.
  *
- * @author Mark O'Sullivan
- * @copyright 2003 Mark O'Sullivan
+ * @author Mark O'Sullivan <markm@vanillaforums.com>
+ * @author Todd Burry <todd@vanillaforums.com> 
+ * @author Tim Gunter <tim@vanillaforums.com>
+ * @copyright 2003 Vanilla Forums, Inc
  * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
  * @package Garden
- * @version @@GARDEN-VERSION@@
- * @namespace Garden.Core
- * @todo Make this object deliver content with a save as dialogue.
+ * @since 2.0
  */
 
 if(!defined('VANILLA_FILE_PUT_FLAGS')) define('VANILLA_FILE_PUT_FLAGS', LOCK_EX);
@@ -297,12 +292,13 @@ class Gdn_FileSystem {
     * @param string $ServeMode Whether to download the file as an attachment, or inline
     */
    public static function ServeFile($File, $Name = '', $MimeType = '', $ServeMode = 'attachment') {
-      if (is_readable($File)) {
-         // Get the db connection and make sure it is closed
-         $Database = Gdn::Database();
-         $Database->CloseConnection();
-         
-         $Size = filesize($File);
+      
+      $FileIsLocal = (substr($File, 0, 4) == 'http') ? FALSE : TRUE;
+      $FileAvailable = ($FileIsLocal) ? is_readable($File) : TRUE;
+      
+      if ($FileAvailable) {
+         // Close the database connection
+         Gdn::Database()->CloseConnection();
          
          // Determine if Path extension should be appended to Name
          $NameExtension = strtolower(pathinfo($Name, PATHINFO_EXTENSION));
@@ -320,20 +316,21 @@ class Gdn_FileSystem {
  
          // Figure out the MIME type
          $MimeTypes = array(
-           "pdf" => "application/pdf",
-           "txt" => "text/plain",
+           "pdf"  => "application/pdf",
+           "txt"  => "text/plain",
            "html" => "text/html",
-           "htm" => "text/html",
-           "exe" => "application/octet-stream",
-           "zip" => "application/zip",
-           "doc" => "application/msword",
-           "xls" => "application/vnd.ms-excel",
-           "ppt" => "application/vnd.ms-powerpoint",
-           "gif" => "image/gif",
-           "png" => "image/png",
-           "jpeg"=> "image/jpg",
-           "jpg" =>  "image/jpg",
-           "php" => "text/plain"
+           "htm"  => "text/html",
+           "exe"  => "application/octet-stream",
+           "zip"  => "application/zip",
+           "doc"  => "application/msword",
+           "xls"  => "application/vnd.ms-excel",
+           "ppt"  => "application/vnd.ms-powerpoint",
+           "gif"  => "image/gif",
+           "png"  => "image/png",
+           "jpeg" => "image/jpg",
+           "jpg"  => "image/jpg",
+           "php"  => "text/plain",
+           "ico"  => "image/vnd.microsoft.icon"
          );
          
          if ($MimeType == '') {

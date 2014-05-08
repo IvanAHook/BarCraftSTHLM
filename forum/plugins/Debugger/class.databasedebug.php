@@ -15,8 +15,6 @@ class Gdn_DatabaseDebug extends Gdn_Database {
 	
 	protected $_Queries = array();
 	
-	protected $_QueryTimes = array();
-	
 	/// METHODS ///
 	
 	public function ExecutionTime() {
@@ -55,7 +53,7 @@ class Gdn_DatabaseDebug extends Gdn_Database {
 		} elseif(is_string($Expr)) {
 			return '\''.str_replace('\'', '\\\'', $Expr).'\'';
 		} elseif(is_object($Expr)) {
-			return '?OBJECT?';
+			return 'Object:'.get_class($Expr);
 		} else {
 			return $Expr;
 		}
@@ -96,8 +94,6 @@ class Gdn_DatabaseDebug extends Gdn_Database {
          $SaveQuery = !$AllSet;
          $Query['Cache'] = $Cache;
       }
-      if ($SaveQuery && !StringBeginsWith($Sql, 'set names'))
-         $this->_Queries[] = $Query;
 
       // Start the Query Timer
       $TimeStart = Now();
@@ -107,12 +103,16 @@ class Gdn_DatabaseDebug extends Gdn_Database {
       // Aggregate the query times
       $TimeEnd = Now();
       $this->_ExecutionTime += ($TimeEnd - $TimeStart);
-      $this->_QueryTimes[] = ($TimeEnd - $TimeStart);
+      
+      if ($SaveQuery && !StringBeginsWith($Sql, 'set names')) {
+         $Query['Time'] = ($TimeEnd - $TimeStart);
+         $this->_Queries[] = $Query;
+      }
       
       return $Result;
    }
 	
 	public function QueryTimes() {
-		return $this->_QueryTimes;
+		return array();
 	}
 }

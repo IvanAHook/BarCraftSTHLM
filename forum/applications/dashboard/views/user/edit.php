@@ -19,12 +19,22 @@ if ($this->Data('AllowEditing')) { ?>
       <li>
          <?php
             echo $this->Form->Label('Email', 'Email');
+            if (UserModel::NoEmail()) {
+               echo '<div class="Gloss">',
+                  T('Email addresses are disabled.', 'Email addresses are disabled. You can only add an email address if you are an administrator.'),
+                  '</div>';
+            }
             echo $this->Form->TextBox('Email');
          ?>
       </li>
       <li>
          <?php
             echo $this->Form->CheckBox('ShowEmail', T('Email visible to other users'), array('value' => '1'));
+         ?>
+      </li>
+      <li>
+         <?php
+            echo $this->Form->CheckBox('Verified', T('Verified Label', 'Verified. Bypasses spam and pre-moderation filters.'), array('value' => '1'));
          ?>
       </li>
       <li>
@@ -45,10 +55,14 @@ if ($this->Data('AllowEditing')) { ?>
    </ul>
    <h3><?php echo T('Password Options'); ?></h3>
    <ul>
-      <li>
+      <li class="PasswordOptions">
          <?php
-            echo $this->Form->Label('Reset Password');
-            echo $this->Form->CheckBox('ResetPassword', T('Reset password and send email notification to user'));
+            $ResetOptions = array(
+               0 => T('Keep current password.'),
+               'Auto' => T('Force user to reset their password and send email notification.'),
+               'Manual' => T('Manually set user password. No email notification.')
+            );
+            echo $this->Form->RadioList('ResetPassword', $ResetOptions);
          ?>
       </li>
       <li id="NewPassword">

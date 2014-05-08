@@ -17,11 +17,15 @@ $ConnectSource = $this->Form->GetFormValue('ProviderName');
 		echo $this->Form->Errors();
 		if ($ConnectName || $ConnectPhoto):
 		?>
-		<div class="ConnectInfo">
+		<div class="MeBox">
 			<?php
-			if ($ConnectPhoto)
-				echo Img($ConnectPhoto, array('alt' => T('Profile Picture')));
+			if ($ConnectPhoto) {
+				echo '<span class="PhotoWrap">',
+               Img($ConnectPhoto, array('alt' => T('Profile Picture'), 'class' => 'ProfilePhoto')),
+               '</span>';
+         }
 	
+         echo '<div class="WhoIs">';
 			if ($ConnectName && $ConnectSource) {
 				$NameFormat = T('You are connected as %s through %s.');
 			} elseif ($ConnectName) {
@@ -39,6 +43,8 @@ $ConnectSource = $this->Form->GetFormValue('ProviderName');
 				'<span class="Source">'.htmlspecialchars($ConnectSource).'</span>');
 			
 			echo Wrap(T('ConnectCreateAccount', 'Add Info &amp; Create Account'), 'h3');
+         
+         echo '</div>';
 			?>
 		</div>
 		<?php endif; ?>
@@ -51,7 +57,7 @@ $ConnectSource = $this->Form->GetFormValue('ProviderName');
 		else:
 			$ExistingUsers = (array)$this->Data('ExistingUsers', array());
 			$NoConnectName = $this->Data('NoConnectName');
-			$PasswordMessage = T('ConnectLeaveBlank', 'Leave blank unless connecting to an exising account.');
+			$PasswordMessage = T('ConnectLeaveBlank', 'Leave blank unless connecting to an existing account.');
 		?>
 			<ul>
             <?php if ($this->Form->GetFormValue('EmailVisible')): ?>
@@ -87,6 +93,7 @@ $ConnectSource = $this->Form->GetFormValue('ProviderName');
 						echo $this->Form->Textbox('ConnectName');
 					?>
 				</li>
+				<?php $this->FireEvent('RegisterBeforePassword'); ?>
 				<li id="ConnectPassword">
 					<?php
 					echo $this->Form->Label('Password', 'ConnectPassword');
@@ -97,7 +104,7 @@ $ConnectSource = $this->Form->GetFormValue('ProviderName');
 			</ul>
 	
 		<?php
-		echo '<div class="Buttons">', Wrap($this->Form->Button('Connect'), 'div', array('class' => 'ButtonContainer')), '</div>';
+		echo '<div class="Buttons">', Wrap($this->Form->Button('Connect', array('class' => 'Button Primary')), 'div', array('class' => 'ButtonContainer')), '</div>';
 	
 		endif;
 		

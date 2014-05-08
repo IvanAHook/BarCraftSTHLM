@@ -1,5 +1,5 @@
 <?php if (!defined('APPLICATION')) exit(); ?>
-<h2><?php echo T('Change My Password'); ?></h2>
+<h2 class="H"><?php echo T('Change My Password'); ?></h2>
 <?php
 echo $this->Form->Open();
 echo $this->Form->Errors();
@@ -17,7 +17,7 @@ echo $this->Form->Errors();
    <li>
       <?php
          echo $this->Form->Label('New Password', 'Password');
-         echo $this->Form->Input('Password', 'password');
+         echo $this->Form->Input('Password', 'password', array('Strength' => TRUE));
       ?>
    </li>
    <li>
@@ -27,4 +27,4 @@ echo $this->Form->Errors();
       ?>
    </li>
 </ul>
-<?php echo $this->Form->Close('Change Password');
+<?php echo $this->Form->Close('Change Password', '', array('class' => 'Button Primary'));

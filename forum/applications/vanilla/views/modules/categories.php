@@ -1,21 +1,21 @@
 <?php if (!defined('APPLICATION')) exit();
 $CountDiscussions = 0;
 $CategoryID = isset($this->_Sender->CategoryID) ? $this->_Sender->CategoryID : '';
-
+$OnCategories = strtolower($this->_Sender->ControllerName) == 'categoriescontroller' && !is_numeric($CategoryID);
 if ($this->Data !== FALSE) {
    foreach ($this->Data->Result() as $Category) {
       $CountDiscussions = $CountDiscussions + $Category->CountDiscussions;
    }
    ?>
 <div class="Box BoxCategories">
-   <h4><?php echo Anchor(T('Categories'), 'categories/all'); ?></h4>
+   <h4><?php echo T('Categories'); ?></h4>
    <ul class="PanelInfo PanelCategories">
-      <li<?php
-      if (!is_numeric($CategoryID))
-         echo ' class="Active"';
-         
-      ?>><span><strong><?php echo Anchor(Gdn_Format::Text(T('All Discussions')), '/discussions'); ?></strong><span class="Count"><?php echo number_format($CountDiscussions); ?></span></span></li>
-<?php
+   <?php
+   echo '<li'.($OnCategories ? ' class="Active"' : '').'>'.
+      Anchor(T('All Categories')
+      .' <span class="Aside"><span class="Count">'.BigPlural($CountDiscussions, '%s discussion').'</span></span>', '/categories', 'ItemLink')
+      .'</li>';
+
    $MaxDepth = C('Vanilla.Categories.MaxDisplayDepth');
    $DoHeadings = C('Vanilla.Categories.DoHeadings');
    
@@ -24,17 +24,19 @@ if ($this->Data !== FALSE) {
          continue;
 
       if ($DoHeadings && $Category->Depth == 1)
-         $CssClass = 'Heading';
+         $CssClass = 'Heading '.$Category->CssClass;
       else
-         $CssClass = 'Depth'.$Category->Depth.($CategoryID == $Category->CategoryID ? ' Active' : '');
+         $CssClass = 'Depth'.$Category->Depth.($CategoryID == $Category->CategoryID ? ' Active' : '').' '.$Category->CssClass;
       
-      echo '<li class="'.$CssClass.'">';
+      echo '<li class="ClearFix '.$CssClass.'">';
 
       if ($DoHeadings && $Category->Depth == 1) {
-         echo Gdn_Format::Text($Category->Name);
+         echo htmlspecialchars($Category->Name)
+            .' <span class="Aside"><span class="Count Hidden">'.BigPlural($Category->CountAllDiscussions, '%s discussion').'</span></span>';
       } else {
-         echo Wrap(Anchor(($Category->Depth > 1 ? '↳ ' : '').Gdn_Format::Text($Category->Name), '/categories/'.rawurlencode($Category->UrlCode)), 'strong')
-            .'<span class="Count">'.number_format($Category->CountAllDiscussions).'</span>';
+         $CountText = ' <span class="Aside"><span class="Count">'.BigPlural($Category->CountAllDiscussions, '%s discussion').'</span></span>';
+         
+         echo Anchor(htmlspecialchars($Category->Name).$CountText, CategoryUrl($Category), 'ItemLink');
       }
       echo "</li>\n";
    }

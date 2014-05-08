@@ -1,4 +1,17 @@
-<?php
+<?php if (!defined('APPLICATION')) exit();
+
+/**
+ * Routing system
+ * 
+ * Allows paths within the application to redirect, either internally or via
+ * http, to other locations.
+ *
+ * @author Tim Gunter <tim@vanillaforums.com>
+ * @copyright 2003 Vanilla Forums, Inc
+ * @license http://www.opensource.org/licenses/gpl-2.0.php GPL
+ * @package Garden
+ * @since 2.0
+ */
 
 class Gdn_Router extends Gdn_Pluggable {
 
@@ -13,7 +26,8 @@ class Gdn_Router extends Gdn_Pluggable {
          'Temporary'    => 'Temporary (302)',
          'Permanent'    => 'Permanent (301)',
          'NotAuthorized' => 'Not Authorized (401)',
-         'NotFound'     => 'Not Found (404)'
+         'NotFound'     => 'Not Found (404)',
+         'Test'         => 'Test'
       );
       $this->ReservedRoutes = array('DefaultController', 'DefaultForumRoot', 'Default404', 'DefaultPermission', 'UpdateMode');
       $this->_LoadRoutes();
@@ -53,11 +67,14 @@ class Gdn_Router extends Gdn_Pluggable {
    /**
     * Update or add a route to the config table
     * 
-    * @return void
+    * @param string $Route
+    * @param string $Destination
+    * @param string $Type
+    * @param bool $Save Optional. Save this to the config or just in memory?
     */
-   public function SetRoute($Route, $Destination, $Type) {
+   public function SetRoute($Route, $Destination, $Type, $Save = TRUE) {
       $Key = $this->_EncodeRouteKey($Route);
-      SaveToConfig('Routes.'.$Key, array($Destination, $Type));
+      SaveToConfig('Routes.'.$Key, array($Destination, $Type), $Save);
       $this->_LoadRoutes();
    }
    

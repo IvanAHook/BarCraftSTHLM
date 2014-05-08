@@ -28,6 +28,7 @@ class ConversationMessageModel extends Gdn_Model {
     */
    public function __construct() {
       parent::__construct('ConversationMessage');
+      $this->PrimaryKey = 'MessageID';
    }
    
    /**
@@ -178,11 +179,17 @@ class ConversationMessageModel extends Gdn_Model {
       $this->Validation->ApplyRule('Body', 'Required');
       $this->AddInsertFields($FormPostValues);
       
+      $this->EventArguments['FormPostValues'] = $FormPostValues;
+      $this->FireEvent('BeforeSaveValidation');
+      
       // Validate the form posted values
       $MessageID = FALSE;
       if($this->Validate($FormPostValues)) {
          $Fields = $this->Validation->SchemaValidationFields(); // All fields on the form that relate to the schema
          TouchValue('Format', $Fields, C('Garden.InputFormatter', 'Html'));
+         
+         $this->EventArguments['Fields'] = $Fields;
+         $this->FireEvent('BeforeSave');
          
          $MessageID = $this->SQL->Insert($this->Name, $Fields);
          $this->LastMessageID = $MessageID;
@@ -191,6 +198,11 @@ class ConversationMessageModel extends Gdn_Model {
          if (!$Conversation)
             $Conversation = $this->SQL->GetWhere('Conversation', array('ConversationID' => $ConversationID))->FirstRow(DATASET_TYPE_ARRAY);
 
+         $Message = $this->GetID($MessageID);
+         $this->EventArguments['Conversation'] = $Conversation;
+         $this->EventArguments['Message'] = $Message;
+         $this->FireEvent('AfterSave');
+         
          // Get the new message count for the conversation.
          $SQLR = $this->SQL
             ->Select('MessageID', 'count', 'CountMessages')
@@ -202,12 +214,15 @@ class ConversationMessageModel extends Gdn_Model {
             list($CountMessages, $LastMessageID) = array_values($SQLR);
          } else { return; }
          
-         // Update the conversation's DateUpdated field
+         // Update the conversation's DateUpdated field.
+         $DateUpdated = Gdn_Format::ToDateTime();
+         
          $this->SQL
             ->Update('Conversation c')
-            ->History()
             ->Set('CountMessages', $CountMessages)
             ->Set('LastMessageID', $LastMessageID)
+            ->Set('UpdateUserID', Gdn::Session()->UserID)
+            ->Set('DateUpdated', $DateUpdated)
             ->Where('ConversationID', $ConversationID)
             ->Put();
 
@@ -215,9 +230,20 @@ class ConversationMessageModel extends Gdn_Model {
          $this->SQL
             ->Update('UserConversation uc')
             ->Set('uc.LastMessageID', $MessageID)
+            ->Set('uc.DateConversationUpdated', $DateUpdated)
             ->Where('uc.ConversationID', $ConversationID)
             ->Where('uc.Deleted', '0')
             ->Where('uc.CountReadMessages', $CountMessages - 1)
+            ->Where('uc.UserID <>', $Session->UserID)
+            ->Put();
+         
+         // Update the date updated of the users that were not up-to-date.
+         $this->SQL
+            ->Update('UserConversation uc')
+            ->Set('uc.DateConversationUpdated', $DateUpdated)
+            ->Where('uc.ConversationID', $ConversationID)
+            ->Where('uc.Deleted', '0')
+            ->Where('uc.CountReadMessages <>', $CountMessages - 1)
             ->Where('uc.UserID <>', $Session->UserID)
             ->Put();
 
@@ -226,6 +252,7 @@ class ConversationMessageModel extends Gdn_Model {
             ->Update('UserConversation uc')
             ->Set('uc.CountReadMessages', $CountMessages)
             ->Set('Deleted', 0)
+            ->Set('uc.DateConversationUpdated', $DateUpdated)
             ->Where('ConversationID', $ConversationID)
             ->Where('UserID', $Session->UserID)
             ->Put();
@@ -242,11 +269,19 @@ class ConversationMessageModel extends Gdn_Model {
          $UpdateCountUserIDs = array();
          $NotifyUserIDs = array();
          
-         // Collapse for call to UpdateUserCache and ActivityModel
+         // Collapse for call to UpdateUserCache and ActivityModel.
+         $InsertUserFound = FALSE;
          foreach ($UserData as $UpdateUser) {
             $LastMessageID = GetValue('LastMessageID', $UpdateUser);
             $UserID = GetValue('UserID', $UpdateUser);
             $Deleted = GetValue('Deleted', $UpdateUser);
+            
+            if ($UserID == GetValue('InsertUserID', $Fields)) {
+               $InsertUserFound = TRUE;
+               if ($Deleted) {
+                  $this->SQL->Put('UserConversation', array('Deleted' => 0, 'DateConversationUpdated' => $DateUpdated), array('ConversationID' => $ConversationID, 'UserID' => $UserID));
+               }
+            }
             
             // Update unread for users that were up to date
             if ($LastMessageID == $MessageID)
@@ -257,10 +292,22 @@ class ConversationMessageModel extends Gdn_Model {
                $NotifyUserIDs[] = $UserID;
          }
          
+         if (!$InsertUserFound) {
+            $UserConversation = array(
+               'UserID' => GetValue('InsertUserID', $Fields),
+               'ConversationID' => $ConversationID,
+               'LastMessageID' => $LastMessageID,
+               'CountReadMessages' => $CountMessages,
+               'DateConversationUpdated' => $DateUpdated);
+            $this->SQL->Insert('UserConversation', $UserConversation);
+         }
+         
          if (sizeof($UpdateCountUserIDs)) {
             $ConversationModel = new ConversationModel();
             $ConversationModel->UpdateUserUnreadCount($UpdateCountUserIDs, TRUE);
          }
+         
+         $this->FireEvent('AfterAdd');
 
          $ActivityModel = new ActivityModel();
          foreach ($NotifyUserIDs as $NotifyUserID) {
