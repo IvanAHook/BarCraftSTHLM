@@ -64,7 +64,7 @@ textarea, input[type=text] {
    width: 960px;
 }
 #Body .ContentColumn {
-   margin: 0 230px 0 0;
+   margin: 10px 230px 0 0;
 }
 
 /* ==================== Pages that hide the panel and have full-width content */
@@ -265,7 +265,7 @@ body {
 }
 #Body {
 	zoom: 1; /* hasLayout for IE6/7 */
-  margin: 40px auto;
+  margin: 44px auto;
 }
 #Body:after { /* clearfix */
 	visibility: hidden;
@@ -332,7 +332,7 @@ a {
 a:hover,
 a.TextColor:hover,
 a:hover .TextColor {
-   color: #E43053;
+
 }
 a.TextColor, a .TextColor {
    color: black;
@@ -354,8 +354,6 @@ textarea {
    margin: 0;
    width: 250px;
 	background: #fff;
-	border: 1px solid #999;
-	border: 1px solid rgba(0, 0, 0, 0.4);
 	padding: 3px;	
 }
 .PasswordStrength {
@@ -581,34 +579,14 @@ select {
    line-height: 1;
    font-weight: bold;
    padding: 4px 6px;
-	background: #f8f8f8;
-   border: 1px solid #999;
-   border-radius: 2px;
-   -moz-border-radius: 2px;
-   -webkit-border-radius: 2px;
-	white-space: nowrap;
-   background-image: linear-gradient(bottom, #CCCCCC 0%, #FAFAFA 100%);
-   background-image: -o-linear-gradient(bottom, #CCCCCC 0%, #FAFAFA 100%);
-   background-image: -moz-linear-gradient(bottom, #CCCCCC 0%, #FAFAFA 100%);
-   background-image: -webkit-linear-gradient(bottom, #CCCCCC 0%, #FAFAFA 100%);
-   background-image: -ms-linear-gradient(bottom, #CCCCCC 0%, #FAFAFA 100%);
-   background-image: -webkit-gradient(
-      linear,
-      left bottom,
-      left top,
-      color-stop(0, #CCCCCC),
-      color-stop(1, #FAFAFA)
-   );
-   text-shadow: 0 1px 0 #fff;
-   box-shadow: inset 0 1px 0 #fff, inset 0 -1px 2px #bbb;
-   -moz-box-shadow: inset 0 1px 0 #fff, inset 0 -1px 2px #bbb;
-   -webkit-box-shadow: inset 0 1px 0 #fff, inset 0 -1px 2px #bbb;
-   border-color: #999;
-   color: #333;
+	 background: #E43053;
+	 white-space: nowrap;
+   color: white;
+   border: 0;
+   border-width: 0;
 }
 .Button:hover {
-   color: #111;
-   border-color: #666;
+   background-color: #DD2E50;
 }
 
 .Button.Disabled {
@@ -642,11 +620,7 @@ div.FileUpload .CurrentImage {
 .ButtonGroup.Open .Button.Handle,
 .Button:focus,
 .Button:active {
-   border-color: #aaa;
-   background: #f7f7f7;
-   box-shadow: none;
-   -moz-box-shadow: none;
-   -webkit-box-shadow: none;
+
 }
 .Button.FileInput > input {
   position: absolute;
@@ -688,7 +662,7 @@ div.FileUpload .CurrentImage {
    text-shadow: 0 0 1px #fff;
    display: inline-block;
    cursor: pointer;
-   font-size: 13px;
+   font-size: 14px;
    line-height: 16px;
    font-weight: bold;
    padding: 5px 8px;
@@ -869,7 +843,7 @@ div.Warning {
 }
 .Count {
    background: #444;
-   background-color: rgba(0, 0, 0, 0.6);
+   background-color: rgba(0, 0, 0, 0.25);
    border-radius: 3px;
    -webkit-border-radius: 3px;
    -moz-border-radius: 3px;
@@ -895,7 +869,7 @@ div.Warning {
    text-decoration: underline;
 }
 .Info {
-   font-size: 13px;
+   font-size: 14px;
    background: #fafafa;
    border: 2px solid #eee;
 	border: 2px solid rgba(0,0,0,0.1);
@@ -914,6 +888,22 @@ div.Warning {
 	line-height: 2.4;
 	font-size: 12px;
 }
+
+.BreadcrumbsWrapper {
+  margin-bottom: 2rem;
+}
+
+.Breadcrumbs {
+  font-family: Oswald, sans-serif;
+  font-size: 32px;
+  font-weight: 300;
+}
+
+.Breadcrumbs .HomeCrumb {
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
 #PagerLess {
    -moz-border-radius-topright: 2px;
    -moz-border-radius-topleft: 2px;
@@ -1004,7 +994,7 @@ a.Small img {
 	font-weight: bold;
 }
 .DismissMessage {
-	font-size: 13px;
+	font-size: 14px;
 	text-align: left;
 	position: relative;
    color: #000;
@@ -1315,6 +1305,9 @@ td.CheckBoxColumn {
 .HomepageTitle .AdminCheck {
     padding-left: 8px;
 }
+.HomepageTitle {
+  display: none;
+}
 .ControlOptions .AdminCheck {
 	display: block;
 	padding: 6px 8px 0;
@@ -1345,6 +1338,7 @@ td.CheckBoxColumn {
 #Panel {
    width: 200px;
    float: right;
+   margin-top: -10px;
    
 /*   
 No overflow hidden on main elements. Causes too many bugs!
@@ -1354,6 +1348,21 @@ overflow: hidden;
 	margin-top: 0;
 */
 }
+
+#Panel .Box, #Panel .BoxFilter, #Panel .MeBox {
+  background: #e43053;
+  color: white;
+  padding: 10px;
+}
+
+#Panel .Box a, #Panel .BoxFilter a, #Panel .MeBox a {
+  color: white;
+}
+
+#Panel .Box a:hover, #Panel .BoxFilter a:hover {
+  text-decoration: underline;
+}
+
 .Box {
    margin: 10px 0;
 }
@@ -1470,7 +1479,7 @@ overflow: hidden;
 	line-height: 1.6;
 }
 .PanelActivity li a {
-	font-size: 13px;
+	font-size: 14px;
 }
 .PanelActivity li a.Name {
 	margin-right: 2px;
@@ -1514,7 +1523,7 @@ overflow: hidden;
 }
 
 .PanelColumn .Item .Title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: normal;
 }
 
@@ -1636,6 +1645,9 @@ overflow: hidden;
 .PanelCategories .Depth10 { padding-left: 40px; }
 .PanelCategories .Depth11 { padding-left: 44px; }
 .PanelCategories .Depth12 { padding-left: 48px; }
+
+.CategoryList .Depth1 .Options { display: none; }
+
 .CategoryList .Depth2 { padding-left: 25px !important; }
 .CategoryList .Depth3 { padding-left: 50px !important; }
 .CategoryList .Depth4 { padding-left: 75px !important; }
@@ -1647,7 +1659,16 @@ overflow: hidden;
 .CategoryList .Depth10 { padding-left: 225px !important; }
 .CategoryList .Depth11 { padding-left: 250px !important; }
 .CategoryList .Depth12 { padding-left: 275px !important; }
-.CategoryListWithHeadings .Depth1 { padding-left: 0 !important; }
+
+.DataList.CategoryListWithHeadings .Depth1 { 
+  background: #e43153;
+  color: white;
+  border: 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 4px 4px 4px 9px;
+}
+
 .CategoryListWithHeadings .Depth2 { padding-left: 0 !important; }
 .CategoryListWithHeadings .Depth3 { padding-left: 25px !important; }
 .CategoryListWithHeadings .Depth4 { padding-left: 50px !important; }
@@ -1680,7 +1701,7 @@ overflow: hidden;
 
 /* Page Controls (new discussion button, pagers, etc) */
 #Content .BoxNewDiscussion {
-    display: none; /* display: block to reveal this */
+    display: block; /* display: block to reveal this */
 }
 .PageControls {
     margin: 5px 0;
@@ -1718,10 +1739,10 @@ overflow: hidden;
 }
 .DataList .Item,
 .NarrowList .Item {
-   margin: 0;
-   padding: 8px;
-   border: 0px solid #ddd;
-   border: 0px solid rgba(0, 0, 0, 0.1);
+  margin: 0;
+  padding: 8px;
+  border: 0px solid #ddd;
+  border: 0px solid rgba(0, 0, 0, 0.1);
 	border-bottom-width: 1px;
 	position: relative;
 }
@@ -1991,7 +2012,7 @@ overflow: hidden;
 }
 .Activities li.Condensed .Excerpt {
 	color: #000;
-	font-size: 13px;
+	font-size: 14px;
 }
 .Activities ul.DataList {
 	margin-left: 50px;
@@ -2012,7 +2033,7 @@ overflow: hidden;
 .Activities .DataList .Title,
 .Activities .DataList .Title a,
 .Activities .DataList .Excerpt p {
-	font-size: 13px;
+	font-size: 14px;
 	line-height: 1;
 }
 .Activities .DataList .Photo img {
@@ -2538,7 +2559,7 @@ div.Popup form ul li label.RadioLabel {
    text-align: center;
    margin: 20px 0 0;
    padding: 4px 9px;
-   font-size: 13px;
+   font-size: 14px;
    color: #ddd;
    line-height: 1;
 }
@@ -2675,7 +2696,7 @@ tbody td.BigCount {
    font-size: 11px;
 }
 .DataTable .Title {
-	font-size: 13px;
+	font-size: 14px;
 	font-weight: bold;
 }
 td.Opts {
@@ -3622,7 +3643,7 @@ span.InformSprite.Dice { background-position: -442px -586px; }
 /* 16px Sprites White */
 .SpDashboard,
 .SpOptions,
-.SpCog { background-position: 0 -148px; }
+.SpCog { background-position: 0 -212px; }
 .SpSettings { background-position: -16px -212px; }
 .SpNotifications,
 .SpGlobe { background-position: -32px -212px; }
@@ -3652,6 +3673,7 @@ span.InformSprite.Dice { background-position: -442px -586px; }
 .SpPlus { background-position: -80px -260px; }
 
 /* 16px Sprites White Transparent */
+/*
 .SpDashboard,
 .SpCog { background-position: 0 -276px; }
 .SpSettings { background-position: -16px -276px; }
@@ -3681,7 +3703,9 @@ span.InformSprite.Dice { background-position: -442px -586px; }
 .SpRefresh { background-position: -48px -324px; }
 .SpPencil { background-position: -64px -324px; }
 .SpPlus { background-position: -80px -324px; }
+*/
 /* 16px Sprites Black */
+/*
 .SpDashboard,
 .SpCog { background-position: 0 -84px; }
 .SpSettings { background-position: -16px -84px; }
@@ -3711,7 +3735,9 @@ span.InformSprite.Dice { background-position: -442px -586px; }
 .SpRefresh { background-position: -48px -132px; }
 .SpPencil { background-position: -64px -132px; }
 .SpPlus { background-position: -80px -132px; }
+*/
 /* 16px Sprites Black Transparent */
+/*
 .SpDashboard,
 .SpCog { background-position: 0 -148px; }
 .SpSettings { background-position: -16px -148px; }
@@ -3741,7 +3767,7 @@ span.InformSprite.Dice { background-position: -442px -586px; }
 .SpRefresh { background-position: -48px -196px; }
 .SpPencil { background-position: -64px -196px; }
 .SpPlus { background-position: -80px -196px; }
-
+*/
 
 /* ============================= Embedded Discussion & Comment Customizations */
 /*body.embed {
