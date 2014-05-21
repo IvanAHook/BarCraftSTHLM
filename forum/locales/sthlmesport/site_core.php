@@ -473,7 +473,7 @@ $Definition['Hide signatures?'] = 'Göm signaturer?';
 
 $Definition['his'] = 'hans';
 
-$Definition['Home'] = 'Hem';
+$Definition['Home'] = 'Forum';
 
 $Definition['hours'] = 'timmar';
 

@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Oswald:400,300|Lato:400,300,700,400italic);
+
 /* ================================================================ Reset CSS */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -51,11 +53,6 @@ textarea, input[type=text] {
    -moz-box-sizing: border-box;
    box-sizing: border-box;
 }
-
-
-/* ================================================================ Web Fonts */
-
-@import url(//fonts.googleapis.com/css?family=Lato:300,400,700,400italic,700italic|Oswald:400,300);
 
 /* ===================================================================== Grid */
 
@@ -254,14 +251,14 @@ XXXXXXXXXXXXXXXXXXXXXXX END  WP Theme  XXXXXXXXXXXXXXXXXXXXXXXXX
 
 /* ============================================== General Styles & Typography */
 body {
-   color: #000;
-	font-family: Lato,sans-serif;
-	font-size: 75%;
-	line-height: 1.7em;
-   background: #fff;
-   margin: 0;
-   padding: 0;
-   font-size: small;
+  color: #000;
+  font-family: 'Lato',sans-serif;
+  font-size: 75%;
+  line-height: 1.6em;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+  font-size: small;
 }
 #Body {
 	zoom: 1; /* hasLayout for IE6/7 */
@@ -300,9 +297,10 @@ body {
 	text-align: right;
 }
 h1, h2, h3, h4, h5, h6 {
-   font-family: "Helvetica Neue",Helvetica,arial,sans-serif;
-   font-weight: bold;
-   margin: 5px 0;
+   font-family: 'Oswald',sans-serif;
+   text-transform: uppercase;
+   line-height: normal;
+   margin: 8px 0 5px 0;
 }
 p {
    margin: 5px 0;
@@ -314,16 +312,16 @@ h1 {
    font-size:140%;
 }
 h2 {
-   font-size:120%;
+   font-size:20px;
 }
 h3 {
-   font-size:110%;
+   font-size:18px;
 }
 h4 {
-   font-size: 110%;
+   font-size: 18px;
 }
 h5 {
-   font-size: 100%;
+   font-size: 16px;
 }
 a {
    text-decoration: none;
@@ -894,7 +892,7 @@ div.Warning {
 }
 
 .Breadcrumbs {
-  font-family: Oswald, sans-serif;
+  font-family: 'Oswald', sans-serif;
   font-size: 32px;
   font-weight: 300;
 }
@@ -1204,7 +1202,7 @@ div.Discussion:hover .OptionsTitle:hover,
 .MenuItems a:hover {
    color: #ffffff !Important;
    text-decoration: none;
-   background-color: #004D9F !Important;
+   background-color: #E43053 !Important;
 }
 .MenuItems li > strong {
    font-size: 12px;
@@ -1246,8 +1244,9 @@ div.Discussion:hover .OptionsTitle:hover,
    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
    border: solid 1px #999;
 }
-.FlyoutMenu a {
-   color: #00419b;
+
+#Panel .Box .FlyoutMenu a, #Panel .BoxFilter .FlyoutMenu a, #Panel .MeBox .FlyoutMenu a {
+   color: #E43053;
 }
 .FlyoutButton {
    cursor: pointer;
@@ -1355,6 +1354,23 @@ overflow: hidden;
   padding: 10px;
 }
 
+#Panel .Box.GuestBox, #Panel .MeBox {
+  background: #541d59;
+}
+
+#Panel .BoxFilter {
+  background: #57c09f;
+}
+
+#Panel .BoxCategories {
+  background: #49bae2;
+}
+
+#Panel .Box.GuestBox .Button {
+  background: none;
+  padding-left: 0;
+}
+
 #Panel .Box a, #Panel .BoxFilter a, #Panel .MeBox a {
   color: white;
 }
@@ -1381,6 +1397,13 @@ overflow: hidden;
 	font-size: 12px;
    margin-left: 80px;
 }
+.Box li {
+  margin-bottom: 0.5em;
+}
+.Box a:before {
+content: "▸";
+}
+
 /* Hiding until we figure out what to do with GuestWelcomeModule */
 .MeBox-SignIn {
    display: none;
@@ -1774,8 +1797,8 @@ overflow: hidden;
    color: #70727c;
 }
 .MItem {
-   margin-left: 8px;
-   margin-right: 8px;
+/*   margin-left: 8px;  */
+   margin-right: 16px;
    white-space: nowrap;
 }
 .MItem:first-child {
@@ -1942,7 +1965,7 @@ overflow: hidden;
 }
 .PopList .Item.Title {
     font-size: 12px;
-    padding: 2px 4px;
+    padding: 2px 8px;
 }
 .PopList .Item.Title a {
     float: right;
@@ -2077,6 +2100,9 @@ body.Post .Popup a.Close {
 .Message h1, .Message h2, .Message h3, .Message p, .Message .P {
    margin: 10px 0;
 }
+.Message a {
+  text-decoration: underline;
+}
 blockquote {
    margin: 1em 0 1em 40px;
 }
@@ -2175,6 +2201,7 @@ pre code {
 	display: block;
 }
 .DataList .Meta .RSS {
+  display: none;
 	margin-right: 6px;
 }
 .Meta .RSS img {
