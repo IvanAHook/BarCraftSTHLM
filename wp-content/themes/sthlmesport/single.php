@@ -9,6 +9,18 @@
 get_header();
 ?>
 
+<!-- Facebook JS SDK -->
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/sv_SE/sdk.js#xfbml=1&appId=319208091493730&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
 <div id="content" class="site-content">
 
 	<?php while ( have_posts() ) : the_post(); ?>
@@ -66,8 +78,8 @@ get_header();
 			<?php get_template_part( 'content', 'single' ); ?>
 
 			<?php// sthlmesport_post_nav(); ?>
-
-			<?php echo do_shortcode('[fbcomments]'); ?>
+			<h3>Kommentarer:</h3>
+			<div class="fb-comments" data-href="<?php the_permalink(); ?>" data-numposts="5" data-colorscheme="light"></div>
 
 			<?php
 				// If comments are open or we have at least one comment, load up the comment template
