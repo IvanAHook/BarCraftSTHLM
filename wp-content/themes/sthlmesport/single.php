@@ -62,9 +62,9 @@ get_header();
 				<?php dynamic_sidebar( 'schedulewidgets' ); ?>
 			</div>
 
-			<div id="schedule-readmore">
+			<!-- <div id="schedule-readmore">
 				<a href="http://sthlmesport.se/?page_id=2075">Se hela kalendariet</a>
-			</div>
+			</div> --!>
 
 		</div>
 	</div>
