@@ -437,9 +437,9 @@ a {
 .main-navigation .menu ul {
 	margin: 0;
 	list-style-image: url("img/icon/list-bullet.png");
-	list-style-position: inside;
+	/* list-style-position: inside; */ /* fix för chromebug */
 	padding-left: 0;
-	overflow: auto;
+	/* overflow: auto; */ /* fix för chromebug */
 	font-size: 1.6rem;
 	font-weight: bold;
 }
@@ -447,6 +447,7 @@ a {
 	float: left;
 	position: relative;
 	margin-right: 0.8em;
+	margin-left: 0.8em; /* fix för chromebug */
 }
 .main-navigation a {
 	text-decoration: none;
